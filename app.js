@@ -8374,3 +8374,26 @@ function calcConversion() {
 
   const rb=el('conv-result-box'); if(rb) rb.style.display='block';
   const bd=el('conv-breakdown'); if(
+bd) bd.style.display='block';
+  const bg=el('btn-conv-go'); if(bg){
+    const ok = rem >= 0 && addr.length > 10;
+    bg.disabled = !ok;
+    bg.style.opacity = ok ? '1' : '.4';
+  }
+}
+
+// ── INIT APP ──────────────────────────────────────────────────────
+function bitosInit(){
+  try{ lsRestore && lsRestore(); }catch(_e){}
+  try{ loadHistory && loadHistory(); }catch(_e){}
+  try{ initMobile && initMobile(); }catch(_e){}
+  try{ renderDash && renderDash(); }catch(_e){}
+  try{ fetchCoinGeckoPrices && fetchCoinGeckoPrices(); }catch(_e){}
+  try{ fetchHiveOS && fetchHiveOS(); }catch(_e){}
+  console.log('[BitOS] Cloud v3 ready');
+}
+if(document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', bitosInit);
+} else {
+  bitosInit();
+}
