@@ -12,6 +12,6 @@ PORT = 8080
 class MyRequestHandler(http.server.SimpleHTTPRequestHandler):
     pass
 
-with socketserver.TCPServer(('', PORT), MyRequestHandler) as httpd:
+with socketserver.TCPServer(('', PORT), MyRequestHandler) as httpd:8080
     print(f"Serving at port {PORT}")
     httpd.serve_forever()
