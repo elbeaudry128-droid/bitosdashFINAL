@@ -135,19 +135,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 <button class="pwa-install" id="pwa-install-btn" onclick="installPWA()">+</button>
 
 <script>
-function showPage(name){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  var p = document.getElementById('page-'+name); if(p) p.classList.add('active');
-  event && event.target && event.target.classList.add('active');
-}
-function el(id){ return document.getElementById(id); }
-function setText(id, txt){ var e = el(id); if(e) e.textContent = txt; }
-function getApiBase(name){
-  var hosts = { xmrchain:'/proxy/xmrchain', kaspa:'/proxy/kaspa', hiveos:'/proxy/hiveos',
-    coingecko:'/proxy/coingecko', xmrPool:'/proxy/xmr-pool', kasPool:'/proxy/kas-pool' };
-  return hosts[name] || '';
-}
+// showPage, el, setText, getApiBase defined in app.js
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', function(){
