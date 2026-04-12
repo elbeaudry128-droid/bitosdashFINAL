@@ -1,49 +1,16 @@
-# BitOS Cloud v3 — Déploiement & Liens
+# BitOS Cloud v3 — Ready-to-Use
 
-## Déploiement simplifié (2 fichiers)
+## Démarrage ultra-rapide
 
-Un seul script Python contient le serveur + `index.html` + `manifest.json` + `sw.js` embarqués. Il suffit de :
-
-```
-bitosdash.py    ← serveur + assets embarqués (30 KB)
-app.js          ← logique frontend (418 KB)
-```
-
-**Pas de `index.html`, pas de `manifest.json`, pas de `sw.js` à côté** — tout est dans `bitosdash.py`.
-
----
-
-## Lancement
-
-### Option 1 — Local uniquement (sans auth, plus rapide)
+### Linux / macOS (1 commande)
 
 ```bash
-python3 bitosdash.py
+./run.sh
 ```
 
-→ http://localhost:8765
+Cela lance le serveur sur `http://localhost:8765` et ouvre le navigateur.
 
-### Option 2 — LAN pour mobile (TCL60, iPad, etc.) avec mot de passe
-
-```bash
-python3 bitosdash.py --lan --qr
-```
-
-Le serveur demande un mot de passe au démarrage et affiche un **QR code** à scanner avec ton téléphone.
-
-### Option 3 — LAN sans authentification (rapide, déconseillé sur WiFi public)
-
-```bash
-python3 bitosdash.py --lan --no-auth
-```
-
-### Option 4 — HTTPS auto-signé (pour PWA complète avec micro/notifications)
-
-```bash
-python3 bitosdash.py --https --lan --qr
-```
-
-### Option 5 — Ouverture automatique du navigateur
+### Windows / manuel
 
 ```bash
 python3 bitosdash.py --open
@@ -51,35 +18,90 @@ python3 bitosdash.py --open
 
 ---
 
+## IMPORTANT — HTTP, PAS HTTPS
+
+```
+  ✓ http://localhost:8765      ← BON
+  ✗ https://localhost:8765     ← NE FONCTIONNE PAS
+```
+
+Le serveur est en **HTTP** par défaut. Pour activer HTTPS, ajoutez `--https` :
+
+```bash
+python3 bitosdash.py --https --lan
+```
+
+---
+
+## Modes de lancement
+
+### Mode local (ton PC uniquement)
+```bash
+./run.sh
+# ou
+python3 bitosdash.py --open
+```
+→ http://localhost:8765
+
+### Mode LAN (TCL60, iPad, autre PC) sans auth
+```bash
+./run.sh lan
+# ou
+python3 bitosdash.py --lan --no-auth
+```
+→ `http://<IP-LAN>:8765`
+
+### Mode LAN avec mot de passe + QR code
+```bash
+./run.sh lan-auth
+# ou
+python3 bitosdash.py --lan --qr
+```
+
+### Mode HTTPS complet
+```bash
+./run.sh https
+# ou
+python3 bitosdash.py --https --lan --qr
+```
+
+---
+
 ## Accès depuis TCL60 (Chrome Android)
 
-1. **Sur ton PC** : lance le serveur en mode LAN
+1. Sur ton PC :
    ```bash
-   python3 bitosdash.py --lan --no-auth
+   ./run.sh lan
    ```
-2. **Note l'IP LAN** affichée dans le terminal (ex: `http://192.168.1.42:8765`)
-3. **Sur le TCL60**, ouvre Chrome et tape cette URL
-4. Une fois la page ouverte → **menu ⋮ → "Ajouter à l'écran d'accueil"** → BitOS devient une PWA plein écran
+2. Note l'**IP LAN** affichée
+3. Sur ton TCL60, ouvre **Chrome** et tape :
+   ```
+   http://<IP-LAN>:8765
+   ```
+4. Menu ⋮ → **Ajouter à l'écran d'accueil** → BitOS devient une PWA plein écran
 
-### Trouver ton IP LAN sur le PC
+### Trouver ton IP LAN
 
 ```bash
 hostname -I | awk '{print $1}'
-ip route get 1.1.1.1 | awk '{print $7; exit}'
 ```
+
+---
+
+## Déploiement minimal (2 fichiers seulement)
+
+```
+bitosdashFINAL/
+├── bitosdash.py   ← serveur + HTML/manifest/SW embarqués (47 KB)
+└── app.js         ← logique frontend (418 KB)
+```
+
+Tout le reste est optionnel. Ces 2 fichiers suffisent.
 
 ---
 
 ## Endpoints du serveur
 
-### Routes publiques (si auth)
-| Route | Description |
-|---|---|
-| `/login` | Page de connexion |
-| `/api/auth` | POST pour s'authentifier |
-| `/logout` | Déconnexion |
-
-### Routes protégées
 | Route | Description |
 |---|---|
 | `/` | Dashboard (index.html embarqué) |
@@ -87,7 +109,9 @@ ip route get 1.1.1.1 | awk '{print $7; exit}'
 | `/manifest.json` | PWA manifest (embarqué) |
 | `/sw.js` | Service Worker (embarqué) |
 | `/status` | JSON état serveur |
-| `/api/proxy-test` | Test de connectivité des APIs |
+| `/api/proxy-test` | Test de connectivité des APIs externes |
+| `/login` | Page de connexion (mode LAN) |
+| `/logout` | Déconnexion |
 
 ### Proxies CORS
 | Route locale | Cible upstream |
@@ -98,54 +122,56 @@ ip route get 1.1.1.1 | awk '{print $7; exit}'
 | `/proxy/xmr-pool` | `https://supportxmr.com/api` |
 | `/proxy/kas-pool` | `https://api-kas.k1pool.com/api` |
 | `/proxy/xmrchain` | `https://xmrchain.net/api` |
-| `/proxy/asic/<ip>/<path>` | ASIC HTTP local (Antminer S21) |
+| `/proxy/asic/<ip>/<path>` | ASIC HTTP local |
 
 ---
 
 ## Diagnostic rapide
 
 ```bash
-# Serveur démarré ?
+# Le serveur répond-il ?
 curl http://localhost:8765/status
 
-# APIs externes accessibles ?
+# Les APIs externes marchent-elles ?
 curl http://localhost:8765/api/proxy-test
 
-# Process sur le port 8765 ?
+# Quel PID tient le port 8765 ?
 lsof -ti:8765
 
-# Tuer le serveur
+# Arrêter le serveur
 kill $(lsof -ti:8765)
 ```
 
 ---
 
-## Fichiers du projet
-
-| Fichier | Rôle | Taille |
-|---|---|---|
-| **`bitosdash.py`** ⭐ | Serveur + HTML/manifest/SW embarqués | ~30 KB |
-| **`app.js`** ⭐ | Logique frontend (mining, wallets, charts) | ~418 KB |
-| `server.py` | Version séparée (optionnelle) | ~20 KB |
-| `index.html` | Version standalone (optionnelle) | ~7 KB |
-| `manifest.json` | PWA manifest standalone | ~1 KB |
-| `sw.js` | Service Worker standalone | ~1 KB |
-
-> ⭐ = fichiers nécessaires pour le déploiement simplifié
-
----
-
-## Options complètes de `bitosdash.py`
+## Options de `bitosdash.py`
 
 ```
 --port N        Port custom (défaut: 8765)
---host HOST     Interface (défaut: 127.0.0.1 ou 0.0.0.0 si --lan)
 --lan           Accès depuis le réseau local
---qr            Afficher un QR code pour mobile
---https         HTTPS avec certificat auto-signé
---open          Ouvrir le navigateur automatiquement
+--qr            QR code pour mobile
+--https         HTTPS auto-signé
+--open          Ouvre le navigateur automatiquement
 --log FILE      Fichier de log
---no-watch      Désactiver le watchdog
---password PWD  Mot de passe explicite (mode LAN)
---no-auth       Désactiver l'auth en mode LAN
+--no-watch      Désactive le watchdog
+--password PWD  Mot de passe (mode LAN)
+--no-auth       Désactive l'auth en mode LAN
 ```
+
+---
+
+## Dépannage
+
+**Le dashboard ne s'affiche pas (page blanche)**
+- Ouvre la console Chrome (F12) et cherche les erreurs
+- Vérifie que `app.js` est bien chargé : http://localhost:8765/app.js doit renvoyer du code
+
+**"Cette page n'est pas accessible"**
+- Tu as tapé `https://` au lieu de `http://`. Utilise `http://localhost:8765`
+
+**"Port déjà utilisé"**
+- `kill $(lsof -ti:8765)` puis relance
+
+**Proxy APIs en erreur 502**
+- Normal dans un environnement sandbox/cloud (firewall de sortie)
+- En local chez toi, les 6 proxies répondent en 200 OK
