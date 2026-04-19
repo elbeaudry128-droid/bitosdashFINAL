@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-BitOS Cloud v3 — Serveur optimise pour Termux (Android)
+BitOS Cloud v3 — Serveur optimisé pour Termux (Android)
 
 Usage Termux:
   python bitos-termux.py              # lance sur 0.0.0.0:8765 + ouvre Chrome
   python bitos-termux.py --port 8080  # port custom
 
-Teste sur: TCL60 + Termux + Chrome Android
+Testé sur: TCL60 + Termux + Chrome Android
 """
 import argparse, hashlib, http.server, json, os, platform, secrets
 import socket, sys, threading, time
@@ -19,26 +19,32 @@ DASHBOARD_FILE = 'index.html'
 DEFAULT_PORT = 8765
 START_TIME = time.time()
 
+# Auth (désactivé par défaut sur Termux — usage local)
 AUTH_ENABLED = False
 AUTH_PASS_HASH = ''
 AUTH_TOKENS = set()
 
 PROXY_RULES = {
-    '/proxy/hiveos':    'https://api2.hiveos.farm/api/v2',
-    '/proxy/coingecko': 'https://api.coingecko.com/api/v3',
-    '/proxy/kaspa':     'https://api.kaspa.org',
-    '/proxy/xmr-pool':  'https://supportxmr.com/api',
-    '/proxy/kas-pool':  'https://api-kas.k1pool.com/api',
-    '/proxy/xmrchain':  'https://xmrchain.net/api',
+    '/proxy/hiveos':       'https://api2.hiveos.farm/api/v2',
+    '/proxy/coingecko':    'https://api.coingecko.com/api/v3',
+    '/proxy/kaspa':        'https://api.kaspa.org',
+    '/proxy/xmr-pool':    'https://supportxmr.com/api',
+    '/proxy/moneroocean':  'https://api.moneroocean.stream',
+    '/proxy/kas-pool':     'https://api-kas.k1pool.com/api',
+    '/proxy/xmrchain':    'https://xmrchain.net/api',
 }
 
+# ── IP detection (Android/Termux compatible) ─────────────────────
 def get_device_ip():
+    """Get local IP — works on Termux without hostname -I"""
+    # Method 1: socket trick (most reliable)
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
             s.connect(('8.8.8.8', 80))
             return s.getsockname()[0]
     except Exception:
         pass
+    # Method 2: Termux API
     try:
         import subprocess
         r = subprocess.run(['termux-wifi-connectioninfo'], capture_output=True, text=True, timeout=3)
@@ -50,13 +56,17 @@ def get_device_ip():
         pass
     return '127.0.0.1'
 
+# ── Open browser (Termux-compatible) ─────────────────────────────
 def open_browser(url):
+    """Open Chrome on Android via Termux, fallback to webbrowser"""
+    # Method 1: Termux
     try:
         import subprocess
         subprocess.Popen(['termux-open-url', url], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         return True
     except Exception:
         pass
+    # Method 2: am start (Android activity manager)
     try:
         import subprocess
         subprocess.Popen(['am', 'start', '-a', 'android.intent.action.VIEW', '-d', url],
@@ -64,6 +74,7 @@ def open_browser(url):
         return True
     except Exception:
         pass
+    # Method 3: standard webbrowser
     try:
         import webbrowser
         webbrowser.open(url)
@@ -71,15 +82,20 @@ def open_browser(url):
     except Exception:
         return False
 
+# ── Kill existing process on port ────────────────────────────────
 def kill_port(port):
+    """Kill process on port — works without lsof"""
     try:
         import subprocess
+        # Try fuser first (available on most Linux/Android)
         subprocess.run(['fuser', '-k', f'{port}/tcp'], capture_output=True, timeout=3)
         time.sleep(0.5)
     except Exception:
         pass
 
+# ── Embedded assets ──────────────────────────────────────────────
 def load_or_embed(filename):
+    """Try to load from disk, return None if not found"""
     p = Path(filename)
     if p.exists() and p.is_file():
         return p.read_text('utf-8')
@@ -109,15 +125,18 @@ class TermuxHandler(http.server.BaseHTTPRequestHandler):
         path = self.path.split('?')[0]
         if path == '/favicon.ico':
             self.send_error(404); return
+        # Proxy
         for prefix, target in PROXY_RULES.items():
             if path == prefix or path.startswith(prefix + '/') or path.startswith(prefix + '?'):
                 self._proxy(method, prefix, target); return
         if path.startswith('/proxy/asic/'):
             self._proxy_asic(method, path); return
+        # Status
         if path in ('/status', '/api/status'):
             self._status(); return
         if path == '/api/proxy-test':
             self._proxy_test(); return
+        # Static
         self._static(path)
 
     def _proxy(self, method, prefix, target):
@@ -174,6 +193,7 @@ class TermuxHandler(http.server.BaseHTTPRequestHandler):
     def _static(self, path):
         if path in ('/', ''): path = '/' + DASHBOARD_FILE
         name = path.lstrip('/')
+        # Embedded assets first
         if name in self.embedded_assets:
             mime, content = self.embedded_assets[name]
             data = content.encode('utf-8')
@@ -183,6 +203,7 @@ class TermuxHandler(http.server.BaseHTTPRequestHandler):
             self.send_header('Cache-Control', 'no-cache' if name.endswith('.html') else 'max-age=300')
             self.end_headers(); self.wfile.write(data)
             return
+        # Disk
         fp = (Path('.') / name).resolve()
         bp = Path('.').resolve()
         if not str(fp).startswith(str(bp)):
@@ -229,7 +250,7 @@ class TermuxHandler(http.server.BaseHTTPRequestHandler):
 
 
 def main():
-    p = argparse.ArgumentParser(description='BitOS Cloud v3 - Termux Edition')
+    p = argparse.ArgumentParser(description='BitOS Cloud v3 — Termux Edition')
     p.add_argument('--port', type=int, default=DEFAULT_PORT)
     p.add_argument('--no-open', action='store_true', help='Ne pas ouvrir Chrome')
     args = p.parse_args()
@@ -237,6 +258,7 @@ def main():
     script_dir = Path(__file__).parent.resolve()
     os.chdir(script_dir)
 
+    # Load embedded or disk assets
     embedded = {}
     for name, mime in [('index.html', 'text/html; charset=utf-8'),
                         ('manifest.json', 'application/json'),
@@ -246,6 +268,7 @@ def main():
             embedded[name] = (mime, content)
     TermuxHandler.embedded_assets = embedded
 
+    # Check app.js exists
     if not Path('app.js').exists():
         print("\n  app.js introuvable.")
         print("  Placez app.js dans le meme dossier que ce script.")
@@ -259,15 +282,19 @@ def main():
     kill_port(port)
 
     print(f"""
-  BitOS Cloud v3 - Termux Edition
-  Optimise pour Android / TCL60
+  ┌─────────────────────────────────────────────────┐
+  │  BitOS Cloud v3 — Termux Edition                │
+  │  Optimise pour Android / TCL60                   │
+  └─────────────────────────────────────────────────┘
 
   Dossier  : {script_dir}
   Version  : {VERSION}
   Fichiers : {', '.join(f for f in ['index.html','app.js','manifest.json','sw.js'] if Path(f).exists())}
 
-  URL locale  : {url}
-  URL WiFi    : {lan}
+  ┌─────────────────────────────────────────────────┐
+  │  URL locale  : {url:<33}│
+  │  URL WiFi    : {lan:<33}│
+  └─────────────────────────────────────────────────┘
 
   Ouvre Chrome sur ton telephone et va sur :
   {url}

@@ -17,14 +17,16 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
+  // Ne jamais cacher les proxy API ni l'auth
   if (url.pathname.startsWith('/proxy/') ||
       url.pathname.startsWith('/api/') ||
       url.pathname === '/login' ||
       url.pathname === '/logout') {
-    return;
+    return; // passthrough
   }
   if (e.request.method !== 'GET') return;
 
+  // Stale-while-revalidate
   e.respondWith(
     caches.open(CACHE).then(cache =>
       cache.match(e.request).then(cached => {
