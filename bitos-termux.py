@@ -25,12 +25,13 @@ AUTH_PASS_HASH = ''
 AUTH_TOKENS = set()
 
 PROXY_RULES = {
-    '/proxy/hiveos':    'https://api2.hiveos.farm/api/v2',
-    '/proxy/coingecko': 'https://api.coingecko.com/api/v3',
-    '/proxy/kaspa':     'https://api.kaspa.org',
-    '/proxy/xmr-pool':  'https://supportxmr.com/api',
-    '/proxy/kas-pool':  'https://api-kas.k1pool.com/api',
-    '/proxy/xmrchain':  'https://xmrchain.net/api',
+    '/proxy/hiveos':       'https://api2.hiveos.farm/api/v2',
+    '/proxy/coingecko':    'https://api.coingecko.com/api/v3',
+    '/proxy/kaspa':        'https://api.kaspa.org',
+    '/proxy/xmr-pool':    'https://supportxmr.com/api',
+    '/proxy/moneroocean':  'https://api.moneroocean.stream',
+    '/proxy/kas-pool':     'https://api-kas.k1pool.com/api',
+    '/proxy/xmrchain':    'https://xmrchain.net/api',
 }
 
 # ── IP detection (Android/Termux compatible) ─────────────────────

@@ -1,4 +1,4 @@
-// BitOS v3
+// BitOS v4
 // ── ERROR BOUNDARY GLOBAL ──────────────────────────────────────
 try{window.addEventListener('error',function(e){console.error('[BitOS]',e.message,e.lineno);});}catch(_e){}
 try{window.addEventListener('unhandledrejection',function(e){e.preventDefault();console.warn('[BitOS] Promise rejection:',e.reason);});}catch(_e){}
@@ -246,17 +246,17 @@ function renderScenarios() {
     return;
   }
   const SCENS=[
-    ['🐻 Bear',    80,  0.04, 't-warn','Difficile'],
-    ['📉 Correct', 120, 0.08, 't-warn','Modéré'],
-    ['📊 Actuel',  xmrP||167, kasP||0.128, 't-info','Actuel'],
-    ['📈 Haussier',200, 0.20, 't-best','Bon'],
-    ['🚀 Bullrun', 350, 0.50, 't-best','Excellent'],
-    ['💎 Moon',    500, 1.00, 't-best','Max'],
+    ['🐻 Bear',    150,  0.02, 't-warn','Difficile'],
+    ['📉 Correct', 250, 0.03, 't-warn','Modéré'],
+    ['📊 Actuel',  xmrP||327, kasP||0.033, 't-info','Actuel'],
+    ['📈 Haussier',450, 0.08, 't-best','Bon'],
+    ['🚀 Bullrun', 600, 0.20, 't-best','Excellent'],
+    ['💎 Moon',    1000, 0.50, 't-best','Max'],
   ];
   function sc(xp,kp) {
     const calc=(hr,coin,p)=>{const ns=NET_STATS[coin];if(!hr||!ns.networkHashrate)return 0;return(hr/ns.networkHashrate)*ns.blockReward*(86400/(ns.blockTime||120))*30*p;};
     const r=calc(xHR,'XMR',xp)+calc(kHR,'KAS',kp);
-    const n=Math.max(0,r-elecM-r*0.006);
+    const n=Math.max(0,r-elecM-r*(POOL_CONFIG.XMR.fee||0));
     return{net:n,roi:invest>0?Math.round(n*12/invest*100):0,pb:n>0?Math.round(invest/n):'∞'};
   }
   tbody.innerHTML=SCENS.map(([l,xp,kp,tc,tl])=>{
@@ -1441,17 +1441,71 @@ function el(id){return document.getElementById(id);}
 // ── PRIX LIVE (CoinGecko) ──
 // Config: entrez votre adresse wallet pour les pools
 const POOL_CONFIG = {
-  XMR: { walletAddr:'87eYaDMVqrC7TuLao24P782QDTpohQeQRbcNHUjU2ksjJhH3LvmwAj6aMrRVZp8xtuGoeK56G4KJrYm2mxf2dF4oGF4o4ZN', pool:'supportxmr',
-          apiBase:'https://supportxmr.com/api', minPayout:0.003,
-          stratumTCP:'stratum+tcp://pool.supportxmr.com:3333',
-          stratumSSL:'stratum+ssl://pool.supportxmr.com:443',
-          worker:'x' },
+  XMR: { walletAddr:'87eYaDMVqrC7TuLao24P782QDTpohQeQRbcNHUjU2ksjJhH3LvmwAj6aMrRVZp8xtuGoeK56G4KJrYm2mxf2dF4oGF4o4ZN', pool:'moneroocean',
+          apiBase:'https://api.moneroocean.stream', minPayout:0.003,
+          stratumTCP:'stratum+tcp://gulf.moneroocean.stream:10128',
+          stratumSSL:'stratum+ssl://gulf.moneroocean.stream:20128',
+          worker:'x', fee:0 },
   KAS: { walletAddr:'kaspa:qpmjj7ksc5ud2jf6drsqf8gerch3fs58h5rakc4a6hf6nfhxerf3g3w3dpauq', pool:'k1pool',
           apiBase:'https://api-kas.k1pool.com/api', minPayout:1,
           stratumTCP:'stratum+tcp://kaspa.k1pool.com:3333',
           stratumSSL:'stratum+ssl://kaspa.k1pool.com:5555',
-          worker:'x' }
+          worker:'x', fee:0.01 }
 };
+
+const XMR_POOLS = {
+  moneroocean: { name:'MoneroOcean', api:'https://api.moneroocean.stream', fee:0, algoSwitch:true,
+    stratum:'stratum+tcp://gulf.moneroocean.stream:10128', ssl:'stratum+ssl://gulf.moneroocean.stream:20128',
+    note:'+10-20% algo-switching, 0% frais' },
+  supportxmr:  { name:'SupportXMR', api:'https://supportxmr.com/api', fee:0.006, algoSwitch:false,
+    stratum:'stratum+tcp://pool.supportxmr.com:3333', ssl:'stratum+ssl://pool.supportxmr.com:443',
+    note:'Pool stable, 0.6% frais' },
+  p2pool:      { name:'P2Pool', api:null, fee:0, algoSwitch:false,
+    stratum:'stratum+tcp://localhost:3333', ssl:null,
+    note:'Décentralisé, 0% frais, noeud requis' },
+};
+
+function switchXMRPool(poolKey) {
+  const pool = XMR_POOLS[poolKey];
+  if (!pool) { toast('error','Pool','Pool inconnu: '+poolKey); return; }
+  POOL_CONFIG.XMR.pool = poolKey;
+  POOL_CONFIG.XMR.apiBase = pool.api;
+  POOL_CONFIG.XMR.stratumTCP = pool.stratum;
+  POOL_CONFIG.XMR.stratumSSL = pool.ssl;
+  POOL_CONFIG.XMR.fee = pool.fee;
+  scheduleSave();
+  updatePoolUI(poolKey);
+  toast('success','Pool XMR','Basculé vers ' + pool.name + (pool.algoSwitch ? ' (algo-switching actif)' : ''));
+  try { localStorage.setItem('bitosdash_xmr_pool', poolKey); } catch(e) {}
+  fetchXMRPool && fetchXMRPool();
+}
+function restorePoolSelection() {
+  try {
+    const saved = localStorage.getItem('bitosdash_xmr_pool');
+    if (saved && XMR_POOLS[saved]) {
+      const pool = XMR_POOLS[saved];
+      POOL_CONFIG.XMR.pool = saved;
+      POOL_CONFIG.XMR.apiBase = pool.api;
+      POOL_CONFIG.XMR.stratumTCP = pool.stratum;
+      POOL_CONFIG.XMR.stratumSSL = pool.ssl;
+      POOL_CONFIG.XMR.fee = pool.fee;
+      updatePoolUI(saved);
+    }
+  } catch(e) {}
+}
+function updatePoolUI(activeKey) {
+  ['moneroocean','supportxmr','p2pool'].forEach(function(k) {
+    const btn = el('pool-btn-'+k);
+    if (btn) {
+      btn.className = k === activeKey ? 'btn btn-primary' : 'btn';
+    }
+  });
+  const pool = XMR_POOLS[activeKey];
+  if (pool) {
+    setText('pool-info', pool.name + ' — ' + pool.note);
+    setText('pool-stratum', (pool.stratum||'').replace('stratum+tcp://',''));
+  }
+}
 
 
 // ══════════════════════════════════════════════════════════════════
@@ -1784,28 +1838,44 @@ async function fetchCoinGeckoPrices() {
   }
 }
 
-// ── SupportXMR API ──
+// ── XMR Pool API (SupportXMR / MoneroOcean / P2Pool) ──
 async function fetchXMRPool() {
   const addr = POOL_CONFIG.XMR.walletAddr;
-  if (!addr || addr.length < 90) {  // Adresses XMR standard (95) et sous-adresses (97)
+  const poolKey = POOL_CONFIG.XMR.pool || 'moneroocean';
+  if (!addr || addr.length < 90) {
     setAPIBadge('xmrpool','offline');
     setText('xmr-pool-hr','⚠ Adresse non configurée');
     const dot=el('xmr-pool-dot'); if(dot) dot.className='live-dot dead';
     return false;
   }
+  if (poolKey === 'p2pool') {
+    setText('xmr-pool-hr','P2Pool — monitoring local');
+    setAPIBadge('xmrpool','live');
+    return true;
+  }
   try {
-    // SupportXMR public API
-    const url = getApiBase('xmrpool') + `/miner/${addr}/stats`;
+    const apiBase = poolKey === 'moneroocean' ? getApiBase('moneroocean') : getApiBase('xmrpool');
+    const url = apiBase + `/miner/${addr}/stats`;
     const res = await fetch(url, {signal: AbortSignal.timeout(8000)});
     if(!res.ok) throw new Error('HTTP '+res.status);
     const data = await res.json();
-    
-    const hr = data.hash || 0;  // H/s
+
+    var hr, pending, totalPaidVal, lastPayTs;
+    if (poolKey === 'moneroocean') {
+      hr = data.hash || data.hash2 || 0;
+      pending = data.amtDue || 0;
+      totalPaidVal = data.amtPaid || 0;
+      lastPayTs = data.lastHash || 0;
+    } else {
+      hr = data.hash || 0;
+      pending = data.amtDue || 0;
+      totalPaidVal = data.totalPaid || 0;
+      lastPayTs = data.lastPayment || 0;
+    }
     const hrKH = (hr/1000).toFixed(2);
-    const pending = data.amtDue || 0;  // atomic units (piconero * 1e-12 = XMR)
     const pendingXMR = (pending / 1e12).toFixed(6);
-    const totalPaid = (data.totalPaid / 1e12).toFixed(4);
-    const lastPayment = data.lastPayment ? new Date(data.lastPayment*1000).toLocaleDateString('fr-FR') : '—';
+    const totalPaid = (totalPaidVal / 1e12).toFixed(4);
+    const lastPayment = lastPayTs ? new Date(lastPayTs*1000).toLocaleDateString('fr-FR') : '—';
     
     setText('xmr-pool-hr', hrKH + ' KH/s');
     xmrPending = pendingXMR; setText('xmr-pending', pendingXMR + ' XMR');
@@ -1851,9 +1921,9 @@ async function fetchXMRPool() {
     
     return true;
   } catch(e) {
-    console.warn('[SupportXMR]', e.message);
+    console.warn('[XMR Pool:'+poolKey+']', e.message);
     setAPIBadge('xmrpool','offline');
-    setText('xmr-pool-hr','⚠ API indisponible');
+    setText('xmr-pool-hr','⚠ '+(XMR_POOLS[poolKey]?.name||'Pool')+' indisponible');
     const dot=el('xmr-pool-dot'); if(dot) dot.className='live-dot warn';
     return false;
   }
@@ -4338,6 +4408,27 @@ function toggleHiveTokenVisibility() {
   inp.type = inp.type === 'password' ? 'text' : 'password';
 }
 
+let HIVE_ENABLED = false;
+function toggleHiveOS(enabled) {
+  HIVE_ENABLED = !!enabled;
+  const panel = el('hive-config-panel');
+  const msg = el('hive-disabled-msg');
+  const tog = el('hive-enabled-toggle');
+  if (panel) panel.style.display = enabled ? 'block' : 'none';
+  if (msg) msg.style.display = enabled ? 'none' : 'block';
+  if (tog) tog.checked = enabled;
+  try { localStorage.setItem('bitosdash_hive_enabled', enabled ? '1' : '0'); } catch(e) {}
+  if (enabled && HIVE_TOKEN) { fetchHiveOS && fetchHiveOS(); }
+  scheduleSave();
+}
+function restoreHiveToggle() {
+  try {
+    const v = localStorage.getItem('bitosdash_hive_enabled');
+    HIVE_ENABLED = v === '1';
+  } catch(e) { HIVE_ENABLED = false; }
+  toggleHiveOS(HIVE_ENABLED);
+}
+
 
 // ══════════════════════════════════════════════════════
 // HIVEOS API — ENGINE ROBUSTE v2
@@ -4388,11 +4479,12 @@ function refreshHiveBase() { HIVE_BASE = getHiveBase(); }
 // ── URL builder centralisé — proxy si HTTP local ─────────────────
 // Retourne l'URL correcte selon l'environnement
 var API_BASES = {
-  coingecko: 'https://api.coingecko.com/api/v3',
-  kaspa:     'https://api.kaspa.org',
-  xmrchain:  'https://xmrchain.net/api',
-  xmrpool:   'https://supportxmr.com/api',
-  kaspool:   'https://api-kas.k1pool.com/api',
+  coingecko:    'https://api.coingecko.com/api/v3',
+  kaspa:        'https://api.kaspa.org',
+  xmrchain:     'https://xmrchain.net/api',
+  xmrpool:      'https://supportxmr.com/api',
+  moneroocean:  'https://api.moneroocean.stream',
+  kaspool:      'https://api-kas.k1pool.com/api',
 };
 
 function getApiBase(service) {
@@ -4406,11 +4498,12 @@ function getApiBase(service) {
   if (_isLocal || _isLAN) {
     var proxyBase = _proto.replace(':','') + '://' + (_loc.host || 'localhost:8765');
     var proxyMap = {
-      coingecko: proxyBase + '/proxy/coingecko',
-      kaspa:     proxyBase + '/proxy/kaspa',
-      xmrchain:  proxyBase + '/proxy/xmrchain',
-      xmrpool:   proxyBase + '/proxy/xmr-pool',
-      kaspool:   proxyBase + '/proxy/kas-pool',
+      coingecko:    proxyBase + '/proxy/coingecko',
+      kaspa:        proxyBase + '/proxy/kaspa',
+      xmrchain:     proxyBase + '/proxy/xmrchain',
+      xmrpool:      proxyBase + '/proxy/xmr-pool',
+      moneroocean:  proxyBase + '/proxy/moneroocean',
+      kaspool:      proxyBase + '/proxy/kas-pool',
     };
     if (proxyMap[service]) return proxyMap[service];
   }
@@ -8385,12 +8478,14 @@ bd) bd.style.display='block';
 // ── INIT APP ──────────────────────────────────────────────────────
 function bitosInit(){
   try{ lsRestore && lsRestore(); }catch(_e){}
+  try{ restoreHiveToggle && restoreHiveToggle(); }catch(_e){}
+  try{ restorePoolSelection && restorePoolSelection(); }catch(_e){}
   try{ loadHistory && loadHistory(); }catch(_e){}
   try{ initMobile && initMobile(); }catch(_e){}
   try{ renderDash && renderDash(); }catch(_e){}
   try{ fetchCoinGeckoPrices && fetchCoinGeckoPrices(); }catch(_e){}
-  try{ fetchHiveOS && fetchHiveOS(); }catch(_e){}
-  console.log('[BitOS] Cloud v3 ready');
+  try{ if(HIVE_ENABLED) fetchHiveOS && fetchHiveOS(); }catch(_e){}
+  console.log('[BitOS] Cloud v4 ready — Pool: ' + (POOL_CONFIG.XMR.pool||'moneroocean'));
 }
 if(document.readyState === 'loading'){
   document.addEventListener('DOMContentLoaded', bitosInit);

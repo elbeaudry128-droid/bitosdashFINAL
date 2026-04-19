@@ -337,22 +337,67 @@ th{color:var(--muted);font-weight:600;font-size:10px;text-transform:uppercase}
 
   <!-- SETTINGS -->
   <div id="page-settings" class="page">
+    <!-- Pool XMR -->
     <div class="card">
-      <div class="card-title">HiveOS API</div>
-      <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Farm ID</label>
-      <input id="hive-farm-input" placeholder="12345">
-      <label style="font-size:11px;color:var(--muted);display:block;margin:10px 0 4px">Token personnel</label>
-      <input id="hive-token-input" type="password" placeholder="Bearer token">
-      <div style="display:flex;gap:8px;margin-top:10px">
-        <button class="btn btn-primary" id="hive-discover-btn">Tester</button>
-        <button class="btn" onclick="openModal('modal-change-pin')">Changer PIN</button>
+      <div class="card-title">Pool XMR (Monero)</div>
+      <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Pool actif</label>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+        <button class="btn btn-primary" id="pool-btn-moneroocean" onclick="switchXMRPool('moneroocean')" style="font-size:11px">MoneroOcean (0%)</button>
+        <button class="btn" id="pool-btn-supportxmr" onclick="switchXMRPool('supportxmr')" style="font-size:11px">SupportXMR (0.6%)</button>
+        <button class="btn" id="pool-btn-p2pool" onclick="switchXMRPool('p2pool')" style="font-size:11px">P2Pool (0%)</button>
       </div>
-      <div id="hive-conn-stats" style="margin-top:10px;font-size:11px;color:var(--muted);font-family:var(--mono)"></div>
-      <div id="hive-debug-log" style="margin-top:8px;font-size:10px;color:var(--muted);font-family:var(--mono);max-height:200px;overflow-y:auto"></div>
+      <div id="pool-info" style="font-size:10px;color:var(--accent);font-family:var(--mono);margin-bottom:8px">MoneroOcean — algo-switching +10-20% revenus, 0% frais</div>
+      <div style="font-size:10px;color:var(--muted)">
+        Stratum: <span id="pool-stratum" style="font-family:var(--mono)">gulf.moneroocean.stream:10128</span>
+      </div>
     </div>
+
+    <!-- Wallets -->
     <div class="card">
-      <div class="card-title">Préférences</div>
-      <div style="font-size:12px;color:var(--muted)">Langue, devise, thème — en développement</div>
+      <div class="card-title">Adresses Wallet</div>
+      <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">XMR (Monero)</label>
+      <div id="sg-xmr-addr" style="font-size:10px;color:var(--green);font-family:var(--mono);margin-bottom:8px;word-break:break-all"></div>
+      <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">KAS (Kaspa)</label>
+      <div id="sg-kas-addr" style="font-size:10px;color:var(--accent);font-family:var(--mono);margin-bottom:8px;word-break:break-all"></div>
+    </div>
+
+    <!-- Mining Config -->
+    <div class="card">
+      <div class="card-title">Mining</div>
+      <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Tarif électricité ($/kWh)</label>
+      <input id="m-elec" type="number" step="0.01" value="0.20" placeholder="0.20" onchange="onElecChange(this)" style="width:120px">
+    </div>
+
+    <!-- HiveOS (optionnel) -->
+    <div class="card">
+      <div class="card-title" style="display:flex;align-items:center;justify-content:space-between">
+        HiveOS API <span style="font-size:10px;color:var(--yellow)">(optionnel)</span>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:11px;color:var(--muted)">
+          <input type="checkbox" id="hive-enabled-toggle" onchange="toggleHiveOS(this.checked)" style="accent-color:var(--accent)">
+          Activer
+        </label>
+      </div>
+      <div id="hive-config-panel" style="display:none">
+        <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Farm ID</label>
+        <input id="hive-farm-input" placeholder="12345">
+        <label style="font-size:11px;color:var(--muted);display:block;margin:10px 0 4px">Token personnel</label>
+        <input id="hive-token-input" type="password" placeholder="Bearer token">
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="btn btn-primary" id="hive-discover-btn">Tester</button>
+        </div>
+        <div id="hive-conn-stats" style="margin-top:10px;font-size:11px;color:var(--muted);font-family:var(--mono)"></div>
+        <div id="hive-debug-log" style="margin-top:8px;font-size:10px;color:var(--muted);font-family:var(--mono);max-height:200px;overflow-y:auto"></div>
+        <div style="font-size:10px;color:var(--muted);margin-top:8px">4 rigs gratuits sur HiveOS. Pour le monitoring GPU sans HiveOS, utilisez XMRig API.</div>
+      </div>
+      <div id="hive-disabled-msg" style="font-size:11px;color:var(--muted);margin-top:8px">
+        HiveOS désactivé — le dashboard utilise les APIs pool directement (SupportXMR, K1Pool, MoneroOcean).
+      </div>
+    </div>
+
+    <!-- Sécurité -->
+    <div class="card">
+      <div class="card-title">Sécurité</div>
+      <button class="btn" onclick="openModal('modal-change-pin')">Changer PIN</button>
     </div>
   </div>
 
