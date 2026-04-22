@@ -361,6 +361,40 @@ th{color:var(--muted);font-weight:600;font-size:10px;text-transform:uppercase}
       <div id="sg-kas-addr" style="font-size:10px;color:var(--accent);font-family:var(--mono);margin-bottom:8px;word-break:break-all"></div>
     </div>
 
+    <!-- Payout Threshold -->
+    <div class="card">
+      <div class="card-title">Seuil de Payout</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div>
+          <div style="font-size:13px;font-weight:600" id="payout-threshold-val">—</div>
+          <div style="font-size:10px;color:var(--muted)" id="payout-threshold-usd"></div>
+        </div>
+        <button class="btn" onclick="fetchPayoutThreshold()" style="font-size:10px">Actualiser</button>
+      </div>
+      <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Nouveau seuil (XMR)</label>
+      <div style="display:flex;gap:6px;align-items:center">
+        <input id="payout-threshold-input" type="number" step="0.001" min="0.003" max="100" placeholder="0.3" style="width:100px">
+        <button class="btn btn-primary" onclick="setPayoutThreshold()" style="font-size:11px">Appliquer</button>
+      </div>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:8px">
+        <button class="btn" onclick="el('payout-threshold-input').value='0.003'" style="font-size:9px;padding:3px 8px">0.003</button>
+        <button class="btn" onclick="el('payout-threshold-input').value='0.01'" style="font-size:9px;padding:3px 8px">0.01</button>
+        <button class="btn" onclick="el('payout-threshold-input').value='0.1'" style="font-size:9px;padding:3px 8px">0.1</button>
+        <button class="btn" onclick="el('payout-threshold-input').value='0.3'" style="font-size:9px;padding:3px 8px">0.3</button>
+        <button class="btn" onclick="el('payout-threshold-input').value='1'" style="font-size:9px;padding:3px 8px">1.0</button>
+      </div>
+      <div style="font-size:9px;color:var(--muted);margin-top:6px">Min: 0.003 XMR · Plus le seuil est haut, moins de frais réseau</div>
+    </div>
+
+    <!-- Historique paiements pool -->
+    <div class="card">
+      <div class="card-title" style="display:flex;justify-content:space-between;align-items:center">
+        Paiements reçus
+        <button class="btn" onclick="fetchPaymentHistory()" style="font-size:10px">Charger</button>
+      </div>
+      <div id="pool-payments-list"><div style="color:var(--muted);font-size:11px;text-align:center;padding:12px">Cliquez Charger pour voir les paiements</div></div>
+    </div>
+
     <!-- Mining Config -->
     <div class="card">
       <div class="card-title">Mining</div>

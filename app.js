@@ -1507,6 +1507,114 @@ function updatePoolUI(activeKey) {
   }
 }
 
+// ── MoneroOcean Payout Threshold ─────────────────────────────────
+async function fetchPayoutThreshold() {
+  const addr = POOL_CONFIG.XMR.walletAddr;
+  const poolKey = POOL_CONFIG.XMR.pool;
+  if (!addr || addr.length < 90) return;
+  try {
+    var url, thresholdXMR;
+    if (poolKey === 'moneroocean') {
+      url = getApiBase('moneroocean') + '/user/' + addr;
+      const res = await fetch(url, {signal: AbortSignal.timeout(8000)});
+      if (!res.ok) throw new Error('HTTP '+res.status);
+      const data = await res.json();
+      thresholdXMR = (data.payout_threshold || 300000000000) / 1e12;
+    } else if (poolKey === 'supportxmr') {
+      url = getApiBase('xmrpool') + '/miner/' + addr + '/stats';
+      const res = await fetch(url, {signal: AbortSignal.timeout(8000)});
+      if (!res.ok) throw new Error('HTTP '+res.status);
+      const data = await res.json();
+      thresholdXMR = (data.minPayout || 100000000000) / 1e12;
+    } else { return; }
+    setText('payout-threshold-val', thresholdXMR.toFixed(4) + ' XMR');
+    setText('payout-threshold-usd', '≈ $' + (thresholdXMR * (xmrP||327)).toFixed(2));
+    const inp = el('payout-threshold-input');
+    if (inp && !inp.value) inp.value = thresholdXMR;
+  } catch(e) {
+    console.warn('[PayoutThreshold]', e.message);
+    setText('payout-threshold-val', '⚠ Erreur');
+  }
+}
+
+async function setPayoutThreshold() {
+  const poolKey = POOL_CONFIG.XMR.pool;
+  if (poolKey !== 'moneroocean') {
+    toast('warn','Payout','Changement de seuil disponible uniquement sur MoneroOcean. Pour SupportXMR, visitez supportxmr.com');
+    return;
+  }
+  const inp = el('payout-threshold-input');
+  if (!inp) return;
+  const val = parseFloat(inp.value);
+  if (!val || val < 0.003) {
+    toast('error','Payout','Minimum 0.003 XMR');
+    return;
+  }
+  if (val > 100) {
+    toast('error','Payout','Maximum 100 XMR');
+    return;
+  }
+  const addr = POOL_CONFIG.XMR.walletAddr;
+  if (!addr || addr.length < 90) { toast('error','Payout','Adresse XMR non configurée'); return; }
+  const thresholdAtomic = Math.round(val * 1e12);
+  try {
+    const url = getApiBase('moneroocean') + '/user/updateThreshold';
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ address: addr, threshold: thresholdAtomic }),
+      signal: AbortSignal.timeout(10000)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(()=>({}));
+      throw new Error(err.error || 'HTTP '+res.status);
+    }
+    toast('success','Payout','Seuil modifié → ' + val.toFixed(4) + ' XMR');
+    setText('payout-threshold-val', val.toFixed(4) + ' XMR');
+    setText('payout-threshold-usd', '≈ $' + (val * (xmrP||327)).toFixed(2));
+  } catch(e) {
+    console.warn('[SetPayout]', e.message);
+    toast('error','Payout','Erreur: ' + e.message);
+  }
+}
+
+async function fetchPaymentHistory() {
+  const addr = POOL_CONFIG.XMR.walletAddr;
+  const poolKey = POOL_CONFIG.XMR.pool;
+  if (!addr || addr.length < 90) return;
+  try {
+    var url;
+    if (poolKey === 'moneroocean') {
+      url = getApiBase('moneroocean') + '/miner/' + addr + '/payments';
+    } else {
+      url = getApiBase('xmrpool') + '/miner/' + addr + '/payments';
+    }
+    const res = await fetch(url, {signal: AbortSignal.timeout(8000)});
+    if (!res.ok) throw new Error('HTTP '+res.status);
+    const payments = await res.json();
+    if (!Array.isArray(payments)) return;
+    const cont = el('pool-payments-list');
+    if (!cont) return;
+    if (payments.length === 0) {
+      cont.innerHTML = '<div style="color:var(--muted);font-size:11px;text-align:center;padding:12px">Aucun paiement reçu</div>';
+      return;
+    }
+    cont.innerHTML = payments.slice(0, 10).map(function(p) {
+      const amt = ((p.amount||0) / 1e12).toFixed(6);
+      const date = p.ts ? new Date(p.ts*1000).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'}) : '—';
+      const txid = p.txnHash || p.hash || '';
+      const short = txid ? txid.slice(0,8)+'…'+txid.slice(-6) : '—';
+      return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05)">'
+        +'<div><div style="font-size:12px;font-weight:600;color:var(--green)">+'+amt+' XMR</div>'
+        +'<div style="font-size:10px;color:var(--muted)">'+date+'</div></div>'
+        +'<div style="font-size:9px;color:var(--muted);font-family:var(--mono)">'+short+'</div>'
+        +'</div>';
+    }).join('');
+  } catch(e) {
+    console.warn('[PaymentHistory]', e.message);
+  }
+}
+
 
 // ══════════════════════════════════════════════════════════════════
 // KASPA XPUB — décodage kpub + dérivation d'adresses BIP32
