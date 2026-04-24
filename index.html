@@ -428,6 +428,38 @@ th{color:var(--muted);font-weight:600;font-size:10px;text-transform:uppercase}
       </div>
     </div>
 
+    <!-- XMRig Monitoring -->
+    <div class="card">
+      <div class="card-title" style="display:flex;justify-content:space-between;align-items:center">
+        XMRig Monitoring (sans HiveOS)
+        <button class="btn" onclick="fetchAllXmrigRigs()" style="font-size:10px">Refresh</button>
+      </div>
+      <div id="xmrig-status" style="font-size:10px;color:var(--muted);margin-bottom:8px"></div>
+      <div id="xmrig-rigs-list"></div>
+      <div style="margin-top:10px;border-top:1px solid rgba(255,255,255,0.05);padding-top:10px">
+        <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Ajouter un rig XMRig</label>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+          <input id="xmrig-add-name" placeholder="Nom (ex: Rig-1)" style="width:90px;font-size:11px">
+          <input id="xmrig-add-ip" placeholder="IP (ex: 192.168.1.10)" style="width:130px;font-size:11px">
+          <input id="xmrig-add-port" placeholder="8080" value="8080" style="width:55px;font-size:11px">
+          <button class="btn btn-primary" onclick="addXmrigRig(el('xmrig-add-name').value, el('xmrig-add-ip').value, el('xmrig-add-port').value)" style="font-size:11px">+</button>
+        </div>
+        <div style="font-size:9px;color:var(--muted);margin-top:4px">XMRig doit être lancé avec: --http-enabled --http-host 0.0.0.0 --http-port 8080</div>
+      </div>
+    </div>
+
+    <!-- Configs Mining -->
+    <div class="card">
+      <div class="card-title" style="display:flex;justify-content:space-between;align-items:center">
+        Configs Mining
+        <button class="btn" onclick="showMiningConfigs()" style="font-size:10px">Générer</button>
+      </div>
+      <div style="font-size:10px;color:var(--muted);margin-bottom:8px">
+        Configurations prêtes à copier pour vos rigs
+      </div>
+      <div id="mining-config-output"></div>
+    </div>
+
     <!-- Sécurité -->
     <div class="card">
       <div class="card-title">Sécurité</div>
