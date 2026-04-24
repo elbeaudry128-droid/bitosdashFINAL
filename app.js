@@ -1615,9 +1615,193 @@ async function fetchPaymentHistory() {
   }
 }
 
+// ══════════════════════════════════════════════════════════════════
+// XMRIG API — Monitoring direct des rigs sans HiveOS
+// Chaque rig expose son API HTTP sur un port configurable (ex: 8080)
+// Endpoint: GET /1/summary → hashrate, uptime, version
+// Endpoint: GET /2/backends → GPU temp, fan, hashrate par device
+// ══════════════════════════════════════════════════════════════════
+
+let XMRIG_RIGS = [];
+
+function loadXmrigRigs() {
+  try {
+    const raw = localStorage.getItem('bitosdash_xmrig_rigs');
+    if (raw) XMRIG_RIGS = JSON.parse(raw);
+  } catch(e) {}
+}
+function saveXmrigRigs() {
+  try { localStorage.setItem('bitosdash_xmrig_rigs', JSON.stringify(XMRIG_RIGS)); } catch(e) {}
+}
+
+function addXmrigRig(name, ip, port) {
+  if (!ip) { toast('error','XMRig','IP requise'); return; }
+  port = parseInt(port) || 8080;
+  name = name || ('Rig-' + (XMRIG_RIGS.length + 1));
+  if (XMRIG_RIGS.find(r => r.ip === ip && r.port === port)) {
+    toast('warn','XMRig','Rig déjà ajouté: '+ip+':'+port); return;
+  }
+  XMRIG_RIGS.push({ name:name, ip:ip, port:port, status:'unknown', hr:0, temp:0, uptime:0, version:'', algo:'' });
+  saveXmrigRigs();
+  toast('success','XMRig','Rig ajouté: '+name+' ('+ip+':'+port+')');
+  renderXmrigRigs();
+}
+
+function removeXmrigRig(idx) {
+  if (XMRIG_RIGS[idx]) {
+    const name = XMRIG_RIGS[idx].name;
+    XMRIG_RIGS.splice(idx, 1);
+    saveXmrigRigs();
+    toast('info','XMRig','Rig supprimé: '+name);
+    renderXmrigRigs();
+  }
+}
+
+async function fetchXmrigRig(rig) {
+  try {
+    const base = 'http://' + rig.ip + ':' + rig.port;
+    const res = await fetch(base + '/1/summary', {signal: AbortSignal.timeout(3000)});
+    if (!res.ok) throw new Error('HTTP '+res.status);
+    const data = await res.json();
+    rig.status = 'online';
+    rig.hr = data.hashrate?.total?.[0] || 0;
+    rig.uptime = data.uptime || 0;
+    rig.version = data.version || '';
+    rig.algo = data.algo || '';
+    rig.cpu = data.cpu?.brand || '';
+    try {
+      const res2 = await fetch(base + '/2/backends', {signal: AbortSignal.timeout(3000)});
+      if (res2.ok) {
+        const backends = await res2.json();
+        var maxTemp = 0;
+        backends.forEach(function(b) {
+          if (b.threads) {
+            b.threads.forEach(function(t) {
+              if (t.health) {
+                var temp = t.health.temperature || 0;
+                if (temp > maxTemp) maxTemp = temp;
+              }
+            });
+          }
+        });
+        if (maxTemp > 0) rig.temp = maxTemp;
+      }
+    } catch(_e) {}
+    return true;
+  } catch(e) {
+    rig.status = 'offline';
+    rig.hr = 0;
+    return false;
+  }
+}
+
+async function fetchAllXmrigRigs() {
+  if (XMRIG_RIGS.length === 0) return;
+  const promises = XMRIG_RIGS.map(r => fetchXmrigRig(r));
+  await Promise.allSettled(promises);
+  saveXmrigRigs();
+  renderXmrigRigs();
+  var totalHR = XMRIG_RIGS.filter(r=>r.status==='online').reduce((s,r)=>s+(r.hr||0),0);
+  if (totalHR > 0 && !HIVE_ENABLED) {
+    setText('s-hash', (totalHR/1000).toFixed(2)+' KH/s');
+  }
+  var onlineCount = XMRIG_RIGS.filter(r=>r.status==='online').length;
+  var totalCount = XMRIG_RIGS.length;
+  setText('xmrig-status', onlineCount+'/'+totalCount+' rigs en ligne');
+}
+
+function renderXmrigRigs() {
+  const cont = el('xmrig-rigs-list');
+  if (!cont) return;
+  if (XMRIG_RIGS.length === 0) {
+    cont.innerHTML = '<div style="color:var(--muted);font-size:11px;text-align:center;padding:12px">Aucun rig configuré</div>';
+    return;
+  }
+  cont.innerHTML = XMRIG_RIGS.map(function(r, i) {
+    var dot = r.status==='online' ? 'live-dot' : 'live-dot dead';
+    var hrStr = r.hr > 0 ? (r.hr/1000).toFixed(2)+' KH/s' : '—';
+    var tempStr = r.temp > 0 ? r.temp+'°C' : '—';
+    var uptimeStr = r.uptime > 0 ? Math.floor(r.uptime/3600)+'h '+Math.floor((r.uptime%3600)/60)+'m' : '—';
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05)">'
+      +'<div style="display:flex;align-items:center;gap:8px">'
+      +'<span class="'+dot+'"></span>'
+      +'<div>'
+      +'<div style="font-size:12px;font-weight:600">'+r.name+'</div>'
+      +'<div style="font-size:9px;color:var(--muted);font-family:var(--mono)">'+r.ip+':'+r.port+(r.algo?' · '+r.algo:'')+'</div>'
+      +'</div></div>'
+      +'<div style="text-align:right">'
+      +'<div style="font-size:12px;font-weight:600;color:'+(r.status==='online'?'var(--green)':'var(--red)')+'">'+hrStr+'</div>'
+      +'<div style="font-size:10px;color:var(--muted)">'+tempStr+' · '+uptimeStr+'</div>'
+      +'</div>'
+      +'<button onclick="removeXmrigRig('+i+')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:14px;padding:4px 8px">×</button>'
+      +'</div>';
+  }).join('');
+}
 
 // ══════════════════════════════════════════════════════════════════
-// KASPA XPUB — décodage kpub + dérivation d'adresses BIP32
+// RVN (Ravencoin) POOL — Alternative GPU à KAS
+// Pools: 2Miners, K1Pool, RavenMiner
+// Algo: KawPow (GPU-friendly, ASIC-resistant)
+// ══════════════════════════════════════════════════════════════════
+
+const RVN_POOLS = {
+  '2miners':    { name:'2Miners', stratum:'stratum+tcp://rvn.2miners.com:6060', fee:1.0 },
+  'k1pool':     { name:'K1Pool', stratum:'stratum+tcp://rvn.k1pool.com:3333', fee:1.0 },
+  'ravenminer': { name:'RavenMiner', stratum:'stratum+tcp://stratum.ravenminer.com:3808', fee:0.5 },
+  'kryptex':    { name:'Kryptex', stratum:'stratum+tcp://rvn.kryptex.network:7031', fee:1.5 },
+};
+
+function generateMiningConfigs() {
+  const xmrAddr = POOL_CONFIG.XMR.walletAddr;
+  const poolKey = POOL_CONFIG.XMR.pool || 'moneroocean';
+  const pool = XMR_POOLS[poolKey] || XMR_POOLS.moneroocean;
+  var configs = {};
+  configs.xmrig = {
+    autosave: true,
+    cpu: true,
+    opencl: false,
+    cuda: false,
+    pools: [{
+      url: (pool.stratum||'').replace('stratum+tcp://',''),
+      user: xmrAddr,
+      pass: 'x',
+      'rig-id': 'BitOS-Rig',
+      algo: poolKey === 'moneroocean' ? null : 'rx/0',
+      tls: false,
+      keepalive: true
+    }],
+    http: {
+      enabled: true,
+      host: '0.0.0.0',
+      port: 8080,
+      'access-token': null,
+      restricted: true
+    }
+  };
+  configs.trex_rvn = 't-rex -a kawpow -o stratum+tcp://rvn.2miners.com:6060 -u YOUR_RVN_WALLET.rig1 -p x';
+  configs.gminer_rvn = 'miner --algo kawpow --server rvn.2miners.com --port 6060 --user YOUR_RVN_WALLET.rig1 --pass x';
+  return configs;
+}
+
+function showMiningConfigs() {
+  const configs = generateMiningConfigs();
+  const cont = el('mining-config-output');
+  if (!cont) return;
+  var xmrigJson = JSON.stringify(configs.xmrig, null, 2);
+  cont.innerHTML = '<div style="margin-bottom:16px">'
+    +'<div style="font-size:12px;font-weight:600;margin-bottom:6px;color:var(--accent)">config.json — XMRig → MoneroOcean (CPU)</div>'
+    +'<pre style="background:var(--bg);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:12px;font-size:10px;overflow-x:auto;color:var(--text);white-space:pre-wrap">'+xmrigJson+'</pre>'
+    +'<button class="btn" onclick="navigator.clipboard.writeText(JSON.stringify('+btoa(xmrigJson)+'))" style="font-size:10px;margin-top:4px">Copier JSON</button>'
+    +'</div>'
+    +'<div style="margin-bottom:16px">'
+    +'<div style="font-size:12px;font-weight:600;margin-bottom:6px;color:var(--green)">T-Rex Miner → Ravencoin (GPU)</div>'
+    +'<pre style="background:var(--bg);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:12px;font-size:10px;overflow-x:auto;color:var(--text);white-space:pre-wrap">'+configs.trex_rvn+'</pre>'
+    +'</div>'
+    +'<div>'
+    +'<div style="font-size:12px;font-weight:600;margin-bottom:6px;color:var(--green)">GMiner → Ravencoin (GPU)</div>'
+    +'<pre style="background:var(--bg);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:12px;font-size:10px;overflow-x:auto;color:var(--text);white-space:pre-wrap">'+configs.gminer_rvn+'</pre>'
+    +'</div>';
+}
 // kpub = base58check(version[4] + depth[1] + fingerprint[4] +
 //                    childIndex[4] + chainCode[32] + pubKey[33])
 // ══════════════════════════════════════════════════════════════════
@@ -8588,6 +8772,7 @@ function bitosInit(){
   try{ lsRestore && lsRestore(); }catch(_e){}
   try{ restoreHiveToggle && restoreHiveToggle(); }catch(_e){}
   try{ restorePoolSelection && restorePoolSelection(); }catch(_e){}
+  try{ loadXmrigRigs && loadXmrigRigs(); }catch(_e){}
   try{ loadHistory && loadHistory(); }catch(_e){}
   try{ initMobile && initMobile(); }catch(_e){}
   try{ renderDash && renderDash(); }catch(_e){}
