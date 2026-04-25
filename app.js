@@ -2445,6 +2445,7 @@ async function fetchCoinGeckoPrices() {
     return false;
   }
 }
+function fetchPrices() { return fetchCoinGeckoPrices(); }
 
 // ── XMR Pool API (SupportXMR / MoneroOcean / P2Pool) ──
 async function fetchXMRPool() {
