@@ -1889,40 +1889,61 @@ const REMOTE_NODES = {
 };
 
 const FLIGHT_SHEETS = {
-  xmr_cpu_moneroocean: {
-    name: 'XMR CPU — MoneroOcean',
+  xmr_cpu_termux: {
+    name: 'XMR CPU — Termux (ARM)',
     coin: 'XMR', type: 'cpu', miner: 'xmrig',
-    desc: 'Algo-switching RandomX, 0% frais, +10-20% revenus',
+    desc: 'Optimisé pour Snapdragon/ARM sur Termux, 2 threads pour préserver batterie',
     recommended: true,
-    profitBoost: '+15%'
+    profitBoost: 'Mobile',
+    hw: 'TCL60 / Android ARM'
+  },
+  xmr_cpu_moneroocean: {
+    name: 'XMR CPU — Desktop x86',
+    coin: 'XMR', type: 'cpu', miner: 'xmrig',
+    desc: 'Algo-switching RandomX, 0% frais, huge-pages, +10-20% revenus',
+    recommended: true,
+    profitBoost: '+15%',
+    hw: 'Intel/AMD x86'
+  },
+  xmr_gpu_rtx90: {
+    name: 'XMR GPU — RTX 3090/4090',
+    coin: 'XMR', type: 'gpu', miner: 'xmrig-cuda',
+    desc: 'MoneroOcean algo-switch CUDA, 24GB VRAM, optimisé pour xx90 class',
+    recommended: true,
+    profitBoost: '+20-30%',
+    hw: 'NVIDIA RTX 3090/4090'
+  },
+  xmr_gpu_a100: {
+    name: 'XMR GPU — A100 Datacenter',
+    coin: 'XMR', type: 'gpu', miner: 'xmrig-cuda',
+    desc: 'Optimisé A100 80GB HBM2e, max threads CUDA, algo-switch MoneroOcean',
+    recommended: true,
+    profitBoost: '+40-60%',
+    hw: 'NVIDIA A100 40/80GB'
   },
   xmr_cpu_p2pool: {
     name: 'XMR CPU — P2Pool',
     coin: 'XMR', type: 'cpu', miner: 'xmrig+p2pool',
     desc: 'Décentralisé, 0% frais, payouts chaque bloc trouvé',
     recommended: false,
-    profitBoost: '0%'
+    profitBoost: '0%',
+    hw: 'Any CPU'
   },
   rvn_gpu_kawpow: {
-    name: 'RVN GPU — KawPow',
+    name: 'RVN GPU — KawPow (RTX)',
     coin: 'RVN', type: 'gpu', miner: 'trex',
-    desc: 'ASIC-résistant, meilleur choix GPU post-KAS',
+    desc: 'ASIC-résistant, meilleur choix GPU post-KAS, T-Rex optimisé',
     recommended: true,
-    profitBoost: 'GPU optimal'
+    profitBoost: 'GPU optimal',
+    hw: 'NVIDIA RTX series'
   },
   rvn_gpu_gminer: {
     name: 'RVN GPU — GMiner',
     coin: 'RVN', type: 'gpu', miner: 'gminer',
     desc: 'Alternative stable, compatible AMD+NVIDIA',
     recommended: false,
-    profitBoost: 'GPU alt'
-  },
-  xmr_gpu_moneroocean: {
-    name: 'XMR GPU — MoneroOcean Algo-Switch',
-    coin: 'XMR', type: 'gpu', miner: 'xmrig-cuda',
-    desc: 'MoneroOcean switch auto vers algo GPU le plus rentable',
-    recommended: false,
-    profitBoost: '+5-10%'
+    profitBoost: 'GPU alt',
+    hw: 'AMD/NVIDIA'
   },
 };
 
@@ -1935,24 +1956,119 @@ function generateFlightSheet(sheetKey) {
   var rvnPool = RVN_POOLS[ACTIVE_RVN_POOL] || RVN_POOLS['2miners'];
 
   switch(sheetKey) {
-    case 'xmr_cpu_moneroocean':
+    case 'xmr_cpu_termux':
       return {
-        type: 'json', filename: 'config.json',
+        type: 'json', filename: 'config-termux.json',
         config: {
-          autosave: true, cpu: { 'huge-pages': true, 'hw-aes': true, priority: 2, 'max-threads-hint': 75 },
+          autosave: true,
+          cpu: {
+            enabled: true,
+            'huge-pages': false,
+            'hw-aes': true,
+            priority: 1,
+            'max-threads-hint': 50,
+            'yield': true,
+            argon2: [0,1]
+          },
           opencl: false, cuda: false,
           pools: [{
             url: 'gulf.moneroocean.stream:10128',
-            user: xmrAddr, pass: 'x', 'rig-id': 'BitOS-Rig',
+            user: xmrAddr, pass: 'x', 'rig-id': 'BitOS-Phone',
             algo: null, tls: false, keepalive: true, nicehash: false
           },{
             url: 'gulf.moneroocean.stream:20128',
-            user: xmrAddr, pass: 'x', 'rig-id': 'BitOS-Rig',
+            user: xmrAddr, pass: 'x', 'rig-id': 'BitOS-Phone',
+            algo: null, tls: true, keepalive: true, nicehash: false
+          }],
+          http: { enabled: true, host: '127.0.0.1', port: 8080, 'access-token': null, restricted: true },
+          donate: { enabled: true, level: 1 }
+        },
+        setup: '# Installation Termux:\npkg install git cmake build-essential\ngit clone https://github.com/xmrig/xmrig.git\ncd xmrig && mkdir build && cd build\ncmake .. -DWITH_HWLOC=OFF\nmake -j$(nproc)\n\n# Lancement:\n./xmrig -c config-termux.json'
+      };
+    case 'xmr_cpu_moneroocean':
+      return {
+        type: 'json', filename: 'config-cpu-desktop.json',
+        config: {
+          autosave: true,
+          cpu: {
+            enabled: true,
+            'huge-pages': true,
+            'huge-pages-jit': true,
+            'hw-aes': true,
+            priority: 2,
+            'max-threads-hint': 75,
+            asm: true,
+            argon2: 'auto'
+          },
+          opencl: false, cuda: false,
+          pools: [{
+            url: 'gulf.moneroocean.stream:10128',
+            user: xmrAddr, pass: 'x', 'rig-id': 'BitOS-CPU',
+            algo: null, tls: false, keepalive: true, nicehash: false
+          },{
+            url: 'gulf.moneroocean.stream:20128',
+            user: xmrAddr, pass: 'x', 'rig-id': 'BitOS-CPU',
             algo: null, tls: true, keepalive: true, nicehash: false
           }],
           http: { enabled: true, host: '0.0.0.0', port: 8080, 'access-token': null, restricted: true },
           donate: { enabled: true, level: 1 }
         }
+      };
+    case 'xmr_gpu_rtx90':
+      return {
+        type: 'json', filename: 'config-rtx90.json',
+        config: {
+          autosave: true,
+          cpu: false,
+          opencl: false,
+          cuda: {
+            enabled: true,
+            loader: null,
+            nvml: true,
+            'cn/0': false,
+            'cn-lite/0': false
+          },
+          pools: [{
+            url: 'gulf.moneroocean.stream:10128',
+            user: xmrAddr, pass: 'x', 'rig-id': 'BitOS-RTX90',
+            algo: null, tls: false, keepalive: true, nicehash: false
+          },{
+            url: 'gulf.moneroocean.stream:20128',
+            user: xmrAddr, pass: 'x', 'rig-id': 'BitOS-RTX90',
+            algo: null, tls: true, keepalive: true, nicehash: false
+          }],
+          http: { enabled: true, host: '0.0.0.0', port: 8080, 'access-token': null, restricted: true },
+          donate: { enabled: true, level: 1 }
+        },
+        setup: '# RTX 3090/4090 Setup:\n# 1. Télécharger XMRig + CUDA plugin:\n#    https://github.com/xmrig/xmrig-cuda/releases\n# 2. Driver NVIDIA >= 535.xx\n# 3. Placer libxmrig-cuda.so dans le dossier XMRig\n\n# Overclocking recommandé (nvidia-smi):\nnvidia-smi -pl 300          # Power limit 300W (RTX 3090)\nnvidia-smi -pl 350          # Power limit 350W (RTX 4090)\n\n# Lancement:\n./xmrig -c config-rtx90.json\n\n# Hashrate attendu:\n# RTX 3090: ~1.4 KH/s RandomX | ~60 MH/s KawPow\n# RTX 4090: ~2.1 KH/s RandomX | ~85 MH/s KawPow\n# MoneroOcean switch auto vers algo le plus rentable'
+      };
+    case 'xmr_gpu_a100':
+      return {
+        type: 'json', filename: 'config-a100.json',
+        config: {
+          autosave: true,
+          cpu: false,
+          opencl: false,
+          cuda: {
+            enabled: true,
+            loader: null,
+            nvml: true,
+            'cn/0': false,
+            'cn-lite/0': false
+          },
+          pools: [{
+            url: 'gulf.moneroocean.stream:10128',
+            user: xmrAddr, pass: 'x', 'rig-id': 'BitOS-A100',
+            algo: null, tls: false, keepalive: true, nicehash: false
+          },{
+            url: 'gulf.moneroocean.stream:20128',
+            user: xmrAddr, pass: 'x', 'rig-id': 'BitOS-A100',
+            algo: null, tls: true, keepalive: true, nicehash: false
+          }],
+          http: { enabled: true, host: '0.0.0.0', port: 8080, 'access-token': null, restricted: true },
+          donate: { enabled: true, level: 1 }
+        },
+        setup: '# A100 Datacenter Setup:\n# 1. NVIDIA Driver >= 535.xx + CUDA Toolkit 12.x\n# 2. XMRig CUDA plugin:\n#    https://github.com/xmrig/xmrig-cuda/releases\n# 3. MIG mode désactivé: nvidia-smi -mig 0\n\n# Power tuning A100:\nnvidia-smi -pm 1                  # Persistence mode\nnvidia-smi -pl 250                # Power limit 250W (A100 40GB)\nnvidia-smi -pl 300                # Power limit 300W (A100 80GB)\nnvidia-smi --compute-mode=0       # Default compute mode\n\n# Lancement:\n./xmrig -c config-a100.json\n\n# Hashrate attendu:\n# A100 40GB: ~2.8 KH/s RandomX | ~95 MH/s KawPow\n# A100 80GB: ~3.2 KH/s RandomX | ~110 MH/s KawPow\n# 8x A100 DGX: ~25 KH/s RandomX (≈$45-65/jour XMR)'
       };
     case 'xmr_cpu_p2pool':
       return {
@@ -1971,11 +2087,13 @@ function generateFlightSheet(sheetKey) {
     case 'rvn_gpu_kawpow':
       return {
         type: 'cmd', filename: 'start-rvn-trex.sh',
-        config: 't-rex -a kawpow'
+        config: '#!/bin/bash\n# RVN KawPow — T-Rex Miner (RTX optimisé)\n'
+          + 't-rex -a kawpow'
           + ' -o ' + rvnPool.stratum
           + ' -u ' + (rvnAddr || 'YOUR_RVN_WALLET') + '.rig1'
           + ' -p x'
           + ' --intensity 22'
+          + ' --lhr-autotune-mode full'
           + ' --api-bind-http 0.0.0.0:4067'
           + ' --api-read-only'
       };
@@ -1983,27 +2101,13 @@ function generateFlightSheet(sheetKey) {
       var rvnHost = (rvnPool.stratum||'').replace('stratum+tcp://','').split(':');
       return {
         type: 'cmd', filename: 'start-rvn-gminer.sh',
-        config: 'miner --algo kawpow'
+        config: '#!/bin/bash\n# RVN KawPow — GMiner (AMD+NVIDIA)\n'
+          + 'miner --algo kawpow'
           + ' --server ' + (rvnHost[0]||'rvn.2miners.com')
           + ' --port ' + (rvnHost[1]||'6060')
           + ' --user ' + (rvnAddr || 'YOUR_RVN_WALLET') + '.rig1'
           + ' --pass x'
           + ' --api 4068'
-      };
-    case 'xmr_gpu_moneroocean':
-      return {
-        type: 'json', filename: 'config-gpu-mo.json',
-        config: {
-          autosave: true, cpu: false,
-          opencl: { enabled: true, cache: true, platform: 'AMD' },
-          cuda: { enabled: true, loader: null },
-          pools: [{
-            url: 'gulf.moneroocean.stream:10128',
-            user: xmrAddr, pass: 'x', 'rig-id': 'BitOS-GPU',
-            algo: null, tls: false, keepalive: true
-          }],
-          http: { enabled: true, host: '0.0.0.0', port: 8080, 'access-token': null, restricted: true }
-        }
       };
     default: return null;
   }
@@ -2074,11 +2178,13 @@ function renderFlightSheets() {
     var coinCol = fs.coin==='XMR' ? 'var(--accent)' : fs.coin==='RVN' ? 'var(--orange)' : '#70eea6';
     var typeIcon = fs.type==='cpu' ? '🖥' : '🎮';
     var recBadge = fs.recommended ? '<span style="background:var(--green);color:var(--bg);padding:1px 6px;border-radius:4px;font-size:8px;font-weight:700;margin-left:6px">OPTIMAL</span>' : '';
+    var hwBadge = fs.hw ? '<div style="font-size:9px;color:var(--muted);font-family:var(--mono);margin-bottom:6px">HW: '+fs.hw+'</div>' : '';
     html += '<div style="background:var(--panel2);border:1px solid '+(fs.recommended?'var(--green)':'var(--border)')+';border-radius:10px;padding:12px;margin-bottom:8px">'
-      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'
       +'<div style="font-size:12px;font-weight:700;color:'+coinCol+'">'+typeIcon+' '+fs.name+recBadge+'</div>'
       +'<span style="font-size:9px;color:var(--green);font-family:var(--mono);font-weight:600">'+fs.profitBoost+'</span>'
       +'</div>'
+      +hwBadge
       +'<div style="font-size:10px;color:var(--muted);margin-bottom:8px">'+fs.desc+'</div>'
       +'<div style="display:flex;gap:6px">'
       +'<button class="btn btn-sm" onclick="showFlightSheet(\''+key+'\')" style="font-size:10px">Voir config</button>'
@@ -2095,11 +2201,19 @@ function showFlightSheet(key) {
   var cont = el('flightsheet-preview');
   if (!cont) return;
   var content = result.type === 'json' ? JSON.stringify(result.config, null, 2) : result.config;
+  var setupHtml = '';
+  if (result.setup) {
+    setupHtml = '<div style="margin-top:10px">'
+      +'<div style="font-size:11px;font-weight:600;color:var(--yellow);margin-bottom:4px">Setup & Installation</div>'
+      +'<pre style="background:var(--bg);border:1px solid rgba(255,184,0,0.2);border-radius:8px;padding:12px;font-size:10px;overflow-x:auto;color:var(--muted);white-space:pre-wrap;max-height:250px;overflow-y:auto">'+result.setup+'</pre>'
+      +'</div>';
+  }
   cont.innerHTML = '<div style="margin-bottom:6px;display:flex;justify-content:space-between;align-items:center">'
     +'<span style="font-size:11px;font-weight:600;color:var(--accent)">'+result.filename+'</span>'
-    +'<button class="btn btn-sm" onclick="copyFlightSheet(\''+key+'\')" style="font-size:9px">Copier</button>'
+    +'<button class="btn btn-sm" onclick="copyFlightSheet(\''+key+'\')" style="font-size:9px">Copier config</button>'
     +'</div>'
-    +'<pre style="background:var(--bg);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:12px;font-size:10px;overflow-x:auto;color:var(--text);white-space:pre-wrap;max-height:300px;overflow-y:auto">'+content+'</pre>';
+    +'<pre style="background:var(--bg);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:12px;font-size:10px;overflow-x:auto;color:var(--text);white-space:pre-wrap;max-height:300px;overflow-y:auto">'+content+'</pre>'
+    +setupHtml;
   cont.scrollIntoView({behavior:'smooth'});
 }
 
