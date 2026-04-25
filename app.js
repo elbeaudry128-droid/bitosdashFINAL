@@ -1452,7 +1452,7 @@ const POOL_CONFIG = {
           stratumTCP:'stratum+tcp://kaspa.k1pool.com:3333',
           stratumSSL:'stratum+ssl://kaspa.k1pool.com:5555',
           worker:'x', fee:0.01 },
-  RVN: { walletAddr:'', pool:'2miners',
+  RVN: { walletAddr:'RWGrRi59CjUtRqFhDiXDWiJ3a4ghttpdXD', pool:'2miners',
           apiBase:'https://rvn.2miners.com/api', minPayout:50,
           stratumTCP:'stratum+tcp://rvn.2miners.com:6060',
           worker:'x', fee:0.01 }
