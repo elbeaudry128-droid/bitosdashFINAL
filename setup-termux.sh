@@ -1,15 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/bash
 # ═══════════════════════════════════════════════════════
-# BitOS Cloud v3 — Installation automatique pour Termux
+# BitOS Cloud v4 — Installation automatique pour Termux
 # Copiez cette commande dans Termux :
-#   curl -sSL https://raw.githubusercontent.com/elbeaudry128-droid/bitosdashFINAL/claude/bitos-v3-hiveos-mining-9sRF0/setup-termux.sh | bash
+#   curl -sSL https://raw.githubusercontent.com/elbeaudry128-droid/bitosdashFINAL/main/setup-termux.sh | bash
 # ═══════════════════════════════════════════════════════
 
 set -e
 
 echo ""
 echo "  ┌───────────────────────────────────────────┐"
-echo "  │  BitOS Cloud v3 — Installation Termux     │"
+echo "  │  BitOS Cloud v4 — Installation Termux     │"
 echo "  └───────────────────────────────────────────┘"
 echo ""
 
@@ -20,20 +20,19 @@ pkg install -y -q python git termux-api 2>/dev/null || apt install -y -qq python
 
 # 2. Clone or update repo
 echo "  [2/4] Telechargement de BitOS..."
-REPO_DIR="$HOME/bitosdash"
+REPO_DIR="$HOME/bitosdashFINAL"
 if [ -d "$REPO_DIR/.git" ]; then
   cd "$REPO_DIR"
-  git pull origin claude/bitos-v3-hiveos-mining-9sRF0 2>/dev/null || true
+  git pull origin main 2>/dev/null || true
 else
-  git clone -b claude/bitos-v3-hiveos-mining-9sRF0 \
-    https://github.com/elbeaudry128-droid/bitosdashFINAL.git "$REPO_DIR" 2>/dev/null
+  git clone https://github.com/elbeaudry128-droid/bitosdashFINAL.git "$REPO_DIR" 2>/dev/null
   cd "$REPO_DIR"
 fi
 
 # 3. Verify files
 echo "  [3/4] Verification des fichiers..."
 MISSING=0
-for f in bitos-termux.py app.js index.html; do
+for f in bitos-termux.py app.js index.html style.css; do
   if [ ! -f "$f" ]; then
     echo "    MANQUANT: $f"
     MISSING=1
@@ -59,7 +58,7 @@ echo ""
 echo "    http://localhost:8765"
 echo ""
 echo "  Pour arreter : Ctrl+C"
-echo "  Pour relancer : cd ~/bitosdash && python bitos-termux.py"
+echo "  Pour relancer : cd ~/bitosdashFINAL && python bitos-termux.py"
 echo "  ════════════════════════════════════════════"
 echo ""
 

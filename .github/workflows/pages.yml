@@ -34,7 +34,6 @@ jobs:
           cp manifest.json _site/
           cp sw.js _site/
           [ -f _headers ] && cp _headers _site/ || true
-          [ -f bitos-standalone.html ] && cp bitos-standalone.html _site/ || true
           echo "=== Deployed files ==="
           ls -la _site/
 

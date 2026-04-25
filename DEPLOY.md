@@ -1,84 +1,100 @@
-# BitOS Cloud v3 — Options de déploiement simples
+# BitOS Cloud v4 — Deployment Guide
 
-## 🥇 Option A — GitHub Pages (automatique, recommandé)
+## Option A — GitHub Pages (recommended)
 
-Un workflow GitHub Actions est déjà configuré dans `.github/workflows/pages.yml`.
+A GitHub Actions workflow auto-deploys on every push to `main`.
 
-### Activation (2 clics, 1 seule fois)
+### First-time setup (once)
 
-1. Va sur **https://github.com/elbeaudry128-droid/bitosdashFINAL/settings/pages**
-2. Dans **Source**, sélectionne : **"GitHub Actions"**
-3. C'est tout.
+1. Go to **https://github.com/elbeaudry128-droid/bitosdashFINAL/settings/pages**
+2. Under **Source**, select: **"GitHub Actions"**
+3. Done.
 
-Dès ton prochain `git push`, le workflow va déployer automatiquement.
-
-### Ton URL publique
+### Your public URL
 
 ```
 https://elbeaudry128-droid.github.io/bitosdashFINAL/
 ```
 
-### Depuis ton TCL60
+### Install as PWA on TCL60
 
-- Ouvre l'URL dans **Chrome**
-- Menu ⋮ → **Ajouter à l'écran d'accueil**
-- L'app s'installe comme une vraie app native
+- Open the URL in **Chrome**
+- Menu ⋮ → **Add to Home Screen**
+- BitOS installs as a native-like app
 
-### Déploiement manuel
+### Manual deploy trigger
 
-Tu peux aussi déclencher le déploiement manuellement :
 - https://github.com/elbeaudry128-droid/bitosdashFINAL/actions
-- Sélectionne "Deploy to GitHub Pages" → "Run workflow"
+- Select "Deploy to GitHub Pages" → "Run workflow"
 
 ---
 
-## 🥈 Option B — Fichier HTML autonome (aucun serveur)
+## Option B — Termux (Android, local server)
 
-Le fichier **`bitos-standalone.html`** (434 KB) contient **TOUT** :
-- HTML + CSS + app.js + manifest inlined
+Run BitOS directly on your phone with full CORS proxy support.
 
-### Utilisation
+### Quick install (one command)
 
-**Sur ton PC :**
-- Double-clic sur `bitos-standalone.html` → Chrome s'ouvre
-- Ou glisse-dépose le fichier sur Chrome
+```bash
+curl -sSL https://raw.githubusercontent.com/elbeaudry128-droid/bitosdashFINAL/main/setup-termux.sh | bash
+```
 
-**Sur ton TCL60 :**
-1. Envoie-toi le fichier par mail / WhatsApp / Google Drive / USB
-2. Ouvre-le avec Chrome
+### Manual launch
 
-**Limitation :** en mode `file://`, certaines APIs externes bloquent CORS. Pour une expérience complète, utilise GitHub Pages (Option A).
+```bash
+cd ~/bitosdashFINAL
+python bitos-termux.py
+```
 
----
+Opens Chrome automatically on `http://localhost:8765`.
 
-## Comparatif des 5 options
-
-| Option | Setup | URL | Mobile | APIs live | Recommandé pour |
-|---|---|---|---|---|---|
-| **A. GitHub Pages** | 2 clics | fixe publique | ✅ | ✅ (avec fallbacks) | **Usage quotidien** |
-| **B. Standalone HTML** | 0 | aucune | ✅ (fichier) | ⚠ CORS limité | **Test rapide / offline** |
-| C. Serveur Python | CLI | locale | via LAN | ✅ complet | Dev avancé |
-| D. Netlify Drop | drag&drop | aléatoire | ✅ | ✅ | Démo publique |
-| E. Termux Android | CLI phone | locale | direct | ✅ complet | Pas de PC |
+Options:
+```
+--port N      Custom port (default: 8765)
+--no-open     Don't open Chrome automatically
+```
 
 ---
 
-## Workflow de fichiers
+## Option C — Cloudflare Worker (CORS proxy for GitHub Pages)
 
-Après activation de GitHub Pages, ton repo contiendra :
+Deploy `cf-worker/worker.js` to Cloudflare Workers for full API proxy support on GitHub Pages.
+
+```bash
+cd cf-worker
+npx wrangler deploy
+```
+
+---
+
+## File structure
 
 ```
 bitosdashFINAL/
-├── .github/workflows/pages.yml    ← auto-deploy (créé)
-├── bitos-standalone.html          ← HTML tout-en-un (créé)
-├── index.html                      ← version web
-├── app.js                          ← frontend
-├── manifest.json
-├── sw.js
-├── bitosdash.py                    ← serveur Python (optionnel)
-├── server.py                       ← version non-fusionnée
-├── run.sh                          ← launcher Python
-└── OPEN.md / DEPLOY.md             ← docs
+├── index.html              ← main HTML
+├── app.js                  ← frontend logic (v4)
+├── style.css               ← extracted CSS
+├── sw.js                   ← service worker (v4.1.0)
+├── manifest.json           ← PWA manifest
+├── _headers                ← Cloudflare/Pages headers
+├── bitos-termux.py         ← local server (Termux/Android)
+├── setup-termux.sh         ← Termux auto-installer
+├── cf-worker/worker.js     ← Cloudflare Worker proxy
+├── wrangler.toml           ← Wrangler config
+├── .github/workflows/
+│   ├── pages.yml           ← GitHub Pages deploy
+│   └── ci.yml              ← CI tests (155 checks)
+└── DEPLOY.md / OPEN.md     ← docs
 ```
 
-Sur GitHub Pages seront déployés : `index.html`, `app.js`, `manifest.json`, `sw.js`, `bitos-standalone.html`.
+GitHub Pages deploys: `index.html`, `app.js`, `style.css`, `manifest.json`, `sw.js`, `_headers`.
+
+---
+
+## Comparison
+
+| Option | Setup | URL | Mobile | Live APIs | Best for |
+|---|---|---|---|---|---|
+| **GitHub Pages** | 2 clicks | public, fixed | PWA | via CF Worker | **Daily use** |
+| **Termux** | 1 command | localhost | direct | full proxy | **On-phone mining** |
+| **CF Worker** | wrangler deploy | — | — | full proxy | **API proxy for Pages** |
