@@ -1,13 +1,9 @@
-# BitOS Cloud v3 — Auto-deploy to GitHub Pages
-# Triggers on push to main and claude/* branches, or manual dispatch
-
 name: Deploy to GitHub Pages
 
 on:
   push:
     branches:
       - main
-      - 'claude/**'
   workflow_dispatch:
 
 permissions:
@@ -32,19 +28,18 @@ jobs:
       - name: Prepare deployment directory
         run: |
           mkdir -p _site
-          # Copy only the static assets needed for GitHub Pages
           cp index.html _site/
           cp app.js _site/
+          cp style.css _site/
           cp manifest.json _site/
           cp sw.js _site/
-          # Include the standalone bundle if present
+          [ -f _headers ] && cp _headers _site/ || true
           [ -f bitos-standalone.html ] && cp bitos-standalone.html _site/ || true
-          # Include OPEN.md for reference
-          [ -f OPEN.md ] && cp OPEN.md _site/ || true
+          echo "=== Deployed files ==="
           ls -la _site/
 
       - name: Setup Pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v5
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
@@ -53,4 +48,4 @@ jobs:
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
