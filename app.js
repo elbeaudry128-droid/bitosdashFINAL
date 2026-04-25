@@ -1712,31 +1712,62 @@ async function fetchAllXmrigRigs() {
 }
 
 function renderXmrigRigs() {
-  const cont = el('xmrig-rigs-list');
-  if (!cont) return;
-  if (XMRIG_RIGS.length === 0) {
-    cont.innerHTML = '<div style="color:var(--muted);font-size:11px;text-align:center;padding:12px">Aucun rig configuré</div>';
-    return;
+  var containers = [el('xmrig-rigs-list'), el('rigs-xmrig-list')];
+  containers.forEach(function(cont) {
+    if (!cont) return;
+    if (XMRIG_RIGS.length === 0) {
+      cont.innerHTML = '<div style="color:var(--muted);font-size:11px;text-align:center;padding:12px">Aucun rig configuré — ajoutez un rig ci-dessous</div>';
+      return;
+    }
+    cont.innerHTML = XMRIG_RIGS.map(function(r, i) {
+      var statusCol = r.status==='online' ? 'var(--green)' : 'var(--red)';
+      var dotCls = r.status==='online' ? 'dot-online' : 'dot-offline';
+      var hrStr = r.hr > 0 ? (r.hr/1000).toFixed(2)+' KH/s' : '—';
+      var tempStr = r.temp > 0 ? r.temp+'°C' : '—';
+      var tempCol = r.temp >= 80 ? 'var(--red)' : r.temp >= 70 ? 'var(--yellow)' : 'var(--green)';
+      var uptimeStr = r.uptime > 0 ? Math.floor(r.uptime/3600)+'h '+Math.floor((r.uptime%3600)/60)+'m' : '—';
+      return '<div class="rig-mini">'
+        +'<div class="rig-mini-dot '+dotCls+'"></div>'
+        +'<div class="rig-mini-name">'
+        +r.name
+        +'<div style="font-size:9px;color:var(--muted);font-family:var(--mono)">'+r.ip+':'+r.port+(r.algo?' · '+r.algo:'')+(r.version?' · v'+r.version:'')+'</div>'
+        +'</div>'
+        +'<div class="rig-mini-info">'
+        +'<span style="color:'+statusCol+';font-weight:600">'+hrStr+'</span>'
+        +'<span>'+(r.temp>0?'<span style="color:'+tempCol+'">'+tempStr+'</span> · ':'')+uptimeStr+'</span>'
+        +'</div>'
+        +'<button onclick="removeXmrigRig('+i+')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:14px;padding:4px 8px" title="Supprimer">×</button>'
+        +'</div>';
+    }).join('');
+  });
+  updateRigsKPI();
+}
+
+function addXmrigRigFromPage() {
+  var name = (el('rig-add-name') || {}).value || '';
+  var ip = (el('rig-add-ip') || {}).value || '';
+  var port = (el('rig-add-port') || {}).value || '8080';
+  addXmrigRig(name, ip, port);
+  if (el('rig-add-name')) el('rig-add-name').value = '';
+  if (el('rig-add-ip')) el('rig-add-ip').value = '';
+}
+
+function updateRigsKPI() {
+  var total = XMRIG_RIGS.length + RIGS.length;
+  var online = XMRIG_RIGS.filter(function(r){return r.status==='online';}).length + RIGS.filter(function(r){return r.status!=='offline';}).length;
+  var totalHR = XMRIG_RIGS.filter(function(r){return r.status==='online';}).reduce(function(s,r){return s+(r.hr||0);},0);
+  var maxTemp = 0;
+  XMRIG_RIGS.forEach(function(r){if(r.temp>maxTemp)maxTemp=r.temp;});
+  RIGS.forEach(function(r){if((r.maxTemp||r.temp||0)>maxTemp)maxTemp=(r.maxTemp||r.temp||0);});
+  setText('rigs-total-count', total);
+  setText('rigs-online-count', online);
+  setText('rigs-total-hr', totalHR > 0 ? (totalHR/1000).toFixed(2)+' KH/s' : '—');
+  setText('rigs-max-temp', maxTemp > 0 ? maxTemp+'°C' : '—');
+  var hiveStatus = el('rigs-hive-status');
+  if (hiveStatus) {
+    hiveStatus.textContent = HIVE_ENABLED ? 'Actif ('+RIGS.length+' workers)' : 'Désactivé';
+    hiveStatus.style.color = HIVE_ENABLED ? 'var(--green)' : 'var(--muted)';
   }
-  cont.innerHTML = XMRIG_RIGS.map(function(r, i) {
-    var dot = r.status==='online' ? 'live-dot' : 'live-dot dead';
-    var hrStr = r.hr > 0 ? (r.hr/1000).toFixed(2)+' KH/s' : '—';
-    var tempStr = r.temp > 0 ? r.temp+'°C' : '—';
-    var uptimeStr = r.uptime > 0 ? Math.floor(r.uptime/3600)+'h '+Math.floor((r.uptime%3600)/60)+'m' : '—';
-    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05)">'
-      +'<div style="display:flex;align-items:center;gap:8px">'
-      +'<span class="'+dot+'"></span>'
-      +'<div>'
-      +'<div style="font-size:12px;font-weight:600">'+r.name+'</div>'
-      +'<div style="font-size:9px;color:var(--muted);font-family:var(--mono)">'+r.ip+':'+r.port+(r.algo?' · '+r.algo:'')+'</div>'
-      +'</div></div>'
-      +'<div style="text-align:right">'
-      +'<div style="font-size:12px;font-weight:600;color:'+(r.status==='online'?'var(--green)':'var(--red)')+'">'+hrStr+'</div>'
-      +'<div style="font-size:10px;color:var(--muted)">'+tempStr+' · '+uptimeStr+'</div>'
-      +'</div>'
-      +'<button onclick="removeXmrigRig('+i+')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:14px;padding:4px 8px">×</button>'
-      +'</div>';
-  }).join('');
 }
 
 // ══════════════════════════════════════════════════════════════════
