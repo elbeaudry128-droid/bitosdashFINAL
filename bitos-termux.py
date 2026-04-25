@@ -200,7 +200,7 @@ class TermuxHandler(http.server.BaseHTTPRequestHandler):
             self._cors(200)
             self.send_header('Content-Type', mime)
             self.send_header('Content-Length', len(data))
-            self.send_header('Cache-Control', 'no-cache' if name.endswith('.html') else 'max-age=300')
+            self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
             self.end_headers(); self.wfile.write(data)
             return
         # Disk
