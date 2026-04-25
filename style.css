@@ -1,0 +1,137 @@
+/* BitOS Cloud v4 — Main Stylesheet */
+:root{
+  --bg:#080c14;--panel:#0d1421;--panel2:#111a2e;--border:#1e2d47;
+  --text:#e8f0fe;--muted:#5a7090;--accent:#00e5ff;--accent2:#7c3aed;
+  --green:#00d97e;--red:#ff2d55;--yellow:#ffb800;--orange:#ff7a00;
+  --mono:'SF Mono',Monaco,'Cascadia Code',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg);color:var(--text);font-family:-apple-system,system-ui,sans-serif;min-height:100vh}
+body{padding:env(safe-area-inset-top) env(safe-area-inset-right) calc(env(safe-area-inset-bottom)+64px) env(safe-area-inset-left);overflow-x:hidden}
+a{color:var(--accent);text-decoration:none}
+button{cursor:pointer;font-family:inherit;background:none;border:none;color:inherit}
+input,select,textarea{font-family:inherit;background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px 12px;outline:none;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+
+/* Topbar */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--panel);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+.tb-left{display:flex;align-items:center;gap:10px}
+.menu-btn{width:36px;height:36px;border-radius:8px;background:var(--panel2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px}
+.tb-title{font-size:15px;font-weight:700}
+.tb-right{display:flex;gap:6px;align-items:center}
+.tb-badge{font-size:10px;padding:3px 8px;border-radius:6px;background:var(--panel2);border:1px solid var(--border);color:var(--muted);font-family:var(--mono)}
+
+/* Sidebar */
+.sidebar{position:fixed;top:0;left:0;width:260px;height:100vh;background:var(--panel);border-right:1px solid var(--border);transform:translateX(-100%);transition:transform .25s;z-index:1000;overflow-y:auto;padding:16px}
+.sidebar.open{transform:translateX(0)}
+.sb-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:999;display:none}
+.sb-overlay.open{display:block}
+.sb-item{padding:12px 14px;border-radius:10px;display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;color:var(--muted);margin-bottom:4px}
+.sb-item:hover{background:var(--panel2);color:var(--text)}
+.sb-item.active{background:var(--accent);color:var(--bg);font-weight:700}
+
+/* Container */
+.container{max-width:1400px;margin:0 auto;padding:16px}
+
+/* Card */
+.card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px}
+.card-title{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-family:var(--mono);margin-bottom:10px}
+.card-value{font-size:24px;font-weight:800}
+.card-sub{font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:2px}
+
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.grid-2{grid-template-columns:repeat(2,1fr)}
+
+/* KPI bar */
+.kpi-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.kpi-bar .card{text-align:center;padding:12px 8px;margin:0}
+.kpi-bar .card-value{font-size:16px}
+.kpi-bar .card-title{font-size:9px;margin-bottom:4px}
+
+/* Wallet strip */
+.dws{background:linear-gradient(135deg,var(--accent)15,var(--accent2)15);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:14px}
+.dws-total{font-size:32px;font-weight:800;margin-bottom:10px}
+.dws-split{display:flex;gap:16px;font-size:12px;color:var(--muted);font-family:var(--mono)}
+
+/* Coin rows */
+.coin-row{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--panel);border:1px solid var(--border);border-radius:12px;margin-bottom:8px}
+.coin-row .dot{width:10px;height:10px;border-radius:50%;background:var(--accent)}
+.coin-row.kas .dot{background:#70eea6}
+.coin-row.rvn .dot{background:var(--orange)}
+.coin-row.flux .dot{background:var(--yellow)}
+.coin-name{font-weight:700;font-size:13px}
+.coin-hr{font-size:11px;color:var(--muted);font-family:var(--mono)}
+.coin-rev{margin-left:auto;font-weight:700;color:var(--green);font-size:13px;font-family:var(--mono)}
+.pbar{flex:1;height:6px;background:var(--panel2);border-radius:3px;overflow:hidden;margin:0 8px}
+.pbar-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .4s}
+
+/* Rig mini */
+.rig-mini{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(30,45,71,.4)}
+.rig-mini:last-child{border-bottom:none}
+.rig-mini-dot{width:8px;height:8px;border-radius:50%}
+.dot-online{background:var(--green)}
+.dot-warning{background:var(--yellow)}
+.dot-offline{background:var(--muted)}
+.rig-mini-name{flex:1;font-size:12px;font-weight:600}
+.rig-mini-info{display:flex;flex-direction:column;align-items:flex-end;font-size:10px;color:var(--muted);font-family:var(--mono)}
+
+/* Bottom nav */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:60px;background:var(--panel);border-top:1px solid var(--border);display:flex;justify-content:space-around;align-items:center;z-index:500;padding-bottom:env(safe-area-inset-bottom)}
+.bn-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:10px;color:var(--muted);gap:2px;padding:6px 2px;position:relative;font-weight:600}
+.bn-item .bn-ico{font-size:18px}
+.bn-item.active{color:var(--accent)}
+.bn-item.active::before{content:'';position:absolute;top:0;left:30%;right:30%;height:2px;background:var(--accent);border-radius:0 0 3px 3px}
+.bn-badge{position:absolute;top:4px;right:16%;background:var(--red);color:#fff;border-radius:9px;padding:1px 5px;font-size:9px;font-weight:800;min-width:14px;text-align:center}
+
+/* Pages */
+.page{display:none}
+.page.active{display:block;animation:fadeIn .2s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* Sections inside pages */
+.empty-hint{background:var(--panel);border:1px dashed var(--border);border-radius:12px;padding:24px;text-align:center;color:var(--muted);font-size:12px}
+.empty-hint b{display:block;color:var(--text);margin-bottom:6px}
+
+/* Buttons */
+.btn{padding:10px 16px;border-radius:10px;font-size:13px;font-weight:700;border:1px solid var(--border);background:var(--panel2);color:var(--text);transition:opacity .15s;display:inline-flex;align-items:center;gap:6px;justify-content:center}
+.btn-primary{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.btn-danger{background:var(--red);color:#fff;border-color:var(--red)}
+.btn-success{background:var(--green);color:var(--bg);border-color:var(--green)}
+.btn-sm{padding:6px 10px;font-size:11px}
+.btn:hover{opacity:.88}
+
+/* Modals */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:2000;display:none;align-items:center;justify-content:center;padding:16px}
+.modal.show{display:flex;animation:fadeIn .2s}
+.modal-box{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:20px;width:100%;max-width:460px;max-height:90vh;overflow-y:auto;position:relative}
+.modal-hdr{font-size:16px;font-weight:800;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.modal-close{width:32px;height:32px;border-radius:8px;background:var(--panel2);border:1px solid var(--border);color:var(--text);font-size:16px}
+
+/* Toast */
+#toast-wrap{position:fixed;top:14px;right:14px;z-index:3000;display:flex;flex-direction:column;gap:8px;max-width:340px}
+.toast{background:var(--panel);border:1px solid var(--border);border-radius:10px;font-size:12px;box-shadow:0 8px 24px rgba(0,0,0,.5);transition:opacity .3s}
+
+/* PWA install */
+.pwa-install{position:fixed;bottom:80px;right:16px;background:var(--accent);color:var(--bg);border:none;border-radius:50%;width:52px;height:52px;font-size:22px;display:none;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(0,229,255,.5);z-index:499;font-weight:800}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;font-size:12px}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--border)}
+th{color:var(--muted);font-weight:600;font-size:10px;text-transform:uppercase}
+
+/* RVN/FLUX coin colors */
+.tag-rvn{background:var(--orange);color:var(--bg);padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700}
+.tag-flux{background:var(--yellow);color:var(--bg);padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700}
+.tag-xmr{background:var(--accent);color:var(--bg);padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700}
+.tag-kas{background:#70eea6;color:var(--bg);padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700}
+
+@media(max-width:640px){
+  .kpi-bar{grid-template-columns:repeat(2,1fr)}
+  .dws-total{font-size:26px}
+  .container{padding:12px}
+}
+@media(min-width:900px){
+  .sidebar{transform:translateX(0);position:sticky;height:auto}
+  .sb-overlay{display:none!important}
+  .menu-btn{display:none}
+}

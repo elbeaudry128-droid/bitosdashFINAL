@@ -574,7 +574,8 @@ const S={coin:'XMR',prio:'slow',amount:0,addr:'',note:'',addrValid:false};
 // ══════════════════════════════════════════════════════
 const TITLES={dashboard:'Dashboard',rigs:'Mes Rigs',monitoring:'Monitoring',performances:'Performances',wallet:'Portefeuille',rentabilite:'Rentabilité',actions:'Actions recommandées',alertes:'Alertes',historique:'Historique',convertir:'Convertir en USDT',settings:'Paramètres',
   xmr:'⬡ Monero XMR',
-  kas:'◈ Kaspa KAS'
+  kas:'◈ Kaspa KAS',
+  rvn:'🐦 Ravencoin RVN'
 };
 const BN_PAGES=['dashboard','wallet','xmr','kas','convertir','actions','alertes','settings'];
 
@@ -1750,6 +1751,33 @@ const RVN_POOLS = {
   'ravenminer': { name:'RavenMiner', stratum:'stratum+tcp://stratum.ravenminer.com:3808', fee:0.5 },
   'kryptex':    { name:'Kryptex', stratum:'stratum+tcp://rvn.kryptex.network:7031', fee:1.5 },
 };
+
+let ACTIVE_RVN_POOL = localStorage.getItem('bitos_rvn_pool') || '2miners';
+
+function switchRVNPool(poolKey) {
+  if (!RVN_POOLS[poolKey]) return;
+  ACTIVE_RVN_POOL = poolKey;
+  localStorage.setItem('bitos_rvn_pool', poolKey);
+  var pool = RVN_POOLS[poolKey];
+  Object.keys(RVN_POOLS).forEach(function(k) {
+    var btn = el('rvn-pool-btn-' + k);
+    if (btn) {
+      btn.className = k === poolKey ? 'btn btn-primary' : 'btn';
+    }
+  });
+  setText('rvn-pool-info', pool.name + ' — KawPow GPU, ' + pool.fee + '% frais');
+  setText('rvn-pool-stratum', pool.stratum.replace('stratum+tcp://',''));
+  var qc = el('rvn-quick-config');
+  if (qc) {
+    qc.innerHTML = '<pre style="background:var(--bg);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:10px;font-size:10px;overflow-x:auto;color:var(--text);white-space:pre-wrap">'
+      + 't-rex -a kawpow -o ' + pool.stratum + ' -u YOUR_RVN_WALLET.rig1 -p x</pre>';
+  }
+}
+
+function restoreRVNPool() {
+  var key = localStorage.getItem('bitos_rvn_pool') || '2miners';
+  switchRVNPool(key);
+}
 
 function generateMiningConfigs() {
   const xmrAddr = POOL_CONFIG.XMR.walletAddr;
@@ -8772,6 +8800,7 @@ function bitosInit(){
   try{ lsRestore && lsRestore(); }catch(_e){}
   try{ restoreHiveToggle && restoreHiveToggle(); }catch(_e){}
   try{ restorePoolSelection && restorePoolSelection(); }catch(_e){}
+  try{ restoreRVNPool && restoreRVNPool(); }catch(_e){}
   try{ loadXmrigRigs && loadXmrigRigs(); }catch(_e){}
   try{ loadHistory && loadHistory(); }catch(_e){}
   try{ initMobile && initMobile(); }catch(_e){}
