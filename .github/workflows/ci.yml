@@ -1,0 +1,356 @@
+name: BitOS CI
+on:
+  push:
+    branches: [main, 'claude/**']
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validate HTML structure
+        run: |
+          echo "=== HTML Structure Tests ==="
+          errors=0
+
+          # Required pages
+          for page in dashboard xmr kas rvn rigs wallet monitoring historique alertes settings actions; do
+            if grep -q "id=\"page-${page}\"" index.html; then
+              echo "PASS: page-${page} exists"
+            else
+              echo "FAIL: page-${page} missing"
+              errors=$((errors+1))
+            fi
+          done
+
+          # Required element IDs
+          for id in dws-total dws-xmr dws-kas s-hash s-rev s-temp s-watt \
+                    d-xmr-hr d-xmr-rev d-kas-hr d-kas-rev d-rvn-hr d-rvn-rev \
+                    xmr-total xmr-pool-hr xmr-shares xmr-pending xmr-last-pay \
+                    kas-total kas-pool-hr kas-pending \
+                    rvn-total rvn-pool-hr rvn-workers rvn-pending rvn-last-pay \
+                    w-total w-xmr-a w-xmr-u w-kas-a w-kas-u \
+                    pool-btn-moneroocean pool-btn-supportxmr pool-btn-p2pool \
+                    pool-info pool-stratum \
+                    payout-threshold-val payout-threshold-input \
+                    pool-payments-list \
+                    hive-enabled-toggle hive-config-panel hive-disabled-msg \
+                    xmrig-rigs-list xmrig-status \
+                    xmrig-add-name xmrig-add-ip xmrig-add-port \
+                    mining-config-output \
+                    rvn-pool-info rvn-pool-stratum \
+                    toast-wrap topbar-title sidebar sb-overlay \
+                    hive-badge-txt connectivity-badge alerts-badge \
+                    nb-alerts alert-count; do
+            if grep -q "id=\"${id}\"" index.html; then
+              echo "PASS: #${id}"
+            else
+              echo "FAIL: #${id} missing"
+              errors=$((errors+1))
+            fi
+          done
+
+          # Bottom nav buttons
+          for bn in bn-dashboard bn-wallet bn-xmr bn-kas bn-alertes bn-settings; do
+            if grep -q "id=\"${bn}\"" index.html; then
+              echo "PASS: ${bn}"
+            else
+              echo "FAIL: ${bn} missing"
+              errors=$((errors+1))
+            fi
+          done
+
+          echo "--- HTML tests: ${errors} failures ---"
+          [ $errors -eq 0 ]
+
+      - name: Validate CSS file
+        run: |
+          echo "=== CSS Tests ==="
+          errors=0
+
+          if [ ! -f style.css ]; then
+            echo "FAIL: style.css not found"
+            exit 1
+          fi
+
+          # Check stylesheet link in HTML
+          if grep -q 'href="style.css"' index.html; then
+            echo "PASS: style.css linked in index.html"
+          else
+            echo "FAIL: style.css not linked"
+            errors=$((errors+1))
+          fi
+
+          # No inline <style> block in index.html
+          if grep -q '<style>' index.html; then
+            echo "FAIL: inline <style> still present"
+            errors=$((errors+1))
+          else
+            echo "PASS: no inline styles"
+          fi
+
+          # Required CSS classes
+          for cls in topbar sidebar card btn modal toast kpi-bar coin-row rig-mini bottom-nav page dws pbar tag-rvn tag-xmr; do
+            if grep -q "\.${cls}" style.css; then
+              echo "PASS: .${cls}"
+            else
+              echo "FAIL: .${cls} missing in style.css"
+              errors=$((errors+1))
+            fi
+          done
+
+          # CSS variables
+          for var in bg panel text accent green red yellow orange mono; do
+            if grep -q "\-\-${var}" style.css; then
+              echo "PASS: --${var}"
+            else
+              echo "FAIL: --${var} missing"
+              errors=$((errors+1))
+            fi
+          done
+
+          # Responsive breakpoints
+          if grep -q '@media' style.css; then
+            echo "PASS: responsive breakpoints"
+          else
+            echo "FAIL: no responsive breakpoints"
+            errors=$((errors+1))
+          fi
+
+          echo "--- CSS tests: ${errors} failures ---"
+          [ $errors -eq 0 ]
+
+      - name: Validate JavaScript syntax
+        run: |
+          echo "=== JS Syntax Tests ==="
+          node --check app.js && echo "PASS: app.js syntax valid" || { echo "FAIL: app.js syntax error"; exit 1; }
+
+      - name: Validate JavaScript functions
+        run: |
+          echo "=== JS Function Tests ==="
+          errors=0
+
+          # Core functions
+          for fn in toast showPage renderDash fetchXMRPool fetchKASPool \
+                    fetchPrices fetchXMRNetworkStats fetchKASNetworkStats \
+                    switchXMRPool restorePoolSelection updatePoolUI \
+                    toggleHiveOS restoreHiveToggle \
+                    fetchPayoutThreshold setPayoutThreshold fetchPaymentHistory \
+                    loadXmrigRigs saveXmrigRigs addXmrigRig removeXmrigRig \
+                    fetchXmrigRig fetchAllXmrigRigs renderXmrigRigs \
+                    generateMiningConfigs showMiningConfigs \
+                    switchRVNPool \
+                    bitosInit; do
+            if grep -q "function ${fn}" app.js; then
+              echo "PASS: ${fn}()"
+            else
+              echo "FAIL: ${fn}() missing"
+              errors=$((errors+1))
+            fi
+          done
+
+          # Constants and configs
+          for const in POOL_CONFIG XMR_POOLS RVN_POOLS NET_STATS XMRIG_RIGS; do
+            if grep -q "${const}" app.js; then
+              echo "PASS: ${const}"
+            else
+              echo "FAIL: ${const} missing"
+              errors=$((errors+1))
+            fi
+          done
+
+          # MoneroOcean default pool
+          if grep -q "pool:'moneroocean'" app.js; then
+            echo "PASS: MoneroOcean is default pool"
+          else
+            echo "FAIL: MoneroOcean not default"
+            errors=$((errors+1))
+          fi
+
+          # Fee = 0 for MoneroOcean
+          if grep -q "fee:0" app.js; then
+            echo "PASS: 0% fee present"
+          else
+            echo "FAIL: 0% fee missing"
+            errors=$((errors+1))
+          fi
+
+          echo "--- JS function tests: ${errors} failures ---"
+          [ $errors -eq 0 ]
+
+      - name: Validate PWA files
+        run: |
+          echo "=== PWA Tests ==="
+          errors=0
+
+          # manifest.json
+          if [ -f manifest.json ]; then
+            echo "PASS: manifest.json exists"
+            node -e "JSON.parse(require('fs').readFileSync('manifest.json','utf8')); console.log('PASS: manifest.json valid JSON')" || { echo "FAIL: manifest.json invalid"; errors=$((errors+1)); }
+          else
+            echo "FAIL: manifest.json missing"
+            errors=$((errors+1))
+          fi
+
+          # Service worker
+          if [ -f sw.js ]; then
+            echo "PASS: sw.js exists"
+            node --check sw.js && echo "PASS: sw.js syntax valid" || { echo "FAIL: sw.js syntax error"; errors=$((errors+1)); }
+          else
+            echo "FAIL: sw.js missing"
+            errors=$((errors+1))
+          fi
+
+          # SW registration in HTML
+          if grep -q "serviceWorker.register" index.html; then
+            echo "PASS: SW registered"
+          else
+            echo "FAIL: SW not registered"
+            errors=$((errors+1))
+          fi
+
+          echo "--- PWA tests: ${errors} failures ---"
+          [ $errors -eq 0 ]
+
+      - name: Validate deployment files
+        run: |
+          echo "=== Deployment Tests ==="
+          errors=0
+
+          # _headers
+          if [ -f _headers ]; then
+            echo "PASS: _headers exists"
+            if grep -q 'X-Frame-Options' _headers; then echo "PASS: X-Frame-Options"; else echo "FAIL: X-Frame-Options missing"; errors=$((errors+1)); fi
+            if grep -q 'X-Content-Type-Options' _headers; then echo "PASS: X-Content-Type-Options"; else echo "FAIL: missing"; errors=$((errors+1)); fi
+            if grep -q 'Content-Security-Policy' _headers; then echo "PASS: CSP header"; else echo "FAIL: CSP missing"; errors=$((errors+1)); fi
+          else
+            echo "FAIL: _headers missing"
+            errors=$((errors+1))
+          fi
+
+          # wrangler.toml
+          if [ -f wrangler.toml ]; then
+            echo "PASS: wrangler.toml exists"
+          else
+            echo "FAIL: wrangler.toml missing"
+            errors=$((errors+1))
+          fi
+
+          # CF Worker
+          if [ -f cf-worker/worker.js ]; then
+            echo "PASS: cf-worker/worker.js exists"
+            node --check cf-worker/worker.js && echo "PASS: worker.js syntax valid" || { echo "FAIL: worker.js syntax error"; errors=$((errors+1)); }
+          else
+            echo "FAIL: cf-worker/worker.js missing"
+            errors=$((errors+1))
+          fi
+
+          echo "--- Deployment tests: ${errors} failures ---"
+          [ $errors -eq 0 ]
+
+      - name: Validate proxy routes
+        run: |
+          echo "=== Proxy Route Tests ==="
+          errors=0
+
+          # Python proxy
+          if [ -f bitos-termux.py ]; then
+            for route in supportxmr moneroocean k1pool coingecko xmrchain kaspa hiveos; do
+              if grep -q "/proxy/${route}" bitos-termux.py; then
+                echo "PASS: /proxy/${route} in Python"
+              else
+                echo "FAIL: /proxy/${route} missing from Python proxy"
+                errors=$((errors+1))
+              fi
+            done
+          fi
+
+          # CF Worker proxy
+          for route in supportxmr moneroocean k1pool coingecko xmrchain kaspa hiveos; do
+            if grep -q "/proxy/${route}" cf-worker/worker.js; then
+              echo "PASS: /proxy/${route} in CF Worker"
+            else
+              echo "FAIL: /proxy/${route} missing from CF Worker"
+              errors=$((errors+1))
+            fi
+          done
+
+          echo "--- Proxy tests: ${errors} failures ---"
+          [ $errors -eq 0 ]
+
+      - name: Validate navigation consistency
+        run: |
+          echo "=== Navigation Tests ==="
+          errors=0
+
+          # Every sidebar page should have a matching page div
+          for page in $(grep -oP "showPage\('\K[^']*" index.html | sort -u); do
+            if grep -q "id=\"page-${page}\"" index.html; then
+              echo "PASS: sidebar→page-${page}"
+            else
+              echo "FAIL: sidebar links to '${page}' but page-${page} not found"
+              errors=$((errors+1))
+            fi
+          done
+
+          echo "--- Navigation tests: ${errors} failures ---"
+          [ $errors -eq 0 ]
+
+      - name: Validate security
+        run: |
+          echo "=== Security Tests ==="
+          errors=0
+
+          # No hardcoded secrets
+          if grep -qiP '(api_key|apikey|secret|password)\s*[:=]\s*["\x27][a-zA-Z0-9]{16,}' app.js; then
+            echo "FAIL: possible hardcoded secret in app.js"
+            errors=$((errors+1))
+          else
+            echo "PASS: no hardcoded secrets"
+          fi
+
+          # CORS origin whitelist in worker
+          if grep -q 'ALLOWED_ORIGINS' cf-worker/worker.js; then
+            echo "PASS: CORS origin whitelist in worker"
+          else
+            echo "FAIL: no CORS whitelist"
+            errors=$((errors+1))
+          fi
+
+          # PIN modal exists
+          if grep -q 'modal-pin' index.html; then
+            echo "PASS: PIN modal present"
+          else
+            echo "FAIL: PIN modal missing"
+            errors=$((errors+1))
+          fi
+
+          echo "--- Security tests: ${errors} failures ---"
+          [ $errors -eq 0 ]
+
+      - name: File size check
+        run: |
+          echo "=== Size Budget ==="
+          MAX_JS=500000
+          MAX_CSS=20000
+          MAX_HTML=40000
+
+          js_size=$(wc -c < app.js)
+          css_size=$(wc -c < style.css)
+          html_size=$(wc -c < index.html)
+
+          echo "app.js:    ${js_size} bytes (max ${MAX_JS})"
+          echo "style.css: ${css_size} bytes (max ${MAX_CSS})"
+          echo "index.html: ${html_size} bytes (max ${MAX_HTML})"
+
+          [ "$js_size" -lt "$MAX_JS" ] && echo "PASS: app.js under budget" || { echo "FAIL: app.js over budget"; exit 1; }
+          [ "$css_size" -lt "$MAX_CSS" ] && echo "PASS: style.css under budget" || { echo "FAIL: style.css over budget"; exit 1; }
+          [ "$html_size" -lt "$MAX_HTML" ] && echo "PASS: index.html under budget" || { echo "FAIL: index.html over budget"; exit 1; }
