@@ -1866,56 +1866,257 @@ function restoreRVNPool() {
   switchRVNPool(key);
 }
 
+// ══════════════════════════════════════════════════════════════════
+// FLIGHT SHEETS — Configs optimisées + Nodes distants
+// ══════════════════════════════════════════════════════════════════
+
+const REMOTE_NODES = {
+  XMR: [
+    { name:'MoneroWorld',     host:'opennode.xmr-tw.org',    port:18089, ssl:false, status:'unknown' },
+    { name:'Seth (US)',       host:'node.sethforprivacy.com',port:18089, ssl:true,  status:'unknown' },
+    { name:'Rino (EU)',       host:'node.community.rino.io', port:18081, ssl:false, status:'unknown' },
+    { name:'Majestic (DE)',   host:'node.majesticbank.is',   port:18089, ssl:false, status:'unknown' },
+    { name:'XMR.fail (pool)', host:'node.xmr.fail',          port:18081, ssl:false, status:'unknown' },
+  ],
+  KAS: [
+    { name:'Kaspa API',       host:'api.kaspa.org',          port:443,   ssl:true,  status:'unknown' },
+    { name:'Kas.fyi',         host:'kas.fyi',                port:443,   ssl:true,  status:'unknown' },
+  ],
+  RVN: [
+    { name:'Ravencoin Core',  host:'seed-raven.bitactivate.com', port:8767, ssl:false, status:'unknown' },
+    { name:'2Miners RVN',     host:'rvn.2miners.com',        port:6060,  ssl:false, status:'unknown' },
+  ]
+};
+
+const FLIGHT_SHEETS = {
+  xmr_cpu_moneroocean: {
+    name: 'XMR CPU — MoneroOcean',
+    coin: 'XMR', type: 'cpu', miner: 'xmrig',
+    desc: 'Algo-switching RandomX, 0% frais, +10-20% revenus',
+    recommended: true,
+    profitBoost: '+15%'
+  },
+  xmr_cpu_p2pool: {
+    name: 'XMR CPU — P2Pool',
+    coin: 'XMR', type: 'cpu', miner: 'xmrig+p2pool',
+    desc: 'Décentralisé, 0% frais, payouts chaque bloc trouvé',
+    recommended: false,
+    profitBoost: '0%'
+  },
+  rvn_gpu_kawpow: {
+    name: 'RVN GPU — KawPow',
+    coin: 'RVN', type: 'gpu', miner: 'trex',
+    desc: 'ASIC-résistant, meilleur choix GPU post-KAS',
+    recommended: true,
+    profitBoost: 'GPU optimal'
+  },
+  rvn_gpu_gminer: {
+    name: 'RVN GPU — GMiner',
+    coin: 'RVN', type: 'gpu', miner: 'gminer',
+    desc: 'Alternative stable, compatible AMD+NVIDIA',
+    recommended: false,
+    profitBoost: 'GPU alt'
+  },
+  xmr_gpu_moneroocean: {
+    name: 'XMR GPU — MoneroOcean Algo-Switch',
+    coin: 'XMR', type: 'gpu', miner: 'xmrig-cuda',
+    desc: 'MoneroOcean switch auto vers algo GPU le plus rentable',
+    recommended: false,
+    profitBoost: '+5-10%'
+  },
+};
+
+function generateFlightSheet(sheetKey) {
+  var sheet = FLIGHT_SHEETS[sheetKey];
+  if (!sheet) return null;
+  var xmrAddr = POOL_CONFIG.XMR.walletAddr;
+  var rvnAddr = POOL_CONFIG.RVN.walletAddr;
+  var xmrPool = XMR_POOLS[POOL_CONFIG.XMR.pool] || XMR_POOLS.moneroocean;
+  var rvnPool = RVN_POOLS[ACTIVE_RVN_POOL] || RVN_POOLS['2miners'];
+
+  switch(sheetKey) {
+    case 'xmr_cpu_moneroocean':
+      return {
+        type: 'json', filename: 'config.json',
+        config: {
+          autosave: true, cpu: { 'huge-pages': true, 'hw-aes': true, priority: 2, 'max-threads-hint': 75 },
+          opencl: false, cuda: false,
+          pools: [{
+            url: 'gulf.moneroocean.stream:10128',
+            user: xmrAddr, pass: 'x', 'rig-id': 'BitOS-Rig',
+            algo: null, tls: false, keepalive: true, nicehash: false
+          },{
+            url: 'gulf.moneroocean.stream:20128',
+            user: xmrAddr, pass: 'x', 'rig-id': 'BitOS-Rig',
+            algo: null, tls: true, keepalive: true, nicehash: false
+          }],
+          http: { enabled: true, host: '0.0.0.0', port: 8080, 'access-token': null, restricted: true },
+          donate: { enabled: true, level: 1 }
+        }
+      };
+    case 'xmr_cpu_p2pool':
+      return {
+        type: 'json', filename: 'config-p2pool.json',
+        config: {
+          autosave: true, cpu: { 'huge-pages': true, 'hw-aes': true, priority: 2, 'max-threads-hint': 100 },
+          opencl: false, cuda: false,
+          pools: [{
+            url: '127.0.0.1:3333',
+            user: xmrAddr, pass: 'x', 'rig-id': 'BitOS-P2Pool',
+            algo: 'rx/0', tls: false, keepalive: true
+          }],
+          http: { enabled: true, host: '0.0.0.0', port: 8080, 'access-token': null, restricted: true }
+        }
+      };
+    case 'rvn_gpu_kawpow':
+      return {
+        type: 'cmd', filename: 'start-rvn-trex.sh',
+        config: 't-rex -a kawpow'
+          + ' -o ' + rvnPool.stratum
+          + ' -u ' + (rvnAddr || 'YOUR_RVN_WALLET') + '.rig1'
+          + ' -p x'
+          + ' --intensity 22'
+          + ' --api-bind-http 0.0.0.0:4067'
+          + ' --api-read-only'
+      };
+    case 'rvn_gpu_gminer':
+      var rvnHost = (rvnPool.stratum||'').replace('stratum+tcp://','').split(':');
+      return {
+        type: 'cmd', filename: 'start-rvn-gminer.sh',
+        config: 'miner --algo kawpow'
+          + ' --server ' + (rvnHost[0]||'rvn.2miners.com')
+          + ' --port ' + (rvnHost[1]||'6060')
+          + ' --user ' + (rvnAddr || 'YOUR_RVN_WALLET') + '.rig1'
+          + ' --pass x'
+          + ' --api 4068'
+      };
+    case 'xmr_gpu_moneroocean':
+      return {
+        type: 'json', filename: 'config-gpu-mo.json',
+        config: {
+          autosave: true, cpu: false,
+          opencl: { enabled: true, cache: true, platform: 'AMD' },
+          cuda: { enabled: true, loader: null },
+          pools: [{
+            url: 'gulf.moneroocean.stream:10128',
+            user: xmrAddr, pass: 'x', 'rig-id': 'BitOS-GPU',
+            algo: null, tls: false, keepalive: true
+          }],
+          http: { enabled: true, host: '0.0.0.0', port: 8080, 'access-token': null, restricted: true }
+        }
+      };
+    default: return null;
+  }
+}
+
 function generateMiningConfigs() {
-  const xmrAddr = POOL_CONFIG.XMR.walletAddr;
-  const poolKey = POOL_CONFIG.XMR.pool || 'moneroocean';
-  const pool = XMR_POOLS[poolKey] || XMR_POOLS.moneroocean;
-  var configs = {};
-  configs.xmrig = {
-    autosave: true,
-    cpu: true,
-    opencl: false,
-    cuda: false,
-    pools: [{
-      url: (pool.stratum||'').replace('stratum+tcp://',''),
-      user: xmrAddr,
-      pass: 'x',
-      'rig-id': 'BitOS-Rig',
-      algo: poolKey === 'moneroocean' ? null : 'rx/0',
-      tls: false,
-      keepalive: true
-    }],
-    http: {
-      enabled: true,
-      host: '0.0.0.0',
-      port: 8080,
-      'access-token': null,
-      restricted: true
-    }
+  return {
+    xmrig: generateFlightSheet('xmr_cpu_moneroocean')?.config || {},
+    trex_rvn: generateFlightSheet('rvn_gpu_kawpow')?.config || '',
+    gminer_rvn: generateFlightSheet('rvn_gpu_gminer')?.config || '',
   };
-  configs.trex_rvn = 't-rex -a kawpow -o stratum+tcp://rvn.2miners.com:6060 -u YOUR_RVN_WALLET.rig1 -p x';
-  configs.gminer_rvn = 'miner --algo kawpow --server rvn.2miners.com --port 6060 --user YOUR_RVN_WALLET.rig1 --pass x';
-  return configs;
+}
+
+async function pingNode(node) {
+  var proto = node.ssl ? 'https://' : 'http://';
+  var url = proto + node.host + ':' + node.port;
+  try {
+    var start = Date.now();
+    var res = await fetch(url, { method:'HEAD', signal: AbortSignal.timeout(5000), mode:'no-cors' });
+    node.latency = Date.now() - start;
+    node.status = 'online';
+  } catch(e) {
+    node.status = 'offline';
+    node.latency = 0;
+  }
+  return node;
+}
+
+async function syncAllNodes() {
+  setText('node-sync-status', 'Synchronisation...');
+  var allNodes = [].concat(REMOTE_NODES.XMR, REMOTE_NODES.KAS, REMOTE_NODES.RVN);
+  await Promise.allSettled(allNodes.map(function(n) { return pingNode(n); }));
+  renderNodes();
+  var onlineCount = allNodes.filter(function(n){return n.status==='online';}).length;
+  setText('node-sync-status', onlineCount + '/' + allNodes.length + ' nodes connectés');
+  toast('info', 'Nodes', onlineCount + '/' + allNodes.length + ' nodes synchronisés');
+}
+
+function renderNodes() {
+  var cont = el('nodes-list');
+  if (!cont) return;
+  var html = '';
+  ['XMR','KAS','RVN'].forEach(function(coin) {
+    var coinCol = coin==='XMR' ? 'var(--accent)' : coin==='KAS' ? '#70eea6' : 'var(--orange)';
+    html += '<div style="font-size:11px;font-weight:700;color:'+coinCol+';margin:10px 0 6px">'+coin+' Nodes</div>';
+    REMOTE_NODES[coin].forEach(function(n) {
+      var dotCls = n.status==='online' ? 'dot-online' : n.status==='offline' ? 'dot-offline' : 'dot-warning';
+      var latStr = n.latency > 0 ? n.latency + 'ms' : '—';
+      html += '<div class="rig-mini" style="padding:6px 0">'
+        +'<div class="rig-mini-dot '+dotCls+'"></div>'
+        +'<div class="rig-mini-name" style="font-size:11px">'
+        +n.name
+        +'<div style="font-size:9px;color:var(--muted);font-family:var(--mono)">'+n.host+':'+n.port+(n.ssl?' (SSL)':'')+'</div>'
+        +'</div>'
+        +'<div style="font-size:10px;color:var(--muted);font-family:var(--mono)">'+latStr+'</div>'
+        +'</div>';
+    });
+  });
+  cont.innerHTML = html;
+}
+
+function renderFlightSheets() {
+  var cont = el('flightsheets-list');
+  if (!cont) return;
+  var html = '';
+  Object.keys(FLIGHT_SHEETS).forEach(function(key) {
+    var fs = FLIGHT_SHEETS[key];
+    var coinCol = fs.coin==='XMR' ? 'var(--accent)' : fs.coin==='RVN' ? 'var(--orange)' : '#70eea6';
+    var typeIcon = fs.type==='cpu' ? '🖥' : '🎮';
+    var recBadge = fs.recommended ? '<span style="background:var(--green);color:var(--bg);padding:1px 6px;border-radius:4px;font-size:8px;font-weight:700;margin-left:6px">OPTIMAL</span>' : '';
+    html += '<div style="background:var(--panel2);border:1px solid '+(fs.recommended?'var(--green)':'var(--border)')+';border-radius:10px;padding:12px;margin-bottom:8px">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
+      +'<div style="font-size:12px;font-weight:700;color:'+coinCol+'">'+typeIcon+' '+fs.name+recBadge+'</div>'
+      +'<span style="font-size:9px;color:var(--green);font-family:var(--mono);font-weight:600">'+fs.profitBoost+'</span>'
+      +'</div>'
+      +'<div style="font-size:10px;color:var(--muted);margin-bottom:8px">'+fs.desc+'</div>'
+      +'<div style="display:flex;gap:6px">'
+      +'<button class="btn btn-sm" onclick="showFlightSheet(\''+key+'\')" style="font-size:10px">Voir config</button>'
+      +'<button class="btn btn-sm btn-primary" onclick="copyFlightSheet(\''+key+'\')" style="font-size:10px">Copier</button>'
+      +'</div>'
+      +'</div>';
+  });
+  cont.innerHTML = html;
+}
+
+function showFlightSheet(key) {
+  var result = generateFlightSheet(key);
+  if (!result) return;
+  var cont = el('flightsheet-preview');
+  if (!cont) return;
+  var content = result.type === 'json' ? JSON.stringify(result.config, null, 2) : result.config;
+  cont.innerHTML = '<div style="margin-bottom:6px;display:flex;justify-content:space-between;align-items:center">'
+    +'<span style="font-size:11px;font-weight:600;color:var(--accent)">'+result.filename+'</span>'
+    +'<button class="btn btn-sm" onclick="copyFlightSheet(\''+key+'\')" style="font-size:9px">Copier</button>'
+    +'</div>'
+    +'<pre style="background:var(--bg);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:12px;font-size:10px;overflow-x:auto;color:var(--text);white-space:pre-wrap;max-height:300px;overflow-y:auto">'+content+'</pre>';
+  cont.scrollIntoView({behavior:'smooth'});
+}
+
+function copyFlightSheet(key) {
+  var result = generateFlightSheet(key);
+  if (!result) return;
+  var content = result.type === 'json' ? JSON.stringify(result.config, null, 2) : result.config;
+  navigator.clipboard.writeText(content).then(function() {
+    toast('success', 'Copié', result.filename + ' copié dans le presse-papier');
+  }).catch(function() {
+    toast('error', 'Erreur', 'Impossible de copier — utilisez la sélection manuelle');
+  });
 }
 
 function showMiningConfigs() {
-  const configs = generateMiningConfigs();
-  const cont = el('mining-config-output');
-  if (!cont) return;
-  var xmrigJson = JSON.stringify(configs.xmrig, null, 2);
-  cont.innerHTML = '<div style="margin-bottom:16px">'
-    +'<div style="font-size:12px;font-weight:600;margin-bottom:6px;color:var(--accent)">config.json — XMRig → MoneroOcean (CPU)</div>'
-    +'<pre style="background:var(--bg);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:12px;font-size:10px;overflow-x:auto;color:var(--text);white-space:pre-wrap">'+xmrigJson+'</pre>'
-    +'<button class="btn" onclick="navigator.clipboard.writeText(JSON.stringify('+btoa(xmrigJson)+'))" style="font-size:10px;margin-top:4px">Copier JSON</button>'
-    +'</div>'
-    +'<div style="margin-bottom:16px">'
-    +'<div style="font-size:12px;font-weight:600;margin-bottom:6px;color:var(--green)">T-Rex Miner → Ravencoin (GPU)</div>'
-    +'<pre style="background:var(--bg);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:12px;font-size:10px;overflow-x:auto;color:var(--text);white-space:pre-wrap">'+configs.trex_rvn+'</pre>'
-    +'</div>'
-    +'<div>'
-    +'<div style="font-size:12px;font-weight:600;margin-bottom:6px;color:var(--green)">GMiner → Ravencoin (GPU)</div>'
-    +'<pre style="background:var(--bg);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:12px;font-size:10px;overflow-x:auto;color:var(--text);white-space:pre-wrap">'+configs.gminer_rvn+'</pre>'
-    +'</div>';
+  renderFlightSheets();
+  renderNodes();
 }
 // kpub = base58check(version[4] + depth[1] + fingerprint[4] +
 //                    childIndex[4] + chainCode[32] + pubKey[33])

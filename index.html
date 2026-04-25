@@ -415,16 +415,33 @@
       </div>
     </div>
 
-    <!-- Configs Mining -->
+    <!-- Flight Sheets -->
     <div class="card">
       <div class="card-title" style="display:flex;justify-content:space-between;align-items:center">
-        Configs Mining
-        <button class="btn" onclick="showMiningConfigs()" style="font-size:10px">Générer</button>
+        Flight Sheets
+        <button class="btn" onclick="showMiningConfigs()" style="font-size:10px">Charger</button>
       </div>
-      <div style="font-size:10px;color:var(--muted);margin-bottom:8px">
-        Configurations prêtes à copier pour vos rigs
+      <div style="font-size:10px;color:var(--muted);margin-bottom:10px">
+        Configs optimisées prêtes à copier — triées par rentabilité
       </div>
+      <div id="flightsheets-list"></div>
+      <div id="flightsheet-preview" style="margin-top:8px"></div>
       <div id="mining-config-output"></div>
+    </div>
+
+    <!-- Nodes distants -->
+    <div class="card">
+      <div class="card-title" style="display:flex;justify-content:space-between;align-items:center">
+        Nodes distants
+        <div style="display:flex;gap:6px;align-items:center">
+          <span id="node-sync-status" style="font-size:9px;color:var(--muted)"></span>
+          <button class="btn btn-sm" onclick="syncAllNodes()" style="font-size:10px">Sync</button>
+        </div>
+      </div>
+      <div style="font-size:10px;color:var(--muted);margin-bottom:6px">
+        Vérification latence des nodes XMR / KAS / RVN
+      </div>
+      <div id="nodes-list"></div>
     </div>
 
     <!-- Sécurité -->
