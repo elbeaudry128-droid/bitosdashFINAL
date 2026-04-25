@@ -303,10 +303,29 @@
     <!-- Wallets -->
     <div class="card">
       <div class="card-title">Adresses Wallet</div>
+
       <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">XMR (Monero)</label>
-      <div id="sg-xmr-addr" style="font-size:10px;color:var(--green);font-family:var(--mono);margin-bottom:8px;word-break:break-all"></div>
+      <div id="sg-xmr-addr" style="font-size:10px;color:var(--green);font-family:var(--mono);margin-bottom:4px;word-break:break-all"></div>
+      <div style="display:flex;gap:6px;margin-bottom:12px">
+        <input id="wallet-input-xmr" placeholder="4... ou 8... (adresse Monero)" style="font-size:10px">
+        <button class="btn btn-sm btn-primary" onclick="saveWallet('XMR')" style="flex-shrink:0">Sauver</button>
+      </div>
+
       <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">KAS (Kaspa)</label>
-      <div id="sg-kas-addr" style="font-size:10px;color:var(--accent);font-family:var(--mono);margin-bottom:8px;word-break:break-all"></div>
+      <div id="sg-kas-addr" style="font-size:10px;color:var(--accent);font-family:var(--mono);margin-bottom:4px;word-break:break-all"></div>
+      <div style="display:flex;gap:6px;margin-bottom:12px">
+        <input id="wallet-input-kas" placeholder="kaspa:q... (adresse Kaspa)" style="font-size:10px">
+        <button class="btn btn-sm btn-primary" onclick="saveWallet('KAS')" style="flex-shrink:0">Sauver</button>
+      </div>
+
+      <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">RVN (Ravencoin)</label>
+      <div id="sg-rvn-addr" style="font-size:10px;color:var(--orange);font-family:var(--mono);margin-bottom:4px;word-break:break-all">Non configuré</div>
+      <div style="display:flex;gap:6px;margin-bottom:8px">
+        <input id="wallet-input-rvn" placeholder="R... (adresse Ravencoin)" style="font-size:10px">
+        <button class="btn btn-sm btn-primary" onclick="saveWallet('RVN')" style="flex-shrink:0">Sauver</button>
+      </div>
+
+      <div style="font-size:9px;color:var(--muted);margin-top:4px">Les adresses sont stockées localement (localStorage). Pour RVN, créez un wallet via Zelcore, Exodus ou Ravencoin Core.</div>
     </div>
 
     <!-- Payout Threshold -->

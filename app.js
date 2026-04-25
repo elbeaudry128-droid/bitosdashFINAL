@@ -1451,8 +1451,64 @@ const POOL_CONFIG = {
           apiBase:'https://api-kas.k1pool.com/api', minPayout:1,
           stratumTCP:'stratum+tcp://kaspa.k1pool.com:3333',
           stratumSSL:'stratum+ssl://kaspa.k1pool.com:5555',
+          worker:'x', fee:0.01 },
+  RVN: { walletAddr:'', pool:'2miners',
+          apiBase:'https://rvn.2miners.com/api', minPayout:50,
+          stratumTCP:'stratum+tcp://rvn.2miners.com:6060',
           worker:'x', fee:0.01 }
 };
+
+function restoreWallets() {
+  try {
+    var saved = localStorage.getItem('bitos_wallets');
+    if (saved) {
+      var w = JSON.parse(saved);
+      if (w.XMR) POOL_CONFIG.XMR.walletAddr = w.XMR;
+      if (w.KAS) POOL_CONFIG.KAS.walletAddr = w.KAS;
+      if (w.RVN) POOL_CONFIG.RVN.walletAddr = w.RVN;
+    }
+  } catch(e) {}
+}
+
+function saveWallet(coin) {
+  var inputId = 'wallet-input-' + coin.toLowerCase();
+  var input = el(inputId);
+  if (!input) return;
+  var addr = input.value.trim();
+  if (coin === 'XMR' && addr && (addr.length < 90 || !/^[48]/.test(addr))) {
+    toast('error', 'Wallet XMR', 'Adresse Monero invalide (doit commencer par 4 ou 8, ~95 chars)');
+    return;
+  }
+  if (coin === 'KAS' && addr && !addr.startsWith('kaspa:')) {
+    toast('error', 'Wallet KAS', 'Adresse Kaspa invalide (doit commencer par kaspa:)');
+    return;
+  }
+  if (coin === 'RVN' && addr && (addr.length < 25 || !/^[Rr]/.test(addr))) {
+    toast('error', 'Wallet RVN', 'Adresse Ravencoin invalide (doit commencer par R, ~34 chars)');
+    return;
+  }
+  POOL_CONFIG[coin].walletAddr = addr;
+  try {
+    var saved = {};
+    try { saved = JSON.parse(localStorage.getItem('bitos_wallets') || '{}'); } catch(e) {}
+    saved[coin] = addr;
+    localStorage.setItem('bitos_wallets', JSON.stringify(saved));
+  } catch(e) {}
+  displayWallets();
+  toast('success', 'Wallet ' + coin, addr ? 'Adresse sauvegardée' : 'Adresse supprimée');
+}
+
+function displayWallets() {
+  var xmrAddr = POOL_CONFIG.XMR.walletAddr || '';
+  var kasAddr = POOL_CONFIG.KAS.walletAddr || '';
+  var rvnAddr = POOL_CONFIG.RVN.walletAddr || '';
+  setText('sg-xmr-addr', xmrAddr || 'Non configuré');
+  setText('sg-kas-addr', kasAddr || 'Non configuré');
+  setText('sg-rvn-addr', rvnAddr || 'Non configuré');
+  var xi = el('wallet-input-xmr'); if (xi && !xi.value) xi.value = xmrAddr;
+  var ki = el('wallet-input-kas'); if (ki && !ki.value) ki.value = kasAddr;
+  var ri = el('wallet-input-rvn'); if (ri && !ri.value) ri.value = rvnAddr;
+}
 
 const XMR_POOLS = {
   moneroocean: { name:'MoneroOcean', api:'https://api.moneroocean.stream', fee:0, algoSwitch:true,
@@ -8829,12 +8885,14 @@ bd) bd.style.display='block';
 // ── INIT APP ──────────────────────────────────────────────────────
 function bitosInit(){
   try{ lsRestore && lsRestore(); }catch(_e){}
+  try{ restoreWallets && restoreWallets(); }catch(_e){}
   try{ restoreHiveToggle && restoreHiveToggle(); }catch(_e){}
   try{ restorePoolSelection && restorePoolSelection(); }catch(_e){}
   try{ restoreRVNPool && restoreRVNPool(); }catch(_e){}
   try{ loadXmrigRigs && loadXmrigRigs(); }catch(_e){}
   try{ loadHistory && loadHistory(); }catch(_e){}
   try{ initMobile && initMobile(); }catch(_e){}
+  try{ displayWallets && displayWallets(); }catch(_e){}
   try{ renderDash && renderDash(); }catch(_e){}
   try{ fetchCoinGeckoPrices && fetchCoinGeckoPrices(); }catch(_e){}
   try{ if(HIVE_ENABLED) fetchHiveOS && fetchHiveOS(); }catch(_e){}
