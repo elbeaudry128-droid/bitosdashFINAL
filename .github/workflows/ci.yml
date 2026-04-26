@@ -22,7 +22,7 @@ jobs:
           errors=0
 
           # Required pages
-          for page in dashboard xmr kas rvn rigs wallet monitoring historique alertes settings actions; do
+          for page in dashboard xmr kas rvn rigs wallet monitoring historique alertes settings actions minerconfig minercontrol; do
             if grep -q "id=\"page-${page}\"" index.html; then
               echo "PASS: page-${page} exists"
             else
@@ -339,9 +339,9 @@ jobs:
       - name: File size check
         run: |
           echo "=== Size Budget ==="
-          MAX_JS=500000
-          MAX_CSS=20000
-          MAX_HTML=40000
+          MAX_JS=550000
+          MAX_CSS=25000
+          MAX_HTML=55000
 
           js_size=$(wc -c < app.js)
           css_size=$(wc -c < style.css)
