@@ -2149,8 +2149,8 @@ const FLIGHT_SHEETS = {
     name: 'XMR CPU — Termux (ARM)',
     coin: 'XMR', type: 'cpu', miner: 'xmrig',
     desc: 'Optimisé pour Snapdragon/ARM sur Termux, 2 threads pour préserver batterie',
-    recommended: true,
-    profitBoost: 'Mobile',
+    recommended: false,
+    profitBoost: '~$0.005/j',
     hw: 'TCL60 / Android ARM'
   },
   xmr_cpu_moneroocean: {
@@ -2160,6 +2160,22 @@ const FLIGHT_SHEETS = {
     recommended: true,
     profitBoost: '+15%',
     hw: 'Intel/AMD x86'
+  },
+  xmr_cpu_i5_laptop: {
+    name: 'XMR CPU — ASUS Pro i5',
+    coin: 'XMR', type: 'cpu', miner: 'xmrig',
+    desc: 'Config laptop Intel i5, 2-4 threads (préserver batterie/chaleur), huge-pages si dispo',
+    recommended: true,
+    profitBoost: '~$0.05-0.15/j',
+    hw: 'ASUS Pro / Intel Core i5'
+  },
+  xmr_cpu_oracle: {
+    name: 'XMR CPU — Oracle Cloud (GRATUIT)',
+    coin: 'XMR', type: 'cpu', miner: 'xmrig',
+    desc: 'Oracle Cloud Free Tier, 4 cores ARM Ampere A1, ~1000 H/s, $0 coût',
+    recommended: true,
+    profitBoost: '~$1/mois GRATUIT',
+    hw: 'Oracle Cloud ARM A1 (free tier)'
   },
   xmr_gpu_rtx90: {
     name: 'XMR GPU — RTX 3090/4090',
@@ -2285,6 +2301,66 @@ function generateFlightSheet(sheetKey) {
           http: { enabled: true, host: '0.0.0.0', port: 8080, 'access-token': null, restricted: true },
           donate: { enabled: true, level: 1 }
         }
+      };
+    case 'xmr_cpu_i5_laptop':
+      return {
+        type: 'json', filename: 'config-asus-i5.json',
+        config: {
+          autosave: true,
+          cpu: {
+            enabled: true,
+            'huge-pages': true,
+            'huge-pages-jit': true,
+            'hw-aes': true,
+            priority: 1,
+            'max-threads-hint': 50,
+            'yield': true,
+            asm: true,
+            argon2: 'auto'
+          },
+          opencl: false, cuda: false,
+          pools: [{
+            url: 'gulf.moneroocean.stream:10128',
+            user: xmrAddr, pass: 'x', 'rig-id': 'ASUS-i5',
+            algo: null, tls: false, keepalive: true, nicehash: false
+          },{
+            url: 'gulf.moneroocean.stream:20128',
+            user: xmrAddr, pass: 'x', 'rig-id': 'ASUS-i5',
+            algo: null, tls: true, keepalive: true, nicehash: false
+          }],
+          http: { enabled: true, host: '0.0.0.0', port: 8080, 'access-token': null, restricted: false },
+          donate: { enabled: true, level: 1 }
+        },
+        setup: '# ASUS Pro i5 — Installation:\n# 1. Télécharger XMRig: https://github.com/xmrig/xmrig/releases\n# 2. Extraire le zip\n# 3. Copier ce config.json dans le dossier XMRig\n\n# Windows:\n#   Ouvrir cmd en admin, naviguer au dossier et lancer:\n#   xmrig.exe\n\n# Linux:\n#   chmod +x xmrig\n#   sudo sysctl -w vm.nr_hugepages=1280  # huge pages\n#   ./xmrig\n\n# IMPORTANT: max-threads-hint à 50% pour ne pas surchauffer le laptop\n# Hashrate attendu: ~1,500-3,000 H/s selon génération i5\n# Revenu: ~$0.05-0.10/jour sur MoneroOcean'
+      };
+    case 'xmr_cpu_oracle':
+      return {
+        type: 'json', filename: 'config-oracle-cloud.json',
+        config: {
+          autosave: true,
+          cpu: {
+            enabled: true,
+            'huge-pages': true,
+            'hw-aes': true,
+            priority: 2,
+            'max-threads-hint': 100,
+            asm: true,
+            argon2: 'auto'
+          },
+          opencl: false, cuda: false,
+          pools: [{
+            url: 'gulf.moneroocean.stream:10128',
+            user: xmrAddr, pass: 'x', 'rig-id': 'Oracle-ARM',
+            algo: null, tls: false, keepalive: true, nicehash: false
+          },{
+            url: 'gulf.moneroocean.stream:20128',
+            user: xmrAddr, pass: 'x', 'rig-id': 'Oracle-ARM',
+            algo: null, tls: true, keepalive: true, nicehash: false
+          }],
+          http: { enabled: true, host: '0.0.0.0', port: 8080, 'access-token': null, restricted: false },
+          donate: { enabled: true, level: 1 }
+        },
+        setup: '# Oracle Cloud Free Tier — Setup complet:\n\n# 1. Créer un compte: https://cloud.oracle.com/\n#    (carte de crédit requise mais ne sera PAS débitée)\n\n# 2. Créer une instance:\n#    Shape: VM.Standard.A1.Flex (Ampere ARM)\n#    OCPUs: 4 (max free tier)\n#    RAM: 24 GB (max free tier)\n#    OS: Ubuntu 22.04 (aarch64)\n\n# 3. Se connecter en SSH et installer:\nsudo apt update && sudo apt install -y git build-essential cmake libuv1-dev libssl-dev libhwloc-dev\ngit clone https://github.com/xmrig/xmrig.git\ncd xmrig && mkdir build && cd build\ncmake ..\nmake -j4\n\n# 4. Huge pages:\nsudo sysctl -w vm.nr_hugepages=1280\necho \"vm.nr_hugepages=1280\" | sudo tee -a /etc/sysctl.conf\n\n# 5. Lancer:\n./xmrig -c config-oracle-cloud.json\n\n# 6. Pour que ça tourne en permanence:\nsudo nohup ./xmrig -c config-oracle-cloud.json &\n\n# Hashrate attendu: ~800-1200 H/s (ARM Ampere A1, 4 cores)\n# Coût: $0.00 (free tier)\n# Revenu: ~$0.02-0.04/jour = ~$1/mois GRATUIT'
       };
     case 'xmr_gpu_rtx90':
       return {
