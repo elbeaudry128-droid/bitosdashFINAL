@@ -491,6 +491,77 @@
       <div id="mining-config-output"></div>
     </div>
 
+    <!-- Oracle Cloud Free Tier Guide -->
+    <div class="card" id="oracle-cloud-guide">
+      <div class="card-title" style="display:flex;justify-content:space-between;align-items:center">
+        <span>☁️ Oracle Cloud Free Tier — Mining GRATUIT</span>
+        <span style="font-size:9px;background:var(--green);color:#000;padding:2px 8px;border-radius:10px;font-weight:600">$0/mois</span>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:10px">
+        4 cores ARM Ampere A1 · 24 GB RAM · ~1000 H/s RandomX · Toujours gratuit
+      </div>
+      <div style="background:var(--bg);border-radius:8px;padding:12px;font-family:var(--mono);font-size:10px;line-height:1.7;color:var(--text);margin-bottom:10px">
+        <div style="color:var(--accent);font-weight:600;margin-bottom:6px">1. Créer un compte</div>
+        <div style="color:var(--muted);margin-bottom:8px">→ cloud.oracle.com (carte crédit requise, ne sera PAS débitée)</div>
+        <div style="color:var(--accent);font-weight:600;margin-bottom:6px">2. Créer une instance</div>
+        <div style="margin-bottom:2px">Shape: <span style="color:var(--green)">VM.Standard.A1.Flex</span> (Ampere ARM)</div>
+        <div style="margin-bottom:2px">OCPUs: <span style="color:var(--green)">4</span> (max free tier)</div>
+        <div style="margin-bottom:2px">RAM: <span style="color:var(--green)">24 GB</span> (max free tier)</div>
+        <div style="margin-bottom:8px">OS: Ubuntu 22.04 (aarch64)</div>
+        <div style="color:var(--accent);font-weight:600;margin-bottom:6px">3. Installer XMRig (SSH)</div>
+        <div style="background:rgba(0,0,0,0.3);padding:8px;border-radius:6px;margin-bottom:8px;white-space:pre-wrap;word-break:break-all">sudo apt update && sudo apt install -y git build-essential cmake libuv1-dev libssl-dev libhwloc-dev
+git clone https://github.com/xmrig/xmrig.git
+cd xmrig && mkdir build && cd build
+cmake .. && make -j4</div>
+        <div style="color:var(--accent);font-weight:600;margin-bottom:6px">4. Huge Pages</div>
+        <div style="background:rgba(0,0,0,0.3);padding:8px;border-radius:6px;margin-bottom:8px;white-space:pre-wrap">sudo sysctl -w vm.nr_hugepages=1280
+echo "vm.nr_hugepages=1280" | sudo tee -a /etc/sysctl.conf</div>
+        <div style="color:var(--accent);font-weight:600;margin-bottom:6px">5. Lancer en permanence</div>
+        <div style="background:rgba(0,0,0,0.3);padding:8px;border-radius:6px;margin-bottom:8px;white-space:pre-wrap">nohup ./xmrig --url gulf.moneroocean.stream:10128 \
+  --user VOTRE_WALLET_XMR --pass BitOS-Oracle \
+  --http-enabled --http-host 0.0.0.0 --http-port 8080 \
+  --threads 4 --huge-pages &</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="generateFlightSheet('xmr_cpu_oracle');showPage('minerconfig')" style="font-size:10px">Générer Config Oracle</button>
+        <button class="btn" onclick="copyOracleCmd()" style="font-size:10px" id="btn-copy-oracle">Copier commandes SSH</button>
+      </div>
+      <div style="font-size:9px;color:var(--muted);margin-top:8px">
+        Revenu estimé: ~$0.02-0.04/jour = <span style="color:var(--green)">~$1/mois GRATUIT</span> · Aucun risque financier
+      </div>
+    </div>
+
+    <!-- ASUS Pro i5 Laptop Guide -->
+    <div class="card" id="laptop-mining-guide">
+      <div class="card-title" style="display:flex;justify-content:space-between;align-items:center">
+        <span>💻 ASUS Pro i5 — Mining Laptop</span>
+        <span style="font-size:9px;background:var(--yellow);color:#000;padding:2px 8px;border-radius:10px;font-weight:600">~$0.10/j</span>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:10px">
+        Intel Core i5 · 2-4 threads (50%) · ~1500-3000 H/s · Config laptop-safe
+      </div>
+      <div style="background:var(--bg);border-radius:8px;padding:12px;font-family:var(--mono);font-size:10px;line-height:1.7;color:var(--text);margin-bottom:10px">
+        <div style="color:var(--accent);font-weight:600;margin-bottom:6px">Installation Windows</div>
+        <div style="margin-bottom:2px">1. Télécharger XMRig: <span style="color:var(--green)">github.com/xmrig/xmrig/releases</span></div>
+        <div style="margin-bottom:2px">2. Extraire dans un dossier (ex: C:\xmrig)</div>
+        <div style="margin-bottom:8px">3. Utiliser la config générée ci-dessous</div>
+        <div style="color:var(--accent);font-weight:600;margin-bottom:6px">Installation Linux</div>
+        <div style="background:rgba(0,0,0,0.3);padding:8px;border-radius:6px;margin-bottom:8px;white-space:pre-wrap">sudo apt install -y xmrig
+# ou compiler depuis source (voir guide Oracle ci-haut)</div>
+        <div style="color:var(--yellow);font-weight:600;margin-bottom:6px">⚠️ Précautions laptop</div>
+        <div style="margin-bottom:2px">• Max 50% threads (<span style="font-family:var(--mono)">max-threads-hint: 50</span>)</div>
+        <div style="margin-bottom:2px">• Surveiller température (max 85°C)</div>
+        <div style="margin-bottom:2px">• Branché sur secteur obligatoire</div>
+        <div>• Élever l'arrière pour la ventilation</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="generateFlightSheet('xmr_cpu_i5_laptop');showPage('minerconfig')" style="font-size:10px">Générer Config Laptop</button>
+      </div>
+      <div style="font-size:9px;color:var(--muted);margin-top:8px">
+        Revenu estimé: ~$0.05-0.15/jour · Coût électricité: ~$0.02-0.04/jour · <span style="color:var(--green)">Net positif</span>
+      </div>
+    </div>
+
     <!-- Nodes distants -->
     <div class="card">
       <div class="card-title" style="display:flex;justify-content:space-between;align-items:center">

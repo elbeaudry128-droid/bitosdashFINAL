@@ -2639,6 +2639,23 @@ function showMiningConfigs() {
   renderFlightSheets();
   renderNodes();
 }
+
+function copyOracleCmd() {
+  const wallet = localStorage.getItem('wallet_XMR') || 'VOTRE_WALLET_XMR';
+  const cmds = `# Oracle Cloud Free Tier — XMRig Setup
+sudo apt update && sudo apt install -y git build-essential cmake libuv1-dev libssl-dev libhwloc-dev
+git clone https://github.com/xmrig/xmrig.git
+cd xmrig && mkdir build && cd build
+cmake .. && make -j4
+sudo sysctl -w vm.nr_hugepages=1280
+echo "vm.nr_hugepages=1280" | sudo tee -a /etc/sysctl.conf
+nohup ./xmrig --url gulf.moneroocean.stream:10128 --user ${wallet} --pass BitOS-Oracle --http-enabled --http-host 0.0.0.0 --http-port 8080 --threads 4 --huge-pages &`;
+  navigator.clipboard.writeText(cmds).then(() => {
+    toast('Commandes SSH copiées!', 'ok');
+    const btn = el('btn-copy-oracle');
+    if (btn) { btn.textContent = '✓ Copié!'; setTimeout(() => btn.textContent = 'Copier commandes SSH', 2000); }
+  }).catch(() => toast('Erreur copie', 'err'));
+}
 // kpub = base58check(version[4] + depth[1] + fingerprint[4] +
 //                    childIndex[4] + chainCode[32] + pubKey[33])
 // ══════════════════════════════════════════════════════════════════
