@@ -138,6 +138,11 @@ class TermuxHandler(http.server.BaseHTTPRequestHandler):
             self._status(); return
         if path == '/api/proxy-test':
             self._proxy_test(); return
+        # Miner Config API
+        if path == '/api/miner/config':
+            self._miner_config(method); return
+        if path == '/api/miner/control':
+            self._miner_control(method); return
         # Static
         self._static(path)
 
@@ -189,6 +194,71 @@ class TermuxHandler(http.server.BaseHTTPRequestHandler):
             ct, status = 'application/json', 502
         self._cors(status)
         self.send_header('Content-Type', ct)
+        self.send_header('Content-Length', len(data))
+        self.end_headers(); self.wfile.write(data)
+
+    def _miner_config(self, method):
+        config_path = Path(os.environ.get('XMRIG_CONFIG', '/etc/xmrig/config.json'))
+        if method == 'GET':
+            if not config_path.exists():
+                data = json.dumps({'error': 'Config not found', 'path': str(config_path)}).encode()
+                self._cors(404)
+            else:
+                data = config_path.read_bytes()
+                self._cors(200)
+            self.send_header('Content-Type', 'application/json')
+            self.send_header('Content-Length', len(data))
+            self.end_headers(); self.wfile.write(data)
+            return
+        if method == 'POST' or method == 'PUT':
+            cl = int(self.headers.get('Content-Length', 0))
+            body = self.rfile.read(cl) if cl > 0 else b''
+            try:
+                cfg = json.loads(body)
+                config_path.parent.mkdir(parents=True, exist_ok=True)
+                config_path.write_text(json.dumps(cfg, indent=2), encoding='utf-8')
+                data = json.dumps({'ok': True, 'path': str(config_path), 'size': len(body)}).encode()
+                self._cors(200)
+            except (json.JSONDecodeError, OSError) as e:
+                data = json.dumps({'error': str(e)}).encode()
+                self._cors(400)
+            self.send_header('Content-Type', 'application/json')
+            self.send_header('Content-Length', len(data))
+            self.end_headers(); self.wfile.write(data)
+            return
+        self.send_error(405)
+
+    def _miner_control(self, method):
+        if method != 'POST':
+            self.send_error(405); return
+        cl = int(self.headers.get('Content-Length', 0))
+        body = json.loads(self.rfile.read(cl)) if cl > 0 else {}
+        action = body.get('action', '')
+        config_path = body.get('config', os.environ.get('XMRIG_CONFIG', '/etc/xmrig/config.json'))
+        result = {'action': action, 'ok': False}
+        try:
+            import subprocess, signal
+            if action == 'stop':
+                subprocess.run(['pkill', '-f', 'xmrig'], capture_output=True, timeout=5)
+                result['ok'] = True; result['msg'] = 'XMRig stopped'
+            elif action in ('start', 'restart'):
+                subprocess.run(['pkill', '-f', 'xmrig'], capture_output=True, timeout=5)
+                import time as _t; _t.sleep(1)
+                cmd = ['xmrig', '--config', config_path, '--http-enabled',
+                       '--http-host', '0.0.0.0', '--http-port', '8080']
+                subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                result['ok'] = True; result['msg'] = f'XMRig {"restarted" if action=="restart" else "started"}'
+            elif action == 'status':
+                r = subprocess.run(['pgrep', '-f', 'xmrig'], capture_output=True, timeout=3)
+                result['ok'] = True; result['running'] = r.returncode == 0
+                result['pid'] = r.stdout.decode().strip().split('\n')[0] if r.returncode == 0 else None
+            else:
+                result['error'] = f'Unknown action: {action}'
+        except Exception as e:
+            result['error'] = str(e)
+        data = json.dumps(result).encode()
+        self._cors(200)
+        self.send_header('Content-Type', 'application/json')
         self.send_header('Content-Length', len(data))
         self.end_headers(); self.wfile.write(data)
 

@@ -41,6 +41,8 @@
   <div class="sb-item" onclick="showPage('kas');closeSidebar()">💎 Kaspa (KAS)</div>
   <div class="sb-item" onclick="showPage('rvn');closeSidebar()">🐦 Ravencoin (RVN)</div>
   <div class="sb-item" onclick="showPage('rigs');closeSidebar()">🖥 Mes Rigs</div>
+  <div class="sb-item" onclick="showPage('minerconfig');closeSidebar()">📝 Miner Config</div>
+  <div class="sb-item" onclick="showPage('minercontrol');closeSidebar()">🎮 Miner Control</div>
   <div class="sb-item" onclick="showPage('wallet');closeSidebar()">💼 Portefeuille</div>
   <div class="sb-item" onclick="showPage('monitoring');closeSidebar()">📊 Monitoring</div>
   <div class="sb-item" onclick="showPage('historique');closeSidebar()">📜 Historique</div>
@@ -448,6 +450,122 @@
     <div class="card">
       <div class="card-title">Sécurité</div>
       <button class="btn" onclick="openModal('modal-change-pin')">Changer PIN</button>
+    </div>
+  </div>
+
+  <!-- MINER CONFIG -->
+  <div id="page-minerconfig" class="page">
+    <div class="card">
+      <div class="card-title" style="display:flex;justify-content:space-between;align-items:center">
+        XMRig Config Editor
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-sm" onclick="loadMinerConfig()" style="font-size:10px">Charger</button>
+          <button class="btn btn-primary btn-sm" onclick="applyMinerConfig()" style="font-size:10px">Appliquer & Redémarrer</button>
+        </div>
+      </div>
+      <div style="margin-bottom:8px;font-size:10px;color:var(--muted)">
+        Éditez ou uploadez votre config.json XMRig. "Appliquer" sauvegarde et redémarre le miner.
+      </div>
+      <div style="margin-bottom:8px;display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+        <label class="btn btn-sm" style="font-size:10px;cursor:pointer">
+          📁 Importer config.json
+          <input type="file" id="mc-file-input" accept=".json,application/json" onchange="importMinerConfig(this)" style="display:none">
+        </label>
+        <button class="btn btn-sm" onclick="exportMinerConfig()" style="font-size:10px">💾 Exporter</button>
+        <select id="mc-rig-select" onchange="onMcRigSelect()" style="font-size:10px;padding:4px 8px;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:6px">
+          <option value="">— Sélectionner un rig —</option>
+        </select>
+      </div>
+      <div id="mc-status" style="font-size:10px;margin-bottom:8px;display:none"></div>
+      <textarea id="mc-editor" spellcheck="false" style="width:100%;min-height:400px;font-family:var(--mono);font-size:11px;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:12px;resize:vertical;line-height:1.5;tab-size:2"></textarea>
+      <div style="margin-top:8px;font-size:9px;color:var(--muted)">
+        Chemin par défaut : <span style="font-family:var(--mono)">/etc/xmrig/config.json</span> — configurable via le champ ci-dessous
+      </div>
+      <div style="margin-top:8px;display:flex;gap:6px;align-items:center">
+        <span style="font-size:10px;color:var(--muted)">Chemin :</span>
+        <input id="mc-config-path" value="/etc/xmrig/config.json" style="flex:1;font-size:10px;font-family:var(--mono)">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Presets (Flight Sheets)</div>
+      <div style="font-size:10px;color:var(--muted);margin-bottom:8px">Chargez un preset optimisé dans l'éditeur</div>
+      <div id="mc-presets" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Validation</div>
+      <div id="mc-validation" style="font-size:11px;color:var(--muted)">Éditez la config puis cliquez Appliquer pour valider</div>
+    </div>
+  </div>
+
+  <!-- MINER CONTROL -->
+  <div id="page-minercontrol" class="page">
+    <div class="kpi-bar">
+      <div class="card"><div class="card-title">Statut</div><div class="card-value" id="ctrl-status" style="font-size:14px">—</div></div>
+      <div class="card"><div class="card-title">Hashrate</div><div class="card-value" id="ctrl-hashrate">—</div></div>
+      <div class="card"><div class="card-title">Algo</div><div class="card-value" id="ctrl-algo" style="font-size:12px">—</div></div>
+      <div class="card"><div class="card-title">Uptime</div><div class="card-value" id="ctrl-uptime">—</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" style="display:flex;justify-content:space-between;align-items:center">
+        Contrôle Miner
+        <select id="ctrl-rig-select" onchange="onCtrlRigSelect()" style="font-size:10px;padding:4px 8px;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:6px">
+          <option value="">— Sélectionner un rig —</option>
+        </select>
+      </div>
+      <div id="ctrl-rig-info" style="font-size:10px;color:var(--muted);margin-bottom:12px">Sélectionnez un rig pour le contrôler</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+        <button class="btn btn-success btn-sm" id="ctrl-btn-start" onclick="minerAction('start')" disabled style="min-width:80px">▶ Start</button>
+        <button class="btn btn-danger btn-sm" id="ctrl-btn-stop" onclick="minerAction('stop')" disabled style="min-width:80px">⏹ Stop</button>
+        <button class="btn btn-sm" id="ctrl-btn-restart" onclick="minerAction('restart')" disabled style="min-width:80px">↺ Restart</button>
+        <button class="btn btn-sm" id="ctrl-btn-pause" onclick="minerAction('pause')" disabled style="min-width:80px">⏸ Pause</button>
+        <button class="btn btn-sm" id="ctrl-btn-resume" onclick="minerAction('resume')" disabled style="min-width:80px">▶ Resume</button>
+      </div>
+      <div id="ctrl-action-status" style="font-size:10px;display:none"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Monitoring Live</div>
+      <div style="font-size:10px;color:var(--muted);margin-bottom:8px">Rafraîchissement auto toutes les 5s quand un rig est sélectionné</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px">
+        <div style="background:var(--bg);border-radius:8px;padding:10px">
+          <div style="font-size:9px;color:var(--muted)">Hashrate 10s</div>
+          <div id="ctrl-hr-10s" style="font-size:16px;font-weight:700;color:var(--green)">—</div>
+        </div>
+        <div style="background:var(--bg);border-radius:8px;padding:10px">
+          <div style="font-size:9px;color:var(--muted)">Hashrate 60s</div>
+          <div id="ctrl-hr-60s" style="font-size:16px;font-weight:700;color:var(--cyan)">—</div>
+        </div>
+        <div style="background:var(--bg);border-radius:8px;padding:10px">
+          <div style="font-size:9px;color:var(--muted)">Hashrate 15m</div>
+          <div id="ctrl-hr-15m" style="font-size:16px;font-weight:700;color:var(--blue)">—</div>
+        </div>
+        <div style="background:var(--bg);border-radius:8px;padding:10px">
+          <div style="font-size:9px;color:var(--muted)">Shares OK</div>
+          <div id="ctrl-shares-ok" style="font-size:16px;font-weight:700;color:var(--green)">—</div>
+        </div>
+        <div style="background:var(--bg);border-radius:8px;padding:10px">
+          <div style="font-size:9px;color:var(--muted)">Shares Total</div>
+          <div id="ctrl-shares-total" style="font-size:16px;font-weight:700">—</div>
+        </div>
+        <div style="background:var(--bg);border-radius:8px;padding:10px">
+          <div style="font-size:9px;color:var(--muted)">Difficulté</div>
+          <div id="ctrl-diff" style="font-size:16px;font-weight:700">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">GPU / CPU — Stats NVML</div>
+      <div style="font-size:10px;color:var(--muted);margin-bottom:8px">Température, puissance, fan via l'API backends XMRig</div>
+      <div id="ctrl-gpu-list"><div class="empty-hint">Sélectionnez un rig pour voir les stats GPU</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Connexion Pool</div>
+      <div id="ctrl-pool-info" style="font-size:11px;color:var(--muted)">—</div>
     </div>
   </div>
 

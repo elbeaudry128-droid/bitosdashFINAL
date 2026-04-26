@@ -575,7 +575,9 @@ const S={coin:'XMR',prio:'slow',amount:0,addr:'',note:'',addrValid:false};
 const TITLES={dashboard:'Dashboard',rigs:'Mes Rigs',monitoring:'Monitoring',performances:'Performances',wallet:'Portefeuille',rentabilite:'Rentabilité',actions:'Actions recommandées',alertes:'Alertes',historique:'Historique',convertir:'Convertir en USDT',settings:'Paramètres',
   xmr:'⬡ Monero XMR',
   kas:'◈ Kaspa KAS',
-  rvn:'🐦 Ravencoin RVN'
+  rvn:'🐦 Ravencoin RVN',
+  minerconfig:'📝 Miner Config',
+  minercontrol:'🎮 Miner Control'
 };
 const BN_PAGES=['dashboard','wallet','xmr','kas','convertir','actions','alertes','settings'];
 
@@ -735,6 +737,8 @@ function renderPage(id){
   // page-performances supprimée (non implémentée)
   if(id==='wallet'){refreshWalletPage();renderExtWallets();renderOwnWallet();}
   if(id==='convertir'){refreshConvertPage();}
+  if(id==='minerconfig'){initMinerConfigPage();}
+  if(id==='minercontrol'){initMinerControlPage();}
 }
 
 // ══════════════════════════════════════════════════════
@@ -9195,6 +9199,477 @@ bd) bd.style.display='block';
     const ok = rem >= 0 && addr.length > 10;
     bg.disabled = !ok;
     bg.style.opacity = ok ? '1' : '.4';
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════
+// MINER CONFIG MODULE
+// ══════════════════════════════════════════════════════════════════
+var MC_SELECTED_RIG = null;
+var MC_DEFAULT_CONFIG = {
+  "autosave": true,
+  "cpu": true,
+  "opencl": false,
+  "cuda": false,
+  "pools": [{
+    "url": "gulf.moneroocean.stream:10128",
+    "user": "",
+    "pass": "BitOS",
+    "algo": null,
+    "tls": false,
+    "keepalive": true
+  }],
+  "http": {
+    "enabled": true,
+    "host": "0.0.0.0",
+    "port": 8080,
+    "access-token": null,
+    "restricted": false
+  }
+};
+
+function initMinerConfigPage() {
+  populateMcRigSelect();
+  var editor = el('mc-editor');
+  if (editor && !editor.value.trim()) {
+    var saved = null;
+    try { saved = localStorage.getItem('bitos_miner_config'); } catch(_e) {}
+    if (saved) {
+      editor.value = saved;
+    } else {
+      var cfg = JSON.parse(JSON.stringify(MC_DEFAULT_CONFIG));
+      cfg.pools[0].user = POOL_CONFIG.XMR.walletAddr || '';
+      editor.value = JSON.stringify(cfg, null, 2);
+    }
+  }
+  renderMcPresets();
+  var path = el('mc-config-path');
+  if (path) {
+    var savedPath = null;
+    try { savedPath = localStorage.getItem('bitos_miner_config_path'); } catch(_e) {}
+    if (savedPath) path.value = savedPath;
+  }
+}
+
+function populateMcRigSelect() {
+  var sel = el('mc-rig-select');
+  if (!sel) return;
+  var html = '<option value="">— Sélectionner un rig —</option>';
+  XMRIG_RIGS.forEach(function(r, i) {
+    html += '<option value="'+i+'">'+r.name+' ('+r.ip+':'+r.port+')</option>';
+  });
+  sel.innerHTML = html;
+  if (MC_SELECTED_RIG !== null) sel.value = MC_SELECTED_RIG;
+}
+
+function onMcRigSelect() {
+  var sel = el('mc-rig-select');
+  MC_SELECTED_RIG = sel && sel.value !== '' ? parseInt(sel.value) : null;
+  if (MC_SELECTED_RIG !== null) loadMinerConfig();
+}
+
+async function loadMinerConfig() {
+  var rig = MC_SELECTED_RIG !== null ? XMRIG_RIGS[MC_SELECTED_RIG] : null;
+  if (!rig) {
+    setMcStatus('warn', 'Sélectionnez un rig pour charger sa config');
+    return;
+  }
+  setMcStatus('info', 'Chargement config depuis ' + rig.ip + ':' + rig.port + '...');
+  try {
+    var base = 'http://' + rig.ip + ':' + rig.port;
+    var res = await fetch(base + '/1/config', { signal: AbortSignal.timeout(5000) });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    var data = await res.json();
+    var editor = el('mc-editor');
+    if (editor) editor.value = JSON.stringify(data, null, 2);
+    setMcStatus('success', 'Config chargée depuis ' + rig.name);
+    validateMinerConfig();
+  } catch(e) {
+    setMcStatus('error', 'Erreur: ' + e.message + ' — le rig doit avoir --http-enabled');
+  }
+}
+
+async function applyMinerConfig() {
+  var editor = el('mc-editor');
+  if (!editor) return;
+  var json;
+  try {
+    json = JSON.parse(editor.value);
+  } catch(e) {
+    setMcStatus('error', 'JSON invalide: ' + e.message);
+    return;
+  }
+  try { localStorage.setItem('bitos_miner_config', editor.value); } catch(_e) {}
+  var pathInput = el('mc-config-path');
+  if (pathInput) {
+    try { localStorage.setItem('bitos_miner_config_path', pathInput.value); } catch(_e) {}
+  }
+  var rig = MC_SELECTED_RIG !== null ? XMRIG_RIGS[MC_SELECTED_RIG] : null;
+  if (!rig) {
+    setMcStatus('warn', 'Config sauvegardée localement. Sélectionnez un rig pour appliquer.');
+    return;
+  }
+  setMcStatus('info', 'Envoi config à ' + rig.name + '...');
+  try {
+    var base = 'http://' + rig.ip + ':' + rig.port;
+    var res = await fetch(base + '/1/config', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(json),
+      signal: AbortSignal.timeout(5000)
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    setMcStatus('success', 'Config appliquée à ' + rig.name + '. XMRig redémarre automatiquement.');
+    toast('success', 'Miner Config', 'Config appliquée à ' + rig.name);
+  } catch(e) {
+    setMcStatus('error', 'Erreur envoi: ' + e.message);
+    toast('error', 'Miner Config', 'Échec: ' + e.message);
+  }
+}
+
+function importMinerConfig(input) {
+  if (!input.files || !input.files[0]) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      var parsed = JSON.parse(e.target.result);
+      var editor = el('mc-editor');
+      if (editor) editor.value = JSON.stringify(parsed, null, 2);
+      setMcStatus('success', 'Config importée: ' + input.files[0].name);
+      validateMinerConfig();
+    } catch(err) {
+      setMcStatus('error', 'Fichier JSON invalide: ' + err.message);
+    }
+  };
+  reader.readAsText(input.files[0]);
+  input.value = '';
+}
+
+function exportMinerConfig() {
+  var editor = el('mc-editor');
+  if (!editor || !editor.value.trim()) return;
+  var blob = new Blob([editor.value], { type: 'application/json' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'xmrig-config.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('success', 'Export', 'config.json téléchargé');
+}
+
+function validateMinerConfig() {
+  var editor = el('mc-editor');
+  var vDiv = el('mc-validation');
+  if (!editor || !vDiv) return;
+  var text = editor.value.trim();
+  if (!text) { vDiv.innerHTML = '<span style="color:var(--muted)">Aucune config</span>'; return; }
+  try {
+    var cfg = JSON.parse(text);
+    var issues = [];
+    var ok = [];
+    if (!cfg.pools || !cfg.pools.length) issues.push('Aucun pool configuré');
+    else {
+      var pool = cfg.pools[0];
+      if (!pool.url) issues.push('Pool URL manquant');
+      else ok.push('Pool: ' + pool.url);
+      if (!pool.user) issues.push('Wallet address manquant (pools[0].user)');
+      else ok.push('Wallet: ' + pool.user.substring(0, 12) + '...');
+    }
+    if (cfg.http && cfg.http.enabled) ok.push('HTTP API: port ' + (cfg.http.port || 8080));
+    else issues.push('HTTP API désactivé — le monitoring ne fonctionnera pas');
+    if (cfg.cpu === true || (cfg.cpu && cfg.cpu.enabled !== false)) ok.push('CPU mining actif');
+    if (cfg.cuda === true || (cfg.cuda && cfg.cuda.enabled !== false)) ok.push('CUDA GPU actif');
+    if (cfg.opencl === true || (cfg.opencl && cfg.opencl.enabled !== false)) ok.push('OpenCL GPU actif');
+    var html = '';
+    if (issues.length) html += '<div style="color:var(--red);margin-bottom:4px">⚠ ' + issues.join(' | ') + '</div>';
+    if (ok.length) html += '<div style="color:var(--green)">✓ ' + ok.join(' | ') + '</div>';
+    vDiv.innerHTML = html;
+  } catch(e) {
+    vDiv.innerHTML = '<span style="color:var(--red)">JSON invalide: ' + e.message + '</span>';
+  }
+}
+
+function renderMcPresets() {
+  var cont = el('mc-presets');
+  if (!cont) return;
+  var html = '';
+  Object.keys(FLIGHT_SHEETS).forEach(function(key) {
+    var fs = FLIGHT_SHEETS[key];
+    html += '<button class="btn btn-sm" onclick="loadPresetConfig(\''+key+'\')" style="font-size:10px">'
+      + fs.name + (fs.recommended ? ' ★' : '') + '</button>';
+  });
+  cont.innerHTML = html;
+}
+
+function loadPresetConfig(sheetKey) {
+  var sheet = FLIGHT_SHEETS[sheetKey];
+  if (!sheet) return;
+  var cfg = generateFlightSheet(sheetKey);
+  if (!cfg) return;
+  var editor = el('mc-editor');
+  if (editor) editor.value = JSON.stringify(cfg, null, 2);
+  setMcStatus('success', 'Preset chargé: ' + sheet.name);
+  validateMinerConfig();
+}
+
+function setMcStatus(type, msg) {
+  var div = el('mc-status');
+  if (!div) return;
+  var colors = { success: 'var(--green)', error: 'var(--red)', warn: 'var(--yellow)', info: 'var(--cyan)' };
+  div.style.display = 'block';
+  div.style.color = colors[type] || 'var(--text)';
+  div.textContent = msg;
+}
+
+// ══════════════════════════════════════════════════════════════════
+// MINER CONTROL MODULE
+// ══════════════════════════════════════════════════════════════════
+var CTRL_SELECTED_RIG = null;
+var CTRL_POLL_TIMER = null;
+
+function initMinerControlPage() {
+  populateCtrlRigSelect();
+  if (CTRL_SELECTED_RIG !== null) {
+    enableCtrlButtons(true);
+    fetchCtrlStats();
+    startCtrlPolling();
+  }
+}
+
+function populateCtrlRigSelect() {
+  var sel = el('ctrl-rig-select');
+  if (!sel) return;
+  var html = '<option value="">— Sélectionner un rig —</option>';
+  XMRIG_RIGS.forEach(function(r, i) {
+    html += '<option value="'+i+'">'+r.name+' ('+r.ip+':'+r.port+')</option>';
+  });
+  sel.innerHTML = html;
+  if (CTRL_SELECTED_RIG !== null) sel.value = CTRL_SELECTED_RIG;
+}
+
+function onCtrlRigSelect() {
+  var sel = el('ctrl-rig-select');
+  CTRL_SELECTED_RIG = sel && sel.value !== '' ? parseInt(sel.value) : null;
+  stopCtrlPolling();
+  if (CTRL_SELECTED_RIG !== null) {
+    var rig = XMRIG_RIGS[CTRL_SELECTED_RIG];
+    var info = el('ctrl-rig-info');
+    if (info) info.textContent = rig.name + ' — ' + rig.ip + ':' + rig.port;
+    enableCtrlButtons(true);
+    fetchCtrlStats();
+    startCtrlPolling();
+  } else {
+    enableCtrlButtons(false);
+    resetCtrlDisplay();
+  }
+}
+
+function enableCtrlButtons(on) {
+  ['ctrl-btn-start','ctrl-btn-stop','ctrl-btn-restart','ctrl-btn-pause','ctrl-btn-resume'].forEach(function(id) {
+    var b = el(id);
+    if (b) b.disabled = !on;
+  });
+}
+
+function resetCtrlDisplay() {
+  ['ctrl-status','ctrl-hashrate','ctrl-algo','ctrl-uptime','ctrl-hr-10s','ctrl-hr-60s','ctrl-hr-15m',
+   'ctrl-shares-ok','ctrl-shares-total','ctrl-diff'].forEach(function(id) { setText(id, '—'); });
+  var info = el('ctrl-rig-info');
+  if (info) info.textContent = 'Sélectionnez un rig pour le contrôler';
+  var gpu = el('ctrl-gpu-list');
+  if (gpu) gpu.innerHTML = '<div class="empty-hint">Sélectionnez un rig pour voir les stats GPU</div>';
+  var pool = el('ctrl-pool-info');
+  if (pool) pool.textContent = '—';
+}
+
+function startCtrlPolling() {
+  stopCtrlPolling();
+  CTRL_POLL_TIMER = setInterval(function() {
+    if (CTRL_SELECTED_RIG !== null) fetchCtrlStats();
+  }, 5000);
+}
+
+function stopCtrlPolling() {
+  if (CTRL_POLL_TIMER) { clearInterval(CTRL_POLL_TIMER); CTRL_POLL_TIMER = null; }
+}
+
+async function fetchCtrlStats() {
+  var rig = CTRL_SELECTED_RIG !== null ? XMRIG_RIGS[CTRL_SELECTED_RIG] : null;
+  if (!rig) return;
+  var base = 'http://' + rig.ip + ':' + rig.port;
+  try {
+    var res = await fetch(base + '/1/summary', { signal: AbortSignal.timeout(4000) });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    var d = await res.json();
+    setText('ctrl-status', d.paused ? '⏸ Pausé' : '✓ Actif');
+    var statusEl = el('ctrl-status');
+    if (statusEl) statusEl.style.color = d.paused ? 'var(--yellow)' : 'var(--green)';
+    var hr = d.hashrate?.total || [0,0,0];
+    setText('ctrl-hashrate', hr[0] > 0 ? formatHR(hr[0]) : '—');
+    setText('ctrl-algo', d.algo || '—');
+    setText('ctrl-uptime', d.uptime ? formatUptime(d.uptime) : '—');
+    setText('ctrl-hr-10s', hr[0] > 0 ? formatHR(hr[0]) : '—');
+    setText('ctrl-hr-60s', hr[1] > 0 ? formatHR(hr[1]) : '—');
+    setText('ctrl-hr-15m', hr[2] > 0 ? formatHR(hr[2]) : '—');
+    var sharesOk = d.results?.shares_good || 0;
+    var sharesTotal = d.results?.shares_total || 0;
+    setText('ctrl-shares-ok', sharesOk.toLocaleString());
+    setText('ctrl-shares-total', sharesTotal.toLocaleString());
+    setText('ctrl-diff', d.results?.diff_current ? d.results.diff_current.toLocaleString() : '—');
+    var conn = d.connection || {};
+    var poolEl = el('ctrl-pool-info');
+    if (poolEl) {
+      poolEl.innerHTML = '<div style="margin-bottom:4px"><b>Pool:</b> ' + (conn.pool || '—') + '</div>'
+        + '<div><b>Algo:</b> ' + (conn.algo || d.algo || '—')
+        + ' | <b>Ping:</b> ' + (conn.ping > 0 ? conn.ping + 'ms' : '—')
+        + ' | <b>Uptime:</b> ' + (conn.uptime ? formatUptime(conn.uptime) : '—')
+        + ' | <b>Accepted:</b> ' + (conn.accepted || 0) + '/' + (conn.rejected || 0)
+        + '</div>';
+    }
+    rig.status = 'online';
+    rig.hr = hr[0] || 0;
+  } catch(e) {
+    setText('ctrl-status', '✗ Hors ligne');
+    var statusEl2 = el('ctrl-status');
+    if (statusEl2) statusEl2.style.color = 'var(--red)';
+    rig.status = 'offline';
+  }
+  try {
+    var res2 = await fetch(base + '/2/backends', { signal: AbortSignal.timeout(4000) });
+    if (res2.ok) {
+      var backends = await res2.json();
+      renderCtrlGPU(backends);
+    }
+  } catch(_e) {}
+}
+
+function renderCtrlGPU(backends) {
+  var cont = el('ctrl-gpu-list');
+  if (!cont) return;
+  var cards = [];
+  backends.forEach(function(b, bi) {
+    var type = b.type || (bi === 0 ? 'cpu' : 'gpu');
+    var label = type.toUpperCase();
+    if (b.threads && b.threads.length > 0) {
+      b.threads.forEach(function(t, ti) {
+        var name = t.name || (label + ' #' + ti);
+        var hr = t.hashrate ? (t.hashrate[0] || 0) : 0;
+        var temp = t.health ? (t.health.temperature || 0) : 0;
+        var power = t.health ? (t.health.power || 0) : 0;
+        var fan = t.health ? (t.health.fan_speed || 0) : 0;
+        var clock = t.health ? (t.health.clock || 0) : 0;
+        var memClock = t.health ? (t.health.mem_clock || 0) : 0;
+        var tempCol = temp >= 80 ? 'var(--red)' : temp >= 70 ? 'var(--yellow)' : 'var(--green)';
+        cards.push(
+          '<div style="background:var(--bg);border-radius:8px;padding:10px;display:flex;justify-content:space-between;align-items:center">'
+          + '<div>'
+          + '<div style="font-size:11px;font-weight:600">' + name + '</div>'
+          + '<div style="font-size:9px;color:var(--muted)">' + label + (t.bus_id ? ' · Bus ' + t.bus_id : '') + '</div>'
+          + '</div>'
+          + '<div style="text-align:right;font-size:10px;font-family:var(--mono)">'
+          + '<span style="color:var(--green);font-weight:600">' + formatHR(hr) + '</span>'
+          + (temp > 0 ? ' · <span style="color:'+tempCol+'">'+temp+'°C</span>' : '')
+          + (power > 0 ? ' · '+power+'W' : '')
+          + (fan > 0 ? ' · Fan '+fan+'%' : '')
+          + (clock > 0 ? ' · '+clock+'/'+memClock+'MHz' : '')
+          + '</div></div>'
+        );
+      });
+    } else if (b.hashrate) {
+      var hr2 = b.hashrate[0] || 0;
+      cards.push(
+        '<div style="background:var(--bg);border-radius:8px;padding:10px">'
+        + '<div style="font-size:11px;font-weight:600">' + label + ' Backend</div>'
+        + '<div style="font-size:10px;color:var(--green);font-family:var(--mono)">' + formatHR(hr2) + '</div>'
+        + '</div>'
+      );
+    }
+  });
+  cont.innerHTML = cards.length > 0 ? cards.join('') : '<div class="empty-hint">Aucun backend détecté</div>';
+}
+
+function formatHR(h) {
+  if (h >= 1e9) return (h / 1e9).toFixed(2) + ' GH/s';
+  if (h >= 1e6) return (h / 1e6).toFixed(2) + ' MH/s';
+  if (h >= 1e3) return (h / 1e3).toFixed(2) + ' KH/s';
+  return h.toFixed(1) + ' H/s';
+}
+
+function formatUptime(sec) {
+  var d = Math.floor(sec / 86400);
+  var h = Math.floor((sec % 86400) / 3600);
+  var m = Math.floor((sec % 3600) / 60);
+  if (d > 0) return d + 'j ' + h + 'h';
+  if (h > 0) return h + 'h ' + m + 'm';
+  return m + 'm';
+}
+
+async function minerAction(action) {
+  var rig = CTRL_SELECTED_RIG !== null ? XMRIG_RIGS[CTRL_SELECTED_RIG] : null;
+  if (!rig) return;
+  var base = 'http://' + rig.ip + ':' + rig.port;
+  var statusDiv = el('ctrl-action-status');
+  if (statusDiv) {
+    statusDiv.style.display = 'block';
+    statusDiv.style.color = 'var(--cyan)';
+    statusDiv.textContent = 'Envoi commande: ' + action + '...';
+  }
+  try {
+    if (action === 'pause') {
+      var res = await fetch(base + '/json_rpc', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ method: 'pause', id: 1 }),
+        signal: AbortSignal.timeout(5000)
+      });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+    } else if (action === 'resume') {
+      var res = await fetch(base + '/json_rpc', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ method: 'resume', id: 1 }),
+        signal: AbortSignal.timeout(5000)
+      });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+    } else if (action === 'stop') {
+      var res = await fetch(base + '/json_rpc', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ method: 'stop', id: 1 }),
+        signal: AbortSignal.timeout(5000)
+      });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+    } else if (action === 'start' || action === 'restart') {
+      var cfgEditor = el('mc-editor');
+      if (cfgEditor && cfgEditor.value.trim()) {
+        try {
+          var cfg = JSON.parse(cfgEditor.value);
+          var res = await fetch(base + '/1/config', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(cfg),
+            signal: AbortSignal.timeout(5000)
+          });
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+        } catch(e) {
+          if (statusDiv) { statusDiv.style.color = 'var(--yellow)'; statusDiv.textContent = 'Config non appliquée: ' + e.message + ' — restart sans config'; }
+        }
+      }
+      try {
+        await fetch(base + '/json_rpc', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ method: 'restart', id: 1 }),
+          signal: AbortSignal.timeout(5000)
+        });
+      } catch(_e) {}
+    }
+    if (statusDiv) { statusDiv.style.color = 'var(--green)'; statusDiv.textContent = action.toUpperCase() + ' envoyé à ' + rig.name; }
+    toast('success', 'Miner Control', action.toUpperCase() + ' → ' + rig.name);
+    setTimeout(fetchCtrlStats, 2000);
+  } catch(e) {
+    if (statusDiv) { statusDiv.style.color = 'var(--red)'; statusDiv.textContent = 'Erreur: ' + e.message; }
+    toast('error', 'Miner Control', 'Échec: ' + e.message);
   }
 }
 
