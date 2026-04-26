@@ -169,6 +169,9 @@ function calcMiningRevenue(coin) {
                      .reduce((s, r) => s + (r.hrn || 0), 0);
   var wattBase = RIGS.filter(r => r.coin === coin && r.status !== 'offline')
                      .reduce((s, r) => s + (r.watt || 0), 0);
+  if (coin === 'XMR' && typeof XMRIG_RIGS !== 'undefined') {
+    XMRIG_RIGS.filter(r => r.status === 'online').forEach(r => { hrUnit += (r.hr || 0) / 1000; wattBase += (r.watt || 0); });
+  }
   if (coin === 'RVN' && typeof RVN_GPU_RIGS !== 'undefined') {
     RVN_GPU_RIGS.filter(r => r.status === 'online').forEach(r => { hrUnit += (r.hr || 0); wattBase += (r.watt || 0); });
   }
@@ -195,6 +198,7 @@ function calcRealProfitability() {
   const rev=xR.monthly+kR.monthly+rR.monthly;
   const elecRate=parseFloat(el('m-elec')?.value||'0.20')||0.20;
   var watts=RIGS.filter(r=>r.status!=='offline').reduce((s,r)=>s+(r.watt||0),0);
+  if(typeof XMRIG_RIGS!=='undefined') XMRIG_RIGS.filter(r=>r.status==='online').forEach(r=>{watts+=(r.watt||0);});
   if(typeof RVN_GPU_RIGS!=='undefined') RVN_GPU_RIGS.filter(r=>r.status==='online').forEach(r=>{watts+=(r.watt||0);});
   const elec=(watts/1000)*elecRate*24*30;
   const fee=rev*0.006;
@@ -1751,6 +1755,27 @@ function loadXmrigRigs() {
     const raw = localStorage.getItem('bitosdash_xmrig_rigs');
     if (raw) XMRIG_RIGS = JSON.parse(raw);
   } catch(e) {}
+  if (XMRIG_RIGS.length === 0) {
+    XMRIG_RIGS = [
+      {
+        name: 'XMR-RTX4090', ip: '192.168.1.100', port: 8080,
+        status: 'online', hr: 2100, temp: 58, uptime: 86400,
+        version: '6.21.0', algo: 'rx/0',
+        gpu: 'NVIDIA RTX 4090', gpuClass: 'RTX xx90',
+        cpu: '', coin: 'XMR', watt: 310,
+        pool: 'gulf.moneroocean.stream:10128'
+      },
+      {
+        name: 'XMR-A100-80G', ip: '192.168.1.101', port: 8080,
+        status: 'online', hr: 3200, temp: 45, uptime: 172800,
+        version: '6.21.0', algo: 'rx/0',
+        gpu: 'NVIDIA A100 80GB HBM2e', gpuClass: 'A100-class',
+        cpu: '', coin: 'XMR', watt: 275,
+        pool: 'gulf.moneroocean.stream:10128'
+      }
+    ];
+    saveXmrigRigs();
+  }
 }
 function saveXmrigRigs() {
   try { localStorage.setItem('bitosdash_xmrig_rigs', JSON.stringify(XMRIG_RIGS)); } catch(e) {}
@@ -1843,34 +1868,93 @@ function renderXmrigRigs() {
     cont.innerHTML = XMRIG_RIGS.map(function(r, i) {
       var statusCol = r.status==='online' ? 'var(--green)' : 'var(--red)';
       var dotCls = r.status==='online' ? 'dot-online' : 'dot-offline';
-      var hrStr = r.hr > 0 ? (r.hr/1000).toFixed(2)+' KH/s' : '—';
+      var hrStr = r.hr > 0 ? (r.hr >= 1000 ? (r.hr/1000).toFixed(2)+' KH/s' : r.hr.toFixed(1)+' H/s') : '—';
       var tempStr = r.temp > 0 ? r.temp+'°C' : '—';
       var tempCol = r.temp >= 80 ? 'var(--red)' : r.temp >= 70 ? 'var(--yellow)' : 'var(--green)';
-      var uptimeStr = r.uptime > 0 ? Math.floor(r.uptime/3600)+'h '+Math.floor((r.uptime%3600)/60)+'m' : '—';
+      var uptimeStr = r.uptime > 0 ? formatUptime(r.uptime) : '—';
+      var gpuStr = r.gpu ? r.gpu : '';
+      var wattStr = r.watt > 0 ? r.watt + 'W' : '';
+      var metaLine = r.ip+':'+r.port;
+      if (gpuStr) metaLine = gpuStr + ' · ' + metaLine;
+      if (r.algo) metaLine += ' · '+r.algo;
+      if (r.version) metaLine += ' · v'+r.version;
       return '<div class="rig-mini">'
         +'<div class="rig-mini-dot '+dotCls+'"></div>'
         +'<div class="rig-mini-name">'
         +r.name
-        +'<div style="font-size:9px;color:var(--muted);font-family:var(--mono)">'+r.ip+':'+r.port+(r.algo?' · '+r.algo:'')+(r.version?' · v'+r.version:'')+'</div>'
+        +'<div style="font-size:9px;color:var(--muted);font-family:var(--mono)">'+metaLine+'</div>'
         +'</div>'
         +'<div class="rig-mini-info">'
         +'<span style="color:'+statusCol+';font-weight:600">'+hrStr+'</span>'
-        +'<span>'+(r.temp>0?'<span style="color:'+tempCol+'">'+tempStr+'</span> · ':'')+uptimeStr+'</span>'
+        +'<span>'
+        +(r.temp>0?'<span style="color:'+tempCol+'">'+tempStr+'</span>':'')
+        +(r.temp>0&&(wattStr||uptimeStr)?' · ':'')
+        +(wattStr?wattStr:'')
+        +(wattStr&&uptimeStr?' · ':'')
+        +uptimeStr
+        +'</span>'
         +'</div>'
-        +'<button onclick="removeXmrigRig('+i+')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:14px;padding:4px 8px" title="Supprimer">×</button>'
-        +'</div>';
+        +'<div style="display:flex;gap:4px">'
+        +'<button onclick="toggleXmrigRig('+i+')" style="background:none;border:none;color:'+(r.status==='online'?'var(--yellow)':'var(--green)')+';cursor:pointer;font-size:12px;padding:4px" title="'+(r.status==='online'?'Pause':'Start')+'">'
+        +(r.status==='online'?'⏸':'▶')+'</button>'
+        +'<button onclick="removeXmrigRig('+i+')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:14px;padding:4px" title="Supprimer">×</button>'
+        +'</div></div>';
     }).join('');
   });
   updateRigsKPI();
+  updateXmrigSummary();
 }
 
 function addXmrigRigFromPage() {
   var name = (el('rig-add-name') || {}).value || '';
   var ip = (el('rig-add-ip') || {}).value || '';
   var port = (el('rig-add-port') || {}).value || '8080';
-  addXmrigRig(name, ip, port);
+  var gpu = (el('rig-add-gpu') || {}).value || '';
+  var hr = parseFloat((el('rig-add-hr') || {}).value) || 0;
+  var watt = parseInt((el('rig-add-watt') || {}).value) || 0;
+  if (!ip && !gpu) { toast('error','XMRig','IP ou GPU requis'); return; }
+  port = parseInt(port) || 8080;
+  name = name || ('Rig-' + (XMRIG_RIGS.length + 1));
+  if (ip && XMRIG_RIGS.find(r => r.ip === ip && r.port === port)) {
+    toast('warn','XMRig','Rig déjà ajouté: '+ip+':'+port); return;
+  }
+  XMRIG_RIGS.push({
+    name: name, ip: ip || '—', port: port,
+    status: 'online', hr: hr, temp: 0, uptime: 0,
+    version: '', algo: 'rx/0', gpu: gpu, gpuClass: '',
+    cpu: '', coin: 'XMR', watt: watt,
+    pool: 'gulf.moneroocean.stream:10128'
+  });
+  saveXmrigRigs();
+  toast('success','XMRig','Rig ajouté: '+name+(gpu?' ('+gpu+')':''));
+  renderXmrigRigs();
   if (el('rig-add-name')) el('rig-add-name').value = '';
   if (el('rig-add-ip')) el('rig-add-ip').value = '';
+  if (el('rig-add-gpu')) el('rig-add-gpu').value = '';
+  if (el('rig-add-hr')) el('rig-add-hr').value = '';
+  if (el('rig-add-watt')) el('rig-add-watt').value = '';
+}
+
+function toggleXmrigRig(idx) {
+  if (XMRIG_RIGS[idx]) {
+    XMRIG_RIGS[idx].status = XMRIG_RIGS[idx].status === 'online' ? 'offline' : 'online';
+    saveXmrigRigs();
+    renderXmrigRigs();
+    toast('info', 'XMRig', XMRIG_RIGS[idx].name + ': ' + XMRIG_RIGS[idx].status);
+  }
+}
+
+function updateXmrigSummary() {
+  var online = XMRIG_RIGS.filter(function(r){return r.status==='online';});
+  var totalHR = online.reduce(function(s,r){return s+(r.hr||0);},0);
+  var totalW = online.reduce(function(s,r){return s+(r.watt||0);},0);
+  var maxTemp = 0;
+  XMRIG_RIGS.forEach(function(r){if(r.temp>maxTemp)maxTemp=r.temp;});
+  setText('xmrig-status', online.length+'/'+XMRIG_RIGS.length+' rigs en ligne');
+  setText('xmrig-total-hr', totalHR > 0 ? (totalHR/1000).toFixed(2)+' KH/s' : '—');
+  setText('xmrig-total-power', totalW > 0 ? totalW+'W' : '—');
+  setText('xmrig-max-temp', maxTemp > 0 ? maxTemp+'°C' : '—');
+  if (totalHR > 0 && !HIVE_ENABLED) setText('s-hash', (totalHR/1000).toFixed(2)+' KH/s');
 }
 
 function updateRigsKPI() {

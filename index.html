@@ -249,23 +249,35 @@
       <div class="card"><div class="card-title">Temp. max</div><div class="card-value" id="rigs-max-temp">—</div></div>
     </div>
 
+    <!-- XMRig Summary -->
+    <div class="grid grid-2" style="margin-bottom:0">
+      <div class="card"><div class="card-title">XMRig Hashrate</div><div class="card-value" id="xmrig-total-hr" style="color:var(--accent)">—</div></div>
+      <div class="card"><div class="card-title">Puissance</div><div class="card-value" id="xmrig-total-power">—</div></div>
+    </div>
+
     <!-- XMRig Rigs -->
     <div class="card">
       <div class="card-title" style="display:flex;justify-content:space-between;align-items:center">
-        Rigs XMRig (monitoring direct)
-        <button class="btn btn-sm" onclick="fetchAllXmrigRigs()" style="font-size:10px">Refresh</button>
+        Rigs XMRig — Monero (RandomX)
+        <div style="display:flex;gap:6px;align-items:center">
+          <span id="xmrig-status" style="font-size:10px;color:var(--muted)"></span>
+          <button class="btn btn-sm" onclick="fetchAllXmrigRigs()" style="font-size:10px">Refresh</button>
+        </div>
       </div>
       <div id="rigs-xmrig-list"></div>
       <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px">
-        <div style="font-size:11px;font-weight:600;margin-bottom:8px;color:var(--text)">Ajouter un rig</div>
+        <div style="font-size:11px;font-weight:600;margin-bottom:8px;color:var(--text)">Ajouter un rig XMR</div>
         <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
-          <input id="rig-add-name" placeholder="Nom (ex: Rig-1)" style="width:100px;font-size:11px">
-          <input id="rig-add-ip" placeholder="IP (ex: 192.168.1.10)" style="width:140px;font-size:11px">
-          <input id="rig-add-port" placeholder="8080" value="8080" style="width:60px;font-size:11px">
+          <input id="rig-add-name" placeholder="Nom" style="width:90px;font-size:11px">
+          <input id="rig-add-gpu" placeholder="GPU (ex: RTX 4090)" style="width:120px;font-size:11px">
+          <input id="rig-add-ip" placeholder="IP (ex: 192.168.1.10)" style="width:130px;font-size:11px">
+          <input id="rig-add-port" placeholder="8080" value="8080" style="width:55px;font-size:11px">
+          <input id="rig-add-hr" placeholder="H/s" style="width:55px;font-size:11px">
+          <input id="rig-add-watt" placeholder="Watts" style="width:55px;font-size:11px">
           <button class="btn btn-primary btn-sm" onclick="addXmrigRigFromPage()">+ Ajouter</button>
         </div>
         <div style="font-size:9px;color:var(--muted);margin-top:6px">
-          XMRig doit être lancé avec : <span style="font-family:var(--mono)">--http-enabled --http-host 0.0.0.0 --http-port 8080</span>
+          XMRig HTTP API : <span style="font-family:var(--mono)">--http-enabled --http-host 0.0.0.0 --http-port 8080</span>
         </div>
       </div>
     </div>
