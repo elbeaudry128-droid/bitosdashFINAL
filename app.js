@@ -2088,19 +2088,19 @@ function addRVNGPURig() {
 
 const REMOTE_NODES = {
   XMR: [
-    { name:'MoneroWorld',     host:'opennode.xmr-tw.org',    port:18089, ssl:false, status:'unknown' },
-    { name:'Seth (US)',       host:'node.sethforprivacy.com',port:18089, ssl:true,  status:'unknown' },
-    { name:'Rino (EU)',       host:'node.community.rino.io', port:18081, ssl:false, status:'unknown' },
-    { name:'Majestic (DE)',   host:'node.majesticbank.is',   port:18089, ssl:false, status:'unknown' },
-    { name:'XMR.fail (pool)', host:'node.xmr.fail',          port:18081, ssl:false, status:'unknown' },
+    { name:'MoneroWorld',     host:'opennode.xmr-tw.org',    port:18089, ssl:false, status:'unknown', checkPath:'/get_info' },
+    { name:'Seth (US)',       host:'node.sethforprivacy.com',port:18089, ssl:true,  status:'unknown', checkPath:'/get_info' },
+    { name:'Rino (EU)',       host:'node.community.rino.io', port:18081, ssl:false, status:'unknown', checkPath:'/get_info' },
+    { name:'MoneroOcean',     host:'api.moneroocean.stream',  port:443,  ssl:true,  status:'unknown', checkPath:'/pool/stats' },
+    { name:'XMRchain',        host:'xmrchain.net',            port:443,  ssl:true,  status:'unknown', checkPath:'/api/networkinfo' },
   ],
   KAS: [
-    { name:'Kaspa API',       host:'api.kaspa.org',          port:443,   ssl:true,  status:'unknown' },
-    { name:'Kas.fyi',         host:'kas.fyi',                port:443,   ssl:true,  status:'unknown' },
+    { name:'Kaspa API',       host:'api.kaspa.org',          port:443,   ssl:true,  status:'unknown', checkPath:'/info/virtual-chain-blue-score' },
+    { name:'Kas.fyi',         host:'kas.fyi',                port:443,   ssl:true,  status:'unknown', checkPath:'/' },
   ],
   RVN: [
-    { name:'Ravencoin Core',  host:'seed-raven.bitactivate.com', port:8767, ssl:false, status:'unknown' },
-    { name:'2Miners RVN',     host:'rvn.2miners.com',        port:6060,  ssl:false, status:'unknown' },
+    { name:'2Miners RVN',     host:'rvn.2miners.com',        port:443,   ssl:true,  status:'unknown', checkPath:'/api/stats' },
+    { name:'K1Pool RVN',      host:'rvn.k1pool.com',         port:443,   ssl:true,  status:'unknown', checkPath:'/' },
   ]
 };
 
@@ -2405,15 +2405,24 @@ function generateMiningConfigs() {
 
 async function pingNode(node) {
   var proto = node.ssl ? 'https://' : 'http://';
-  var url = proto + node.host + ':' + node.port;
+  var portStr = (node.ssl && node.port === 443) || (!node.ssl && node.port === 80) ? '' : ':' + node.port;
+  var path = node.checkPath || '/';
+  var url = proto + node.host + portStr + path;
   try {
     var start = Date.now();
-    var res = await fetch(url, { method:'HEAD', signal: AbortSignal.timeout(5000), mode:'no-cors' });
+    var res = await fetch(url, { signal: AbortSignal.timeout(6000), mode:'cors' });
     node.latency = Date.now() - start;
-    node.status = 'online';
+    node.status = res.ok || res.status === 405 || res.status === 403 ? 'online' : 'online';
   } catch(e) {
-    node.status = 'offline';
-    node.latency = 0;
+    try {
+      var start2 = Date.now();
+      await fetch(url, { method:'HEAD', signal: AbortSignal.timeout(5000), mode:'no-cors' });
+      node.latency = Date.now() - start2;
+      node.status = 'online';
+    } catch(_e2) {
+      node.status = 'offline';
+      node.latency = 0;
+    }
   }
   return node;
 }
