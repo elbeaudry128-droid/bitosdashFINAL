@@ -48,27 +48,6 @@ function loadRVNRigs() {
     var saved = localStorage.getItem('bitos_rvn_gpu_rigs');
     if (saved) RVN_GPU_RIGS = JSON.parse(saved);
   } catch(_e) {}
-  if (RVN_GPU_RIGS.length === 0) {
-    RVN_GPU_RIGS = [
-      {
-        name: 'RVN-RTX4090', gpu: 'NVIDIA RTX 4090', gpuClass: 'RTX xx90',
-        algo: 'kawpow', miner: 'T-Rex', status: 'online',
-        hr: 85, unit: 'MH/s', temp: 62, fan: 68, power: 320, watt: 320,
-        pool: '2miners', stratum: 'stratum+tcp://rvn.2miners.com:6060',
-        wallet: 'RWGrRi59CjUtRqFhDiXDWiJ3a4ghttpdXD',
-        coin: 'RVN', uptime: 0
-      },
-      {
-        name: 'RVN-A100-80G', gpu: 'NVIDIA A100 80GB HBM2e', gpuClass: 'A100-class',
-        algo: 'kawpow', miner: 'T-Rex', status: 'online',
-        hr: 110, unit: 'MH/s', temp: 48, fan: 45, power: 275, watt: 275,
-        pool: '2miners', stratum: 'stratum+tcp://rvn.2miners.com:6060',
-        wallet: 'RWGrRi59CjUtRqFhDiXDWiJ3a4ghttpdXD',
-        coin: 'RVN', uptime: 0
-      }
-    ];
-    saveRVNRigs();
-  }
 }
 
 function saveRVNRigs() {
@@ -91,8 +70,7 @@ async function fetchRVNNetworkStats() {
     NET_STATS.RVN.lastFetch = Date.now();
     console.log('[NET-RVN]', (NET_STATS.RVN.networkHashrate / 1e12).toFixed(2), 'TH/s | reward:', NET_STATS.RVN.blockReward, 'RVN');
   } catch(e) {
-    NET_STATS.RVN.networkHashrate = NET_STATS.RVN.networkHashrate || 3.5e12;
-    NET_STATS.RVN.blockReward = NET_STATS.RVN.blockReward || 2500;
+    // No fallback — show 0 if API unreachable
     console.warn('[NET-RVN] offline:', e.message);
   }
 }
@@ -111,8 +89,7 @@ async function fetchXMRNetworkStats() {
     console.log('[NET-XMR]',(NET_STATS.XMR.networkHashrate/1e9).toFixed(2),'GH/s | reward:',NET_STATS.XMR.blockReward.toFixed(4),'XMR');
     setAPIBadge('xmrnet','live');
   } catch(e) {
-    NET_STATS.XMR.networkHashrate = NET_STATS.XMR.networkHashrate || 2.85e9; // ~2.85 GH/s
-    NET_STATS.XMR.blockReward     = NET_STATS.XMR.blockReward     || 0.6;
+    // No fallback — show 0 if API unreachable
     console.warn('[NET-XMR] offline:',e.message);
     setAPIBadge('xmrnet','off');
   }
@@ -627,7 +604,7 @@ Object.defineProperty(window, 'USER_PIN', {
   configurable: false, enumerable: false
 });
 let currentRig=null;
-let xmrP=167.42,kasP=0.1284,btcP=98240,ethP=3610,rvnP=0.0165;
+let xmrP=0,kasP=0,btcP=0,ethP=0,rvnP=0;
 let xmrPending='—'; let kasPending='—'; // Soldes en attente pool (mis à jour via API)
 
 // ── Send state ──
@@ -1755,27 +1732,6 @@ function loadXmrigRigs() {
     const raw = localStorage.getItem('bitosdash_xmrig_rigs');
     if (raw) XMRIG_RIGS = JSON.parse(raw);
   } catch(e) {}
-  if (XMRIG_RIGS.length === 0) {
-    XMRIG_RIGS = [
-      {
-        name: 'XMR-RTX4090', ip: '192.168.1.100', port: 8080,
-        status: 'online', hr: 2100, temp: 58, uptime: 86400,
-        version: '6.21.0', algo: 'rx/0',
-        gpu: 'NVIDIA RTX 4090', gpuClass: 'RTX xx90',
-        cpu: '', coin: 'XMR', watt: 310,
-        pool: 'gulf.moneroocean.stream:10128'
-      },
-      {
-        name: 'XMR-A100-80G', ip: '192.168.1.101', port: 8080,
-        status: 'online', hr: 3200, temp: 45, uptime: 172800,
-        version: '6.21.0', algo: 'rx/0',
-        gpu: 'NVIDIA A100 80GB HBM2e', gpuClass: 'A100-class',
-        cpu: '', coin: 'XMR', watt: 275,
-        pool: 'gulf.moneroocean.stream:10128'
-      }
-    ];
-    saveXmrigRigs();
-  }
 }
 function saveXmrigRigs() {
   try { localStorage.setItem('bitosdash_xmrig_rigs', JSON.stringify(XMRIG_RIGS)); } catch(e) {}
@@ -1920,7 +1876,7 @@ function addXmrigRigFromPage() {
   }
   XMRIG_RIGS.push({
     name: name, ip: ip || '—', port: port,
-    status: 'online', hr: hr, temp: 0, uptime: 0,
+    status: 'unknown', hr: hr, temp: 0, uptime: 0,
     version: '', algo: 'rx/0', gpu: gpu, gpuClass: '',
     cpu: '', coin: 'XMR', watt: watt,
     pool: 'gulf.moneroocean.stream:10128'
@@ -2152,8 +2108,8 @@ function addRVNGPURig() {
   if (!gpu) gpu = 'NVIDIA GPU';
   RVN_GPU_RIGS.push({
     name: name, gpu: gpu, gpuClass: 'Custom',
-    algo: 'kawpow', miner: 'T-Rex', status: 'online',
-    hr: hr, unit: 'MH/s', temp: 55, fan: 60, power: power, watt: power,
+    algo: 'kawpow', miner: 'T-Rex', status: 'unknown',
+    hr: hr, unit: 'MH/s', temp: 0, fan: 0, power: power, watt: power,
     pool: ACTIVE_RVN_POOL || '2miners',
     stratum: (RVN_POOLS[ACTIVE_RVN_POOL] || RVN_POOLS['2miners']).stratum,
     wallet: POOL_CONFIG.RVN.walletAddr,
