@@ -17,6 +17,7 @@ const PROXY_ROUTES = {
   '/proxy/xmrchain':     'https://xmrchain.net/api',
   '/proxy/kaspa':        'https://api.kaspa.org',
   '/proxy/hiveos':       'https://api2.hiveos.farm/api/v2',
+  '/proxy/rvn-2miners':  'https://rvn.2miners.com/api',
 };
 
 function corsHeaders(origin) {

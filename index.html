@@ -159,17 +159,63 @@
 
   <!-- RVN PAGE -->
   <div id="page-rvn" class="page">
-    <div class="card">
-      <div class="card-title">Ravencoin — RVN <span class="tag-rvn">GPU KawPow</span></div>
-      <div class="card-value" id="rvn-total">— RVN</div>
-      <div class="card-sub">Alternative GPU à Kaspa (ASIC-résistant)</div>
+    <!-- Hero -->
+    <div class="card" style="background:linear-gradient(135deg,rgba(255,152,0,.15),rgba(255,87,34,.08));border:1px solid rgba(255,152,0,.3)">
+      <div class="card-title">Ravencoin — RVN <span class="tag-rvn">GPU KawPow</span> <span id="rvn-price-live" style="float:right;font-size:11px;color:var(--orange)">—</span></div>
+      <div class="card-value" id="rvn-hero-hr" style="font-size:28px;color:var(--orange)">— MH/s</div>
+      <div id="rvn-hero-rev" style="font-size:16px;color:var(--green);margin:4px 0">$0.00/jour</div>
+      <div id="rvn-hero-sub" style="font-size:11px;color:var(--muted)">— RVN/jour · $0.00/mois</div>
     </div>
+
+    <!-- Revenue -->
+    <div class="grid grid-2">
+      <div class="card"><div class="card-title">Revenu brut/j</div><div class="card-value" id="rvn-rev-day">$0.00</div></div>
+      <div class="card"><div class="card-title">Revenu net/j</div><div class="card-value" id="rvn-rev-net" style="color:var(--green)">$0.00</div></div>
+      <div class="card"><div class="card-title">Revenu/mois</div><div class="card-value" id="rvn-rev-month">$0.00</div></div>
+      <div class="card"><div class="card-title">RVN/jour</div><div class="card-value" id="rvn-coin-day" style="color:var(--orange)">—</div></div>
+      <div class="card"><div class="card-title">Puissance</div><div class="card-value" id="rvn-watt">—</div></div>
+      <div class="card"><div class="card-title">Elec/jour</div><div class="card-value" id="rvn-elec-day">—</div></div>
+    </div>
+
+    <!-- Pool stats -->
     <div class="grid grid-2">
       <div class="card"><div class="card-title">Hashrate pool</div><div class="card-value" id="rvn-pool-hr">—</div></div>
       <div class="card"><div class="card-title">Workers</div><div class="card-value" id="rvn-workers">—</div></div>
       <div class="card"><div class="card-title">En attente</div><div class="card-value" id="rvn-pending">—</div></div>
-      <div class="card"><div class="card-title">Dernier paiement</div><div class="card-value" id="rvn-last-pay">—</div></div>
+      <div class="card"><div class="card-title">Total payé</div><div class="card-value" id="rvn-last-pay">—</div></div>
     </div>
+
+    <!-- GPU Rigs -->
+    <div class="card">
+      <div class="card-title" style="display:flex;justify-content:space-between;align-items:center">
+        GPU Rigs RVN (KawPow)
+        <span id="rvn-total" style="font-size:11px;color:var(--orange)">— RVN</span>
+      </div>
+      <div id="rvn-gpu-rigs-list"></div>
+      <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px">
+        <div style="font-size:11px;font-weight:600;margin-bottom:8px;color:var(--text)">Ajouter un GPU</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+          <input id="rvn-rig-add-name" placeholder="Nom (ex: RVN-RTX4090)" style="width:120px;font-size:11px">
+          <input id="rvn-rig-add-gpu" placeholder="GPU (ex: RTX 4090)" style="width:120px;font-size:11px">
+          <input id="rvn-rig-add-hr" placeholder="MH/s" value="85" style="width:60px;font-size:11px">
+          <input id="rvn-rig-add-power" placeholder="Watts" value="320" style="width:60px;font-size:11px">
+          <button class="btn btn-primary btn-sm" onclick="addRVNGPURig()">+ Ajouter</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Network -->
+    <div class="card">
+      <div class="card-title">Réseau Ravencoin</div>
+      <div class="grid grid-2" style="gap:8px">
+        <div><span style="font-size:10px;color:var(--muted)">Hashrate réseau</span><div id="rvn-net-hr" style="font-size:14px;font-weight:600">—</div></div>
+        <div><span style="font-size:10px;color:var(--muted)">Votre part</span><div id="rvn-net-share" style="font-size:14px;font-weight:600;color:var(--orange)">—</div></div>
+        <div><span style="font-size:10px;color:var(--muted)">Récompense bloc</span><div id="rvn-net-reward" style="font-size:14px;font-weight:600">2500 RVN/bloc</div></div>
+        <div><span style="font-size:10px;color:var(--muted)">Temps de bloc</span><div id="rvn-net-time" style="font-size:14px;font-weight:600">~60s/bloc</div></div>
+      </div>
+    </div>
+
+    <!-- Pool selector -->
     <div class="card">
       <div class="card-title">Pool RVN</div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
@@ -182,6 +228,8 @@
         Stratum: <span id="rvn-pool-stratum" style="font-family:var(--mono)">stratum+tcp://rvn.2miners.com:6060</span>
       </div>
     </div>
+
+    <!-- Quick config -->
     <div class="card">
       <div class="card-title">Config rapide</div>
       <div style="font-size:11px;color:var(--muted);margin-bottom:6px">Commandes prêtes à copier pour vos GPU :</div>

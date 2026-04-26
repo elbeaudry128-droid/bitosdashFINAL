@@ -1,5 +1,5 @@
 // BitOS Cloud v4 — Service Worker (cache-bust + stale-while-revalidate)
-const CACHE = 'bitos-v4.1.0';
+const CACHE = 'bitos-v4.2.0';
 const ASSETS = ['/', '/index.html', '/app.js', '/style.css', '/manifest.json'];
 
 self.addEventListener('install', e => {

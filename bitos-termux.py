@@ -34,6 +34,7 @@ PROXY_RULES = {
     '/proxy/k1pool':       'https://api-kas.k1pool.com/api',
     '/proxy/kas-pool':     'https://api-kas.k1pool.com/api',
     '/proxy/xmrchain':     'https://xmrchain.net/api',
+    '/proxy/rvn-2miners':  'https://rvn.2miners.com/api',
 }
 
 # ── IP detection (Android/Termux compatible) ─────────────────────

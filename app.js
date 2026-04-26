@@ -38,7 +38,64 @@ function toast(type, title, msg, duration) {
 let NET_STATS = {
   XMR:{ networkHashrate:0, blockReward:0.6,  blockTime:120, height:0, lastFetch:0 },
   KAS:{ networkHashrate:0, blockReward:146,   blockTime:1,   height:0, lastFetch:0 },
+  RVN:{ networkHashrate:0, blockReward:2500,  blockTime:60,  height:0, lastFetch:0 },
 };
+
+var RVN_GPU_RIGS = [];
+
+function loadRVNRigs() {
+  try {
+    var saved = localStorage.getItem('bitos_rvn_gpu_rigs');
+    if (saved) RVN_GPU_RIGS = JSON.parse(saved);
+  } catch(_e) {}
+  if (RVN_GPU_RIGS.length === 0) {
+    RVN_GPU_RIGS = [
+      {
+        name: 'RVN-RTX4090', gpu: 'NVIDIA RTX 4090', gpuClass: 'RTX xx90',
+        algo: 'kawpow', miner: 'T-Rex', status: 'online',
+        hr: 85, unit: 'MH/s', temp: 62, fan: 68, power: 320, watt: 320,
+        pool: '2miners', stratum: 'stratum+tcp://rvn.2miners.com:6060',
+        wallet: 'RWGrRi59CjUtRqFhDiXDWiJ3a4ghttpdXD',
+        coin: 'RVN', uptime: 0
+      },
+      {
+        name: 'RVN-A100-80G', gpu: 'NVIDIA A100 80GB HBM2e', gpuClass: 'A100-class',
+        algo: 'kawpow', miner: 'T-Rex', status: 'online',
+        hr: 110, unit: 'MH/s', temp: 48, fan: 45, power: 275, watt: 275,
+        pool: '2miners', stratum: 'stratum+tcp://rvn.2miners.com:6060',
+        wallet: 'RWGrRi59CjUtRqFhDiXDWiJ3a4ghttpdXD',
+        coin: 'RVN', uptime: 0
+      }
+    ];
+    saveRVNRigs();
+  }
+}
+
+function saveRVNRigs() {
+  try { localStorage.setItem('bitos_rvn_gpu_rigs', JSON.stringify(RVN_GPU_RIGS)); } catch(_e) {}
+}
+
+async function fetchRVNNetworkStats() {
+  if (Date.now() - NET_STATS.RVN.lastFetch < 300000) return;
+  try {
+    var url = 'https://rvn.2miners.com/api/stats';
+    var res = await fetch(url, {signal: AbortSignal.timeout(8000)});
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    var d = await res.json();
+    if (d.nodes && d.nodes[0]) {
+      NET_STATS.RVN.networkHashrate = d.nodes[0].networkhashps || 0;
+      NET_STATS.RVN.blockTime = d.nodes[0].blocktime || 60;
+      NET_STATS.RVN.height = d.nodes[0].height || 0;
+    }
+    if (d.blockReward) NET_STATS.RVN.blockReward = d.blockReward / 1e8;
+    NET_STATS.RVN.lastFetch = Date.now();
+    console.log('[NET-RVN]', (NET_STATS.RVN.networkHashrate / 1e12).toFixed(2), 'TH/s | reward:', NET_STATS.RVN.blockReward, 'RVN');
+  } catch(e) {
+    NET_STATS.RVN.networkHashrate = NET_STATS.RVN.networkHashrate || 3.5e12;
+    NET_STATS.RVN.blockReward = NET_STATS.RVN.blockReward || 2500;
+    console.warn('[NET-RVN] offline:', e.message);
+  }
+}
 
 async function fetchXMRNetworkStats() {
   if(Date.now()-NET_STATS.XMR.lastFetch < 300000) return; // cache 5 min
@@ -108,19 +165,22 @@ async function fetchKASNetworkStats() {
 // Revenus miniers réels pour un coin
 function calcMiningRevenue(coin) {
   const ns = NET_STATS[coin];
-  const hrUnit = RIGS.filter(r => r.coin === coin && r.status !== 'offline')
+  var hrUnit = RIGS.filter(r => r.coin === coin && r.status !== 'offline')
                      .reduce((s, r) => s + (r.hrn || 0), 0);
+  var wattBase = RIGS.filter(r => r.coin === coin && r.status !== 'offline')
+                     .reduce((s, r) => s + (r.watt || 0), 0);
+  if (coin === 'RVN' && typeof RVN_GPU_RIGS !== 'undefined') {
+    RVN_GPU_RIGS.filter(r => r.status === 'online').forEach(r => { hrUnit += (r.hr || 0); wattBase += (r.watt || 0); });
+  }
   if (!hrUnit || !ns || !ns.networkHashrate || !ns.blockReward)
     return {daily:0, monthly:0, coinPerDay:0, hr:hrUnit, hrHS:0, netDaily:0, netMonthly:0};
-  // Convertir hrn → H/s (XMR: KH/s×1000, KAS: GH/s×1e9)
-  const hrHS       = coin === 'XMR' ? hrUnit * 1000 : hrUnit * 1e9;
-  const blocksPerDay = 86400 / (ns.blockTime || (coin === 'XMR' ? 120 : 1));
+  const hrHS       = coin === 'XMR' ? hrUnit * 1000 : coin === 'RVN' ? hrUnit * 1e6 : hrUnit * 1e9;
+  const blocksPerDay = 86400 / (ns.blockTime || (coin === 'XMR' ? 120 : coin === 'RVN' ? 60 : 1));
   const share      = hrHS / ns.networkHashrate;
   const coinPerDay = share * ns.blockReward * blocksPerDay;
-  const price      = coin === 'XMR' ? xmrP : kasP;
+  const price      = coin === 'XMR' ? xmrP : coin === 'RVN' ? rvnP : kasP;
   const daily      = coinPerDay * (price || 0);
-  const watt       = RIGS.filter(r => r.coin === coin && r.status !== 'offline')
-                         .reduce((s, r) => s + (r.watt || 0), 0);
+  const watt       = wattBase;
   const elecRate   = parseFloat(el('m-elec')?.value || '0.20') || 0.20;
   const elecDay    = (watt / 1000) * elecRate * 24;
   const feeDay     = daily * 0.006;
@@ -131,28 +191,27 @@ function calcMiningRevenue(coin) {
 
 // Profitabilité complète — met à jour TOUS les KPI
 function calcRealProfitability() {
-  const xR=calcMiningRevenue('XMR'), kR=calcMiningRevenue('KAS');
-  const rev=xR.monthly+kR.monthly;
+  const xR=calcMiningRevenue('XMR'), kR=calcMiningRevenue('KAS'), rR=calcMiningRevenue('RVN');
+  const rev=xR.monthly+kR.monthly+rR.monthly;
   const elecRate=parseFloat(el('m-elec')?.value||'0.20')||0.20;
-  const watts=RIGS.filter(r=>r.status!=='offline').reduce((s,r)=>s+(r.watt||0),0);
+  var watts=RIGS.filter(r=>r.status!=='offline').reduce((s,r)=>s+(r.watt||0),0);
+  if(typeof RVN_GPU_RIGS!=='undefined') RVN_GPU_RIGS.filter(r=>r.status==='online').forEach(r=>{watts+=(r.watt||0);});
   const elec=(watts/1000)*elecRate*24*30;
-  const fee=rev*0.006; // pool fee ~0.6%
+  const fee=rev*0.006;
   const net=Math.max(0,rev-elec-fee);
   const margin=rev>0?(net/rev*100):0;
   const invest=RIGS.reduce((s,r)=>s+(r.price||800),0)||3200;
   const roi=net>0?(net*12/invest*100):0;
   const pb=net>0?Math.round(invest/net):0;
-  const rev24=xR.daily+kR.daily;
+  const rev24=xR.daily+kR.daily+rR.daily;
   const f=(n,d=0)=>n>0?'$'+n.toLocaleString('fr-CA',{minimumFractionDigits:d,maximumFractionDigits:d}):'—';
 
-  // KPI page Rentabilité
   setText('kpi-rev',   f(rev));
   setText('kpi-cost',  f(elec));
   setText('kpi-net',   f(net));
   setText('kpi-margin','Marge: '+Math.round(margin)+'%');
   setText('kpi-roi',   roi>0?Math.round(roi)+'%':'—');
   setText('kpi-pb',    pb>0?pb+' mois':'—');
-  // KPI Dashboard
   setText('d-rev-day',  f(rev24,2));
   setText('d-rev-month',f(rev));
   setText('d-elec',     f(elec));
@@ -160,10 +219,11 @@ function calcRealProfitability() {
   setText('d-margin',   Math.round(margin)+'%');
   if(xR.coinPerDay>0) setText('d-xmr-day',xR.coinPerDay.toFixed(4)+' XMR/j');
   if(kR.coinPerDay>0) setText('d-kas-day',kR.coinPerDay.toFixed(1)+' KAS/j');
+  if(rR.coinPerDay>0) setText('d-rvn-rev','+$'+rR.daily.toFixed(2)+'/j');
   if(xR.hr>0){ setText('d-xmr-hr',(xR.hr/1000).toFixed(1)+' KH/s'); setText('d-xmr-hr-side',(xR.hr/1000).toFixed(1)+' KH/s'); }
   if(kR.hr>0)  setText('d-kas-hr',(kR.hr/1e9).toFixed(2)+' GH/s');
+  if(rR.hr>0) setText('d-rvn-hr',rR.hr.toFixed(1)+' MH/s');
   if(watts>0){ setText('d-watt',watts+'W'); setText('s-watt',watts+'W'); }
-  // Revenu ticker
   setText('s-rev', f(rev24,2));
   // Carte calculateur réel
   if(xmrP>0) setText('rc-xmr-price','$'+xmrP.toLocaleString('fr-CA',{minimumFractionDigits:2,maximumFractionDigits:2}));
@@ -563,7 +623,7 @@ Object.defineProperty(window, 'USER_PIN', {
   configurable: false, enumerable: false
 });
 let currentRig=null;
-let xmrP=167.42,kasP=0.1284,btcP=98240,ethP=3610;
+let xmrP=167.42,kasP=0.1284,btcP=98240,ethP=3610,rvnP=0.0165;
 let xmrPending='—'; let kasPending='—'; // Soldes en attente pool (mis à jour via API)
 
 // ── Send state ──
@@ -734,6 +794,7 @@ function renderPage(id){
   if(id==='monitoring')renderMon();
   if(id==='xmr'){ fetchXMRAll(); }
   if(id==='kas'){ fetchKASAll(); }
+  if(id==='rvn'){ fetchRVNAll(); }
   // page-performances supprimée (non implémentée)
   if(id==='wallet'){refreshWalletPage();renderExtWallets();renderOwnWallet();}
   if(id==='convertir'){refreshConvertPage();}
@@ -1813,12 +1874,15 @@ function addXmrigRigFromPage() {
 }
 
 function updateRigsKPI() {
-  var total = XMRIG_RIGS.length + RIGS.length;
-  var online = XMRIG_RIGS.filter(function(r){return r.status==='online';}).length + RIGS.filter(function(r){return r.status!=='offline';}).length;
+  var rvnCount = typeof RVN_GPU_RIGS !== 'undefined' ? RVN_GPU_RIGS.length : 0;
+  var rvnOnline = typeof RVN_GPU_RIGS !== 'undefined' ? RVN_GPU_RIGS.filter(function(r){return r.status==='online';}).length : 0;
+  var total = XMRIG_RIGS.length + RIGS.length + rvnCount;
+  var online = XMRIG_RIGS.filter(function(r){return r.status==='online';}).length + RIGS.filter(function(r){return r.status!=='offline';}).length + rvnOnline;
   var totalHR = XMRIG_RIGS.filter(function(r){return r.status==='online';}).reduce(function(s,r){return s+(r.hr||0);},0);
   var maxTemp = 0;
   XMRIG_RIGS.forEach(function(r){if(r.temp>maxTemp)maxTemp=r.temp;});
   RIGS.forEach(function(r){if((r.maxTemp||r.temp||0)>maxTemp)maxTemp=(r.maxTemp||r.temp||0);});
+  if (typeof RVN_GPU_RIGS !== 'undefined') RVN_GPU_RIGS.forEach(function(r){if(r.temp>maxTemp)maxTemp=r.temp;});
   setText('rigs-total-count', total);
   setText('rigs-online-count', online);
   setText('rigs-total-hr', totalHR > 0 ? (totalHR/1000).toFixed(2)+' KH/s' : '—');
@@ -1868,6 +1932,154 @@ function switchRVNPool(poolKey) {
 function restoreRVNPool() {
   var key = localStorage.getItem('bitos_rvn_pool') || '2miners';
   switchRVNPool(key);
+}
+
+async function fetchRVNPool() {
+  var addr = POOL_CONFIG.RVN.walletAddr;
+  if (!addr || addr.length < 25) return;
+  try {
+    var url = 'https://rvn.2miners.com/api/accounts/' + addr;
+    var res = await fetch(url, { signal: AbortSignal.timeout(8000) });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    var d = await res.json();
+    var hr = d.currentHashrate || d.hashrate || 0;
+    var workers = d.workersOnline || (d.workers ? Object.keys(d.workers).length : 0);
+    var pending = d.stats ? (d.stats.balance || 0) / 1e8 : 0;
+    var paid = d.stats ? (d.stats.paid || 0) / 1e8 : 0;
+    setText('rvn-pool-hr', hr > 1e6 ? (hr / 1e6).toFixed(2) + ' MH/s' : (hr / 1e3).toFixed(1) + ' KH/s');
+    setText('rvn-workers', workers);
+    setText('rvn-pending', pending.toFixed(2) + ' RVN');
+    setText('rvn-last-pay', paid > 0 ? paid.toFixed(2) + ' RVN total' : '—');
+    setText('rvn-total', pending.toFixed(2) + ' RVN');
+    WALLET.RVN = WALLET.RVN || { balance: 0 };
+    WALLET.RVN.balance = pending;
+    console.log('[RVN-Pool] HR:', (hr/1e6).toFixed(2), 'MH/s | Workers:', workers, '| Pending:', pending.toFixed(2));
+  } catch(e) {
+    console.warn('[RVN-Pool]', e.message);
+  }
+}
+
+async function fetchRVNAll() {
+  await Promise.allSettled([
+    fetchRVNPool(),
+    fetchRVNNetworkStats(),
+  ]);
+  renderRVNPage();
+  renderDash();
+}
+
+function renderRVNPage() {
+  var rR = calcMiningRevenue('RVN');
+  var ns = NET_STATS.RVN;
+  var onlineRigs = RVN_GPU_RIGS.filter(function(r) { return r.status === 'online'; });
+  var totalHR = onlineRigs.reduce(function(s, r) { return s + (r.hr || 0); }, 0);
+  var totalW = onlineRigs.reduce(function(s, r) { return s + (r.watt || 0); }, 0);
+  var elecRate = parseFloat(el('m-elec')?.value || '0.20') || 0.20;
+
+  setText('rvn-hero-hr', totalHR > 0 ? totalHR.toFixed(1) + ' MH/s' : '— MH/s');
+  setText('rvn-hero-rev', rR.netDaily > 0 ? '$' + rR.netDaily.toFixed(2) + '/jour' : '$0.00/jour');
+  setText('rvn-hero-sub',
+    (rR.coinPerDay > 0 ? Math.round(rR.coinPerDay).toLocaleString() + ' RVN/jour' : '— RVN/jour') +
+    ' · ' + (rR.netMonthly > 0 ? '$' + rR.netMonthly.toFixed(2) : '$0.00') + '/mois'
+  );
+
+  setText('rvn-rev-day', rR.daily > 0 ? '$' + rR.daily.toFixed(2) : '$0.00');
+  setText('rvn-rev-net', rR.netDaily > 0 ? '$' + rR.netDaily.toFixed(2) : '$0.00');
+  setText('rvn-rev-month', rR.monthly > 0 ? '$' + rR.monthly.toFixed(2) : '$0.00');
+  setText('rvn-coin-day', rR.coinPerDay > 0 ? Math.round(rR.coinPerDay).toLocaleString() + ' RVN' : '—');
+  setText('rvn-watt', totalW ? totalW + ' W' : '—');
+  setText('rvn-elec-day', totalW ? '$' + ((totalW / 1000) * elecRate * 24).toFixed(2) : '—');
+  setText('rvn-price-live', rvnP > 0 ? '$' + rvnP.toFixed(4) : '—');
+
+  if (ns && ns.networkHashrate > 0) {
+    setText('rvn-net-hr', (ns.networkHashrate / 1e12).toFixed(2) + ' TH/s');
+    var share = rR.hrHS > 0 ? (rR.hrHS / ns.networkHashrate * 100).toFixed(8) + '%' : '—';
+    setText('rvn-net-share', share);
+  }
+  setText('rvn-net-reward', (ns.blockReward || 2500) + ' RVN/bloc');
+  setText('rvn-net-time', '~' + (ns.blockTime || 60) + 's/bloc');
+
+  renderRVNGPURigs();
+
+  if (totalHR > 0) {
+    var pct = Math.min(100, (rR.netDaily / 5) * 100);
+    var bar = el('d-rvn-bar');
+    if (bar) bar.style.width = pct + '%';
+  }
+}
+
+function renderRVNGPURigs() {
+  var cont = el('rvn-gpu-rigs-list');
+  if (!cont) return;
+  if (RVN_GPU_RIGS.length === 0) {
+    cont.innerHTML = '<div style="color:var(--muted);font-size:11px;text-align:center;padding:12px">Aucun rig RVN GPU configuré</div>';
+    return;
+  }
+  cont.innerHTML = RVN_GPU_RIGS.map(function(r, i) {
+    var statusCol = r.status === 'online' ? 'var(--green)' : 'var(--red)';
+    var dotCls = r.status === 'online' ? 'dot-online' : 'dot-offline';
+    var tempCol = r.temp >= 80 ? 'var(--red)' : r.temp >= 70 ? 'var(--yellow)' : 'var(--green)';
+    return '<div class="rig-mini">'
+      + '<div class="rig-mini-dot ' + dotCls + '"></div>'
+      + '<div class="rig-mini-name">'
+      + r.name
+      + '<div style="font-size:9px;color:var(--muted);font-family:var(--mono)">'
+      + r.gpu + ' · ' + r.miner + ' · ' + r.algo
+      + '</div></div>'
+      + '<div class="rig-mini-info">'
+      + '<span style="color:' + statusCol + ';font-weight:600">' + r.hr + ' ' + r.unit + '</span>'
+      + '<span style="color:' + tempCol + '">' + r.temp + '°C</span>'
+      + ' · ' + r.power + 'W'
+      + (r.fan ? ' · Fan ' + r.fan + '%' : '')
+      + '</div>'
+      + '<div style="display:flex;gap:4px">'
+      + '<button onclick="toggleRVNRig(' + i + ')" style="background:none;border:none;color:' + (r.status === 'online' ? 'var(--yellow)' : 'var(--green)') + ';cursor:pointer;font-size:12px;padding:4px" title="' + (r.status === 'online' ? 'Pause' : 'Start') + '">'
+      + (r.status === 'online' ? '⏸' : '▶') + '</button>'
+      + '<button onclick="removeRVNRig(' + i + ')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:14px;padding:4px" title="Supprimer">×</button>'
+      + '</div></div>';
+  }).join('');
+}
+
+function toggleRVNRig(idx) {
+  if (RVN_GPU_RIGS[idx]) {
+    RVN_GPU_RIGS[idx].status = RVN_GPU_RIGS[idx].status === 'online' ? 'offline' : 'online';
+    saveRVNRigs();
+    renderRVNPage();
+    toast('info', 'RVN GPU', RVN_GPU_RIGS[idx].name + ': ' + RVN_GPU_RIGS[idx].status);
+  }
+}
+
+function removeRVNRig(idx) {
+  if (RVN_GPU_RIGS[idx]) {
+    var name = RVN_GPU_RIGS[idx].name;
+    RVN_GPU_RIGS.splice(idx, 1);
+    saveRVNRigs();
+    renderRVNPage();
+    toast('info', 'RVN GPU', 'Rig supprimé: ' + name);
+  }
+}
+
+function addRVNGPURig() {
+  var name = (el('rvn-rig-add-name') || {}).value || '';
+  var gpu = (el('rvn-rig-add-gpu') || {}).value || '';
+  var hr = parseFloat((el('rvn-rig-add-hr') || {}).value) || 50;
+  var power = parseInt((el('rvn-rig-add-power') || {}).value) || 250;
+  if (!name) name = 'RVN-Rig-' + (RVN_GPU_RIGS.length + 1);
+  if (!gpu) gpu = 'NVIDIA GPU';
+  RVN_GPU_RIGS.push({
+    name: name, gpu: gpu, gpuClass: 'Custom',
+    algo: 'kawpow', miner: 'T-Rex', status: 'online',
+    hr: hr, unit: 'MH/s', temp: 55, fan: 60, power: power, watt: power,
+    pool: ACTIVE_RVN_POOL || '2miners',
+    stratum: (RVN_POOLS[ACTIVE_RVN_POOL] || RVN_POOLS['2miners']).stratum,
+    wallet: POOL_CONFIG.RVN.walletAddr,
+    coin: 'RVN', uptime: 0
+  });
+  saveRVNRigs();
+  renderRVNPage();
+  toast('success', 'RVN GPU', 'Rig ajouté: ' + name + ' (' + hr + ' MH/s)');
+  if (el('rvn-rig-add-name')) el('rvn-rig-add-name').value = '';
+  if (el('rvn-rig-add-gpu')) el('rvn-rig-add-gpu').value = '';
 }
 
 // ══════════════════════════════════════════════════════════════════
@@ -1940,6 +2152,22 @@ const FLIGHT_SHEETS = {
     recommended: true,
     profitBoost: 'GPU optimal',
     hw: 'NVIDIA RTX series'
+  },
+  rvn_gpu_rtx90: {
+    name: 'RVN GPU — RTX 3090/4090',
+    coin: 'RVN', type: 'gpu', miner: 'trex',
+    desc: 'T-Rex KawPow optimisé pour xx90 class, CUDA 12, 24GB VRAM, ~85 MH/s',
+    recommended: true,
+    profitBoost: '+25-35%',
+    hw: 'NVIDIA RTX 3090/4090'
+  },
+  rvn_gpu_a100: {
+    name: 'RVN GPU — A100 Datacenter',
+    coin: 'RVN', type: 'gpu', miner: 'trex',
+    desc: 'T-Rex KawPow pour A100 80GB HBM2e, CUDA tuning, ~110 MH/s',
+    recommended: true,
+    profitBoost: '+40-60%',
+    hw: 'NVIDIA A100 40/80GB'
   },
   rvn_gpu_gminer: {
     name: 'RVN GPU — GMiner',
@@ -2100,6 +2328,56 @@ function generateFlightSheet(sheetKey) {
           + ' --lhr-autotune-mode full'
           + ' --api-bind-http 0.0.0.0:4067'
           + ' --api-read-only'
+      };
+    case 'rvn_gpu_rtx90':
+      return {
+        type: 'cmd', filename: 'start-rvn-rtx90.sh',
+        config: '#!/bin/bash\n# RVN KawPow — RTX 3090/4090 (xx90-class)\n'
+          + '# Driver NVIDIA >= 535.xx + CUDA 12.x\n'
+          + '# Overclocking:\n'
+          + '# nvidia-smi -pl 320                  # RTX 4090\n'
+          + '# nvidia-smi -pl 280                  # RTX 3090\n'
+          + '# nvidia-settings -a GPUMemoryTransferRateOffset[3]=1200\n\n'
+          + 't-rex -a kawpow'
+          + ' -o ' + rvnPool.stratum
+          + ' -u ' + (rvnAddr || 'YOUR_RVN_WALLET') + '.RTX90'
+          + ' -p x'
+          + ' --intensity 23'
+          + ' --dag-build-mode 1'
+          + ' --gpu-report-interval 30'
+          + ' --api-bind-http 0.0.0.0:4067'
+          + ' --api-read-only\n\n'
+          + '# Hashrate attendu:\n'
+          + '# RTX 3090: ~60 MH/s KawPow\n'
+          + '# RTX 4090: ~85 MH/s KawPow\n'
+          + '# RVN/jour estimé: ~300-500 RVN ($5-9/jour @ $0.0165)',
+        setup: '# Installation RTX xx90:\nwget https://github.com/trexminer/T-Rex/releases/latest/download/t-rex-linux.tar.gz\ntar xzf t-rex-linux.tar.gz\nchmod +x t-rex\n\n# Power tuning:\nnvidia-smi -pm 1\nnvidia-smi -pl 320  # RTX 4090 (ajustez pour 3090: 280W)\n\n# Lancement:\nbash start-rvn-rtx90.sh'
+      };
+    case 'rvn_gpu_a100':
+      return {
+        type: 'cmd', filename: 'start-rvn-a100.sh',
+        config: '#!/bin/bash\n# RVN KawPow — A100 Datacenter (40GB/80GB)\n'
+          + '# Driver NVIDIA >= 535.xx + CUDA 12.x\n'
+          + '# MIG désactivé: nvidia-smi -mig 0\n'
+          + '# Power tuning:\n'
+          + '# nvidia-smi -pm 1\n'
+          + '# nvidia-smi -pl 275                  # A100 80GB optimal\n'
+          + '# nvidia-smi -pl 250                  # A100 40GB optimal\n\n'
+          + 't-rex -a kawpow'
+          + ' -o ' + rvnPool.stratum
+          + ' -u ' + (rvnAddr || 'YOUR_RVN_WALLET') + '.A100'
+          + ' -p x'
+          + ' --intensity 24'
+          + ' --dag-build-mode 1'
+          + ' --mt 2'
+          + ' --gpu-report-interval 30'
+          + ' --api-bind-http 0.0.0.0:4067'
+          + ' --api-read-only\n\n'
+          + '# Hashrate attendu:\n'
+          + '# A100 40GB: ~95 MH/s KawPow\n'
+          + '# A100 80GB: ~110 MH/s KawPow\n'
+          + '# 8x A100: ~880 MH/s (~7000 RVN/jour ≈ $115/jour @ $0.0165)',
+        setup: '# Installation A100:\nwget https://github.com/trexminer/T-Rex/releases/latest/download/t-rex-linux.tar.gz\ntar xzf t-rex-linux.tar.gz\nchmod +x t-rex\n\n# Datacenter setup:\nnvidia-smi -pm 1\nnvidia-smi -mig 0\nnvidia-smi -pl 275  # A100 80GB\nnvidia-smi --compute-mode=0\n\n# Lancement:\nbash start-rvn-a100.sh'
       };
     case 'rvn_gpu_gminer':
       var rvnHost = (rvnPool.stratum||'').replace('stratum+tcp://','').split(':');
@@ -2503,7 +2781,7 @@ function setAPIBadge(id, status){
 // ── CoinGecko Prix ──
 async function fetchCoinGeckoPrices() {
   try {
-    const url = getApiBase('coingecko') + '/simple/price?ids=monero,kaspa,bitcoin,ethereum&vs_currencies=usd&include_24hr_change=true';
+    const url = getApiBase('coingecko') + '/simple/price?ids=monero,kaspa,bitcoin,ethereum,ravencoin&vs_currencies=usd&include_24hr_change=true';
     const res = await fetch(url, {signal: AbortSignal.timeout(8000)});
     if(!res.ok) throw new Error('HTTP '+res.status);
     const data = await res.json();
@@ -2517,15 +2795,19 @@ async function fetchCoinGeckoPrices() {
     const bc = data.bitcoin?.usd_24h_change;
     const ec = data.ethereum?.usd_24h_change;
 
+    const rp = data.ravencoin?.usd;
+    const rc = data.ravencoin?.usd_24h_change;
     if(xp) xmrP = xp;
     if(kp) kasP = kp;
     if(bp) btcP = bp;
     if(ep) ethP = ep;
+    if(rp) rvnP = rp;
     // Recalculer profit/margin des rigs avec prix live
     if (RIGS.length) updateRigProfits();
 
     setText('t-xmr', '$' + xmrP.toFixed(2));
     setText('t-kas', '$' + kasP.toFixed(4));
+    setText('t-rvn', '$' + rvnP.toFixed(4));
     setText('t-btc', '$' + Math.round(btcP).toLocaleString('fr-FR'));
     setText('t-eth', '$' + Math.round(ethP).toLocaleString('fr-FR'));
 
@@ -2536,6 +2818,10 @@ async function fetchCoinGeckoPrices() {
     if(kc !== undefined) {
       const kEl = el('t-kasc');
       if(kEl){kEl.textContent=(kc>=0?'+':'')+kc.toFixed(2)+'%';kEl.className=kc>=0?'up':'dn';}
+    }
+    if(rc !== undefined) {
+      const rEl = el('t-rvnc');
+      if(rEl){rEl.textContent=(rc>=0?'+':'')+rc.toFixed(2)+'%';rEl.className=rc>=0?'up':'dn';}
     }
 
     // Update wallet si visible
@@ -9681,6 +9967,7 @@ function bitosInit(){
   try{ restorePoolSelection && restorePoolSelection(); }catch(_e){}
   try{ restoreRVNPool && restoreRVNPool(); }catch(_e){}
   try{ loadXmrigRigs && loadXmrigRigs(); }catch(_e){}
+  try{ loadRVNRigs && loadRVNRigs(); }catch(_e){}
   try{ loadHistory && loadHistory(); }catch(_e){}
   try{ initMobile && initMobile(); }catch(_e){}
   try{ displayWallets && displayWallets(); }catch(_e){}
