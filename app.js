@@ -54,6 +54,19 @@ function saveRVNRigs() {
   try { localStorage.setItem('bitos_rvn_gpu_rigs', JSON.stringify(RVN_GPU_RIGS)); } catch(_e) {}
 }
 
+var KAS_GPU_RIGS = [];
+
+function loadKASRigs() {
+  try {
+    var saved = localStorage.getItem('bitos_kas_gpu_rigs');
+    if (saved) KAS_GPU_RIGS = JSON.parse(saved);
+  } catch(_e) {}
+}
+
+function saveKASRigs() {
+  try { localStorage.setItem('bitos_kas_gpu_rigs', JSON.stringify(KAS_GPU_RIGS)); } catch(_e) {}
+}
+
 async function fetchRVNNetworkStats() {
   if (Date.now() - NET_STATS.RVN.lastFetch < 300000) return;
   try {
@@ -152,6 +165,9 @@ function calcMiningRevenue(coin) {
   if (coin === 'RVN' && typeof RVN_GPU_RIGS !== 'undefined') {
     RVN_GPU_RIGS.filter(r => r.status === 'online').forEach(r => { hrUnit += (r.hr || 0); wattBase += (r.watt || 0); });
   }
+  if (coin === 'KAS' && typeof KAS_GPU_RIGS !== 'undefined') {
+    KAS_GPU_RIGS.filter(r => r.status === 'online').forEach(r => { hrUnit += (r.hr || 0); wattBase += (r.watt || 0); });
+  }
   if (!hrUnit || !ns || !ns.networkHashrate || !ns.blockReward)
     return {daily:0, monthly:0, coinPerDay:0, hr:hrUnit, hrHS:0, netDaily:0, netMonthly:0};
   const hrHS       = coin === 'XMR' ? hrUnit * 1000 : coin === 'RVN' ? hrUnit * 1e6 : hrUnit * 1e9;
@@ -177,6 +193,7 @@ function calcRealProfitability() {
   var watts=RIGS.filter(r=>r.status!=='offline').reduce((s,r)=>s+(r.watt||0),0);
   if(typeof XMRIG_RIGS!=='undefined') XMRIG_RIGS.filter(r=>r.status==='online').forEach(r=>{watts+=(r.watt||0);});
   if(typeof RVN_GPU_RIGS!=='undefined') RVN_GPU_RIGS.filter(r=>r.status==='online').forEach(r=>{watts+=(r.watt||0);});
+  if(typeof KAS_GPU_RIGS!=='undefined') KAS_GPU_RIGS.filter(r=>r.status==='online').forEach(r=>{watts+=(r.watt||0);});
   const elec=(watts/1000)*elecRate*24*30;
   const fee=rev*0.006;
   const net=Math.max(0,rev-elec-fee);
@@ -2123,6 +2140,121 @@ function addRVNGPURig() {
 }
 
 // ══════════════════════════════════════════════════════════════════
+// KAS GPU RIGS — Management + KAS Pools
+// ══════════════════════════════════════════════════════════════════
+
+const KAS_POOLS = {
+  'k1pool':     { name:'K1Pool', stratum:'stratum+tcp://kaspa.k1pool.com:3333', ssl:'stratum+ssl://kaspa.k1pool.com:5555', fee:1.0, api:'https://api-kas.k1pool.com/api' },
+  'acc-pool':   { name:'ACC Pool', stratum:'stratum+tcp://kas.acc-pool.pw:16061', ssl:null, fee:1.0, api:null },
+  'woolypooly': { name:'WoolyPooly', stratum:'stratum+tcp://pool.woolypooly.com:3112', ssl:'stratum+ssl://pool.woolypooly.com:3113', fee:0.9, api:null },
+};
+
+let ACTIVE_KAS_POOL = localStorage.getItem('bitos_kas_pool') || 'k1pool';
+
+function switchKASPool(poolKey) {
+  if (!KAS_POOLS[poolKey]) return;
+  ACTIVE_KAS_POOL = poolKey;
+  localStorage.setItem('bitos_kas_pool', poolKey);
+  var pool = KAS_POOLS[poolKey];
+  POOL_CONFIG.KAS.pool = poolKey;
+  POOL_CONFIG.KAS.apiBase = pool.api || POOL_CONFIG.KAS.apiBase;
+  POOL_CONFIG.KAS.stratumTCP = pool.stratum;
+  if (pool.ssl) POOL_CONFIG.KAS.stratumSSL = pool.ssl;
+  POOL_CONFIG.KAS.fee = pool.fee / 100;
+  Object.keys(KAS_POOLS).forEach(function(k) {
+    var btn = el('kas-pool-btn-' + k);
+    if (btn) btn.className = k === poolKey ? 'btn btn-primary' : 'btn';
+  });
+  setText('kas-pool-info', pool.name + ' — kHeavyHash GPU, ' + pool.fee + '% frais');
+  setText('kas-pool-stratum', pool.stratum.replace('stratum+tcp://',''));
+  var qc = el('kas-quick-config');
+  if (qc) {
+    var host = pool.stratum.replace('stratum+tcp://','').split(':');
+    qc.innerHTML = '<pre style="background:var(--bg);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:10px;font-size:10px;overflow-x:auto;color:var(--text);white-space:pre-wrap">'
+      + 'miner --algo kheavyhash --server ' + (host[0]||'kaspa.k1pool.com') + ' --port ' + (host[1]||'3333') + ' --user YOUR_KAS_WALLET.rig1 --pass x</pre>';
+  }
+}
+
+function restoreKASPool() {
+  var key = localStorage.getItem('bitos_kas_pool') || 'k1pool';
+  switchKASPool(key);
+}
+
+function renderKASGPURigs() {
+  var cont = el('kas-gpu-rigs-list');
+  if (!cont) return;
+  if (KAS_GPU_RIGS.length === 0) {
+    cont.innerHTML = '<div style="color:var(--muted);font-size:11px;text-align:center;padding:12px">Aucun rig KAS GPU configuré</div>';
+    return;
+  }
+  cont.innerHTML = KAS_GPU_RIGS.map(function(r, i) {
+    var statusCol = r.status === 'online' ? 'var(--green)' : 'var(--red)';
+    var dotCls = r.status === 'online' ? 'dot-online' : 'dot-offline';
+    var tempCol = r.temp >= 80 ? 'var(--red)' : r.temp >= 70 ? 'var(--yellow)' : 'var(--green)';
+    return '<div class="rig-mini">'
+      + '<div class="rig-mini-dot ' + dotCls + '"></div>'
+      + '<div class="rig-mini-name">'
+      + r.name
+      + '<div style="font-size:9px;color:var(--muted);font-family:var(--mono)">'
+      + r.gpu + ' · ' + r.miner + ' · ' + r.algo
+      + '</div></div>'
+      + '<div class="rig-mini-info">'
+      + '<span style="color:' + statusCol + ';font-weight:600">' + r.hr + ' ' + r.unit + '</span>'
+      + '<span style="color:' + tempCol + '">' + (r.temp||0) + '°C</span>'
+      + ' · ' + r.power + 'W'
+      + '</div>'
+      + '<div style="display:flex;gap:4px">'
+      + '<button onclick="toggleKASRig(' + i + ')" style="background:none;border:none;color:' + (r.status === 'online' ? 'var(--yellow)' : 'var(--green)') + ';cursor:pointer;font-size:12px;padding:4px" title="' + (r.status === 'online' ? 'Pause' : 'Start') + '">'
+      + (r.status === 'online' ? '⏸' : '▶') + '</button>'
+      + '<button onclick="removeKASRig(' + i + ')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:14px;padding:4px" title="Supprimer">×</button>'
+      + '</div></div>';
+  }).join('');
+  setText('kas-rigs-count', KAS_GPU_RIGS.length + ' rig' + (KAS_GPU_RIGS.length > 1 ? 's' : ''));
+}
+
+function toggleKASRig(idx) {
+  if (KAS_GPU_RIGS[idx]) {
+    KAS_GPU_RIGS[idx].status = KAS_GPU_RIGS[idx].status === 'online' ? 'offline' : 'online';
+    saveKASRigs();
+    renderKASPage();
+    toast('info', 'KAS GPU', KAS_GPU_RIGS[idx].name + ': ' + KAS_GPU_RIGS[idx].status);
+  }
+}
+
+function removeKASRig(idx) {
+  if (KAS_GPU_RIGS[idx]) {
+    var name = KAS_GPU_RIGS[idx].name;
+    KAS_GPU_RIGS.splice(idx, 1);
+    saveKASRigs();
+    renderKASPage();
+    toast('info', 'KAS GPU', 'Rig supprimé: ' + name);
+  }
+}
+
+function addKASGPURig() {
+  var name = (el('kas-rig-add-name') || {}).value || '';
+  var gpu = (el('kas-rig-add-gpu') || {}).value || '';
+  var hr = parseFloat((el('kas-rig-add-hr') || {}).value) || 1.0;
+  var power = parseInt((el('kas-rig-add-power') || {}).value) || 300;
+  if (!name) name = 'KAS-Rig-' + (KAS_GPU_RIGS.length + 1);
+  if (!gpu) gpu = 'NVIDIA GPU';
+  KAS_GPU_RIGS.push({
+    name: name, gpu: gpu, gpuClass: 'Custom',
+    algo: 'kheavyhash', miner: 'GMiner', status: 'unknown',
+    hr: hr, unit: 'GH/s', temp: 0, fan: 0, power: power, watt: power,
+    pool: ACTIVE_KAS_POOL || 'k1pool',
+    stratum: (KAS_POOLS[ACTIVE_KAS_POOL] || KAS_POOLS['k1pool']).stratum,
+    wallet: POOL_CONFIG.KAS.walletAddr,
+    coin: 'KAS', uptime: 0
+  });
+  saveKASRigs();
+  renderKASPage();
+  toast('success', 'KAS GPU', 'Rig ajouté: ' + name + ' (' + hr + ' GH/s)');
+  if (el('kas-rig-add-name')) el('kas-rig-add-name').value = '';
+  if (el('kas-rig-add-gpu')) el('kas-rig-add-gpu').value = '';
+}
+
+// ══════════════════════════════════════════════════════════════════
 // FLIGHT SHEETS — Configs optimisées + Nodes distants
 // ══════════════════════════════════════════════════════════════════
 
@@ -2233,6 +2365,38 @@ const FLIGHT_SHEETS = {
     profitBoost: 'GPU alt',
     hw: 'AMD/NVIDIA'
   },
+  kas_gpu_gminer: {
+    name: 'KAS GPU — GMiner (RTX)',
+    coin: 'KAS', type: 'gpu', miner: 'gminer',
+    desc: 'kHeavyHash optimisé NVIDIA, +10-15% vs CPU, ASIC-résistant',
+    recommended: true,
+    profitBoost: 'GPU optimal',
+    hw: 'NVIDIA RTX series'
+  },
+  kas_gpu_rtx90: {
+    name: 'KAS GPU — RTX 3090/4090',
+    coin: 'KAS', type: 'gpu', miner: 'gminer',
+    desc: 'GMiner kHeavyHash pour xx90 class, CUDA 12, 24GB VRAM, ~1.2 GH/s',
+    recommended: true,
+    profitBoost: '+20-30%',
+    hw: 'NVIDIA RTX 3090/4090'
+  },
+  kas_gpu_a100: {
+    name: 'KAS GPU — A100 Datacenter',
+    coin: 'KAS', type: 'gpu', miner: 'gminer',
+    desc: 'GMiner kHeavyHash pour A100 80GB HBM2e, ~2.5 GH/s',
+    recommended: true,
+    profitBoost: '+40-60%',
+    hw: 'NVIDIA A100 40/80GB'
+  },
+  kas_gpu_bzminer: {
+    name: 'KAS GPU — BzMiner',
+    coin: 'KAS', type: 'gpu', miner: 'bzminer',
+    desc: 'Alternative multi-algo, compatible AMD+NVIDIA, frais 0.5%',
+    recommended: false,
+    profitBoost: 'GPU alt',
+    hw: 'AMD/NVIDIA'
+  },
 };
 
 function generateFlightSheet(sheetKey) {
@@ -2240,8 +2404,10 @@ function generateFlightSheet(sheetKey) {
   if (!sheet) return null;
   var xmrAddr = POOL_CONFIG.XMR.walletAddr;
   var rvnAddr = POOL_CONFIG.RVN.walletAddr;
+  var kasAddr = POOL_CONFIG.KAS.walletAddr;
   var xmrPool = XMR_POOLS[POOL_CONFIG.XMR.pool] || XMR_POOLS.moneroocean;
   var rvnPool = RVN_POOLS[ACTIVE_RVN_POOL] || RVN_POOLS['2miners'];
+  var kasPool = KAS_POOLS[ACTIVE_KAS_POOL] || KAS_POOLS['k1pool'];
 
   switch(sheetKey) {
     case 'xmr_cpu_termux':
@@ -2506,6 +2672,77 @@ function generateFlightSheet(sheetKey) {
           + ' --user ' + (rvnAddr || 'YOUR_RVN_WALLET') + '.rig1'
           + ' --pass x'
           + ' --api 4068'
+      };
+    case 'kas_gpu_gminer':
+      var kasHost1 = (kasPool.stratum||'').replace('stratum+tcp://','').split(':');
+      return {
+        type: 'cmd', filename: 'start-kas-gminer.sh',
+        config: '#!/bin/bash\n# KAS kHeavyHash — GMiner (NVIDIA RTX)\n'
+          + 'miner --algo kheavyhash'
+          + ' --server ' + (kasHost1[0]||'kaspa.k1pool.com')
+          + ' --port ' + (kasHost1[1]||'3333')
+          + ' --user ' + (kasAddr || 'YOUR_KAS_WALLET') + '.rig1'
+          + ' --pass x'
+          + ' --api 4068',
+        setup: '# Installation GMiner:\nwget https://github.com/develsoftware/GMinerRelease/releases/latest/download/gminer_linux64.tar.xz\ntar xf gminer_linux64.tar.xz\nchmod +x miner\n\n# Lancement:\nbash start-kas-gminer.sh'
+      };
+    case 'kas_gpu_rtx90':
+      var kasHost2 = (kasPool.stratum||'').replace('stratum+tcp://','').split(':');
+      return {
+        type: 'cmd', filename: 'start-kas-rtx90.sh',
+        config: '#!/bin/bash\n# KAS kHeavyHash — RTX 3090/4090 (xx90-class)\n'
+          + '# Driver NVIDIA >= 535.xx + CUDA 12.x\n'
+          + '# Overclocking:\n'
+          + '# nvidia-smi -pl 320                  # RTX 4090\n'
+          + '# nvidia-smi -pl 280                  # RTX 3090\n'
+          + '# nvidia-settings -a GPUMemoryTransferRateOffset[3]=1500\n'
+          + '# nvidia-settings -a GPUGraphicsClockOffset[4]=-200\n\n'
+          + 'miner --algo kheavyhash'
+          + ' --server ' + (kasHost2[0]||'kaspa.k1pool.com')
+          + ' --port ' + (kasHost2[1]||'3333')
+          + ' --user ' + (kasAddr || 'YOUR_KAS_WALLET') + '.RTX90'
+          + ' --pass x'
+          + ' --oc 1'
+          + ' --api 4068\n\n'
+          + '# Hashrate attendu:\n'
+          + '# RTX 3090: ~1.0 GH/s kHeavyHash\n'
+          + '# RTX 4090: ~1.2 GH/s kHeavyHash\n'
+          + '# KAS/jour estimé: ~200-400 KAS',
+        setup: '# Installation RTX xx90:\nwget https://github.com/develsoftware/GMinerRelease/releases/latest/download/gminer_linux64.tar.xz\ntar xf gminer_linux64.tar.xz\nchmod +x miner\n\n# Power tuning:\nnvidia-smi -pm 1\nnvidia-smi -pl 320  # RTX 4090 (ajustez pour 3090: 280W)\n\n# Lancement:\nbash start-kas-rtx90.sh'
+      };
+    case 'kas_gpu_a100':
+      var kasHost3 = (kasPool.stratum||'').replace('stratum+tcp://','').split(':');
+      return {
+        type: 'cmd', filename: 'start-kas-a100.sh',
+        config: '#!/bin/bash\n# KAS kHeavyHash — A100 Datacenter (40GB/80GB)\n'
+          + '# Driver NVIDIA >= 535.xx + CUDA 12.x\n'
+          + '# MIG désactivé: nvidia-smi -mig 0\n'
+          + '# Power tuning:\n'
+          + '# nvidia-smi -pm 1\n'
+          + '# nvidia-smi -pl 275                  # A100 80GB optimal\n\n'
+          + 'miner --algo kheavyhash'
+          + ' --server ' + (kasHost3[0]||'kaspa.k1pool.com')
+          + ' --port ' + (kasHost3[1]||'3333')
+          + ' --user ' + (kasAddr || 'YOUR_KAS_WALLET') + '.A100'
+          + ' --pass x'
+          + ' --oc 1'
+          + ' --api 4068\n\n'
+          + '# Hashrate attendu:\n'
+          + '# A100 40GB: ~2.0 GH/s kHeavyHash\n'
+          + '# A100 80GB: ~2.5 GH/s kHeavyHash\n'
+          + '# 8x A100: ~20 GH/s (~3000 KAS/jour)',
+        setup: '# Installation A100:\nwget https://github.com/develsoftware/GMinerRelease/releases/latest/download/gminer_linux64.tar.xz\ntar xf gminer_linux64.tar.xz\nchmod +x miner\n\n# Datacenter setup:\nnvidia-smi -pm 1\nnvidia-smi -mig 0\nnvidia-smi -pl 275  # A100 80GB\n\n# Lancement:\nbash start-kas-a100.sh'
+      };
+    case 'kas_gpu_bzminer':
+      var kasHost4 = (kasPool.stratum||'').replace('stratum+tcp://','').split(':');
+      return {
+        type: 'cmd', filename: 'start-kas-bzminer.sh',
+        config: '#!/bin/bash\n# KAS kHeavyHash — BzMiner (AMD+NVIDIA)\n'
+          + 'bzminer -a kaspa'
+          + ' -p stratum+tcp://' + (kasHost4[0]||'kaspa.k1pool.com') + ':' + (kasHost4[1]||'3333')
+          + ' -w ' + (kasAddr || 'YOUR_KAS_WALLET') + '.rig1'
+          + ' --http_enabled --http_port 4068',
+        setup: '# Installation BzMiner:\nwget https://github.com/bzminer/bzminer/releases/latest/download/bzminer_v21.6.0_linux.tar.gz\ntar xzf bzminer_v21.6.0_linux.tar.gz\nchmod +x bzminer\n\n# Lancement:\nbash start-kas-bzminer.sh'
       };
     default: return null;
   }
@@ -8358,6 +8595,17 @@ function renderKASPage() {
         + '</tbody></table>';
     }
   }
+
+  setText('kas-price-live', kasP > 0 ? '$' + kasP.toFixed(4) : '—');
+
+  renderKASGPURigs();
+
+  var kasPoolInf = el('kas-pool-info');
+  if (kasPoolInf) {
+    var activeKPool = KAS_POOLS[ACTIVE_KAS_POOL] || KAS_POOLS['k1pool'];
+    setText('kas-pool-info', activeKPool.name + ' — kHeavyHash GPU, ' + activeKPool.fee + '% frais');
+    setText('kas-pool-stratum', (activeKPool.stratum || '').replace('stratum+tcp://',''));
+  }
 }
 
 async function createXMRFarm() {
@@ -8813,6 +9061,40 @@ function renderXMRPage() {
           }).join('')
         + '</tbody></table>';
     }
+  }
+
+  setText('xmr-price-live', xmrP > 0 ? '$' + xmrP.toFixed(2) : '—');
+
+  var xmrRigsList = el('xmr-rigs-list');
+  if (xmrRigsList) {
+    var cpuRigs = XMRIG_RIGS.filter(function(r) { return !r.algo || r.algo === '' || r.algo === 'rx/0' || r.algo === 'randomx' || r.coin === 'XMR'; });
+    if (cpuRigs.length === 0 && XMRIG_RIGS.length > 0) cpuRigs = XMRIG_RIGS;
+    var allXmrRigs = xmrRigs.concat(cpuRigs);
+    if (allXmrRigs.length === 0) {
+      xmrRigsList.innerHTML = '<div style="color:var(--muted);font-size:11px;text-align:center;padding:12px">Aucun rig XMR — ajoutez via Settings → XMRig Monitoring</div>';
+    } else {
+      xmrRigsList.innerHTML = allXmrRigs.map(function(r) {
+        var isXmrig = r.ip !== undefined;
+        var statusCol = (isXmrig ? r.status === 'online' : r.status !== 'offline') ? 'var(--green)' : 'var(--red)';
+        var dotCls = (isXmrig ? r.status === 'online' : r.status !== 'offline') ? 'dot-online' : 'dot-offline';
+        var hrStr = isXmrig ? ((r.hr||0)/1000).toFixed(2) + ' KH/s' : (r.hr || r.hrn || '—');
+        var sub = isXmrig ? (r.cpu || 'CPU') + ' · ' + (r.algo || 'RandomX') : (r.gpus || '') + ' · ' + (r.os || '');
+        return '<div class="rig-mini">'
+          + '<div class="rig-mini-dot ' + dotCls + '"></div>'
+          + '<div class="rig-mini-name">' + r.name
+          + '<div style="font-size:9px;color:var(--muted);font-family:var(--mono)">' + sub + '</div></div>'
+          + '<div class="rig-mini-info"><span style="color:' + statusCol + ';font-weight:600">' + hrStr + '</span>'
+          + (r.temp > 0 || r.maxTemp > 0 ? '<span>' + (r.maxTemp || r.temp) + '°C</span>' : '')
+          + '</div></div>';
+      }).join('');
+    }
+  }
+
+  var xmrPoolInf = el('xmr-pool-info');
+  if (xmrPoolInf) {
+    var activePool = XMR_POOLS[POOL_CONFIG.XMR.pool] || XMR_POOLS.moneroocean;
+    setText('xmr-pool-info', activePool.name + ' — ' + activePool.note);
+    setText('xmr-pool-stratum', (POOL_CONFIG.XMR.stratumTCP || '').replace('stratum+tcp://',''));
   }
 }
 
@@ -10108,8 +10390,10 @@ function bitosInit(){
   try{ restoreHiveToggle && restoreHiveToggle(); }catch(_e){}
   try{ restorePoolSelection && restorePoolSelection(); }catch(_e){}
   try{ restoreRVNPool && restoreRVNPool(); }catch(_e){}
+  try{ restoreKASPool && restoreKASPool(); }catch(_e){}
   try{ loadXmrigRigs && loadXmrigRigs(); }catch(_e){}
   try{ loadRVNRigs && loadRVNRigs(); }catch(_e){}
+  try{ loadKASRigs && loadKASRigs(); }catch(_e){}
   try{ loadHistory && loadHistory(); }catch(_e){}
   try{ initMobile && initMobile(); }catch(_e){}
   try{ displayWallets && displayWallets(); }catch(_e){}

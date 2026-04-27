@@ -341,7 +341,7 @@ jobs:
           echo "=== Size Budget ==="
           MAX_JS=550000
           MAX_CSS=25000
-          MAX_HTML=55000
+          MAX_HTML=65000
 
           js_size=$(wc -c < app.js)
           css_size=$(wc -c < style.css)

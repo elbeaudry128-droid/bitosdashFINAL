@@ -131,29 +131,157 @@
 
   <!-- XMR PAGE -->
   <div id="page-xmr" class="page">
-    <div class="card">
-      <div class="card-title">Monero — XMR</div>
-      <div class="card-value" id="xmr-total">— XMR</div>
-      <div class="card-sub">Pool · SupportXMR</div>
+    <!-- Hero -->
+    <div class="card" style="background:linear-gradient(135deg,rgba(255,106,0,.12),rgba(255,166,77,.06));border:1px solid rgba(255,106,0,.25)">
+      <div class="card-title">Monero — XMR <span class="tag-xmr">CPU RandomX</span> <span id="xmr-price-live" style="float:right;font-size:11px;color:var(--accent)">—</span></div>
+      <div class="card-value" id="xmr-hero-hr" style="font-size:28px;color:var(--accent)">— KH/s</div>
+      <div id="xmr-hero-rev" style="font-size:16px;color:var(--green);margin:4px 0">$0.00/jour</div>
+      <div id="xmr-hero-sub" style="font-size:11px;color:var(--muted)">— XMR/jour · $0.00/mois</div>
     </div>
+
+    <!-- Revenue -->
     <div class="grid grid-2">
+      <div class="card"><div class="card-title">Revenu brut/j</div><div class="card-value" id="xmr-rev-day-gross">$0.00</div></div>
+      <div class="card"><div class="card-title">Revenu net/j</div><div class="card-value" id="xmr-rev-day-net" style="color:var(--green)">$0.00</div></div>
+      <div class="card"><div class="card-title">Revenu/mois</div><div class="card-value" id="xmr-rev-month">$0.00</div></div>
+      <div class="card"><div class="card-title">XMR/jour</div><div class="card-value" id="xmr-coin-day" style="color:var(--accent)">—</div></div>
+      <div class="card"><div class="card-title">Puissance</div><div class="card-value" id="xmr-watt-total">—</div></div>
+      <div class="card"><div class="card-title">Elec/jour</div><div class="card-value" id="xmr-elec-day">—</div></div>
+    </div>
+
+    <!-- Pool stats -->
+    <div class="grid grid-2">
+      <div class="card"><div class="card-title">Balance totale</div><div class="card-value" id="xmr-total">— XMR</div></div>
       <div class="card"><div class="card-title">Hashrate pool</div><div class="card-value" id="xmr-pool-hr">—</div></div>
       <div class="card"><div class="card-title">Shares</div><div class="card-value" id="xmr-shares">—</div></div>
       <div class="card"><div class="card-title">En attente</div><div class="card-value" id="xmr-pending">—</div></div>
       <div class="card"><div class="card-title">Dernier paiement</div><div class="card-value" id="xmr-last-pay">—</div></div>
+      <div class="card"><div class="card-title">Marge profit</div><div class="card-value" id="xmr-margin">—</div></div>
+    </div>
+
+    <!-- CPU Rigs -->
+    <div class="card">
+      <div class="card-title" style="display:flex;justify-content:space-between;align-items:center">
+        CPU Rigs XMR (RandomX)
+        <button class="btn btn-sm" onclick="fetchAllXmrigRigs()" style="font-size:10px">Refresh</button>
+      </div>
+      <div id="xmr-rigs-list"></div>
+    </div>
+
+    <!-- Network -->
+    <div class="card">
+      <div class="card-title">Réseau Monero</div>
+      <div class="grid grid-2" style="gap:8px">
+        <div><span style="font-size:10px;color:var(--muted)">Hashrate réseau</span><div id="xmr-net-hr" style="font-size:14px;font-weight:600">—</div></div>
+        <div><span style="font-size:10px;color:var(--muted)">Votre part</span><div id="xmr-net-share" style="font-size:14px;font-weight:600;color:var(--accent)">—</div></div>
+        <div><span style="font-size:10px;color:var(--muted)">Récompense bloc</span><div id="xmr-net-reward" style="font-size:14px;font-weight:600">— XMR/bloc</div></div>
+        <div><span style="font-size:10px;color:var(--muted)">Temps de bloc</span><div id="xmr-net-time" style="font-size:14px;font-weight:600">~120s/bloc</div></div>
+      </div>
+    </div>
+
+    <!-- Pool selector -->
+    <div class="card">
+      <div class="card-title">Pool XMR</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
+        <button class="btn btn-primary" id="xmr-pool-btn-moneroocean" onclick="switchXMRPool('moneroocean')" style="font-size:11px">MoneroOcean (0%)</button>
+        <button class="btn" id="xmr-pool-btn-supportxmr" onclick="switchXMRPool('supportxmr')" style="font-size:11px">SupportXMR (0.6%)</button>
+        <button class="btn" id="xmr-pool-btn-p2pool" onclick="switchXMRPool('p2pool')" style="font-size:11px">P2Pool (0%)</button>
+      </div>
+      <div id="xmr-pool-info" style="font-size:10px;color:var(--accent);font-family:var(--mono)">MoneroOcean — algo-switching +10-20% revenus, 0% frais</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:4px">
+        Stratum: <span id="xmr-pool-stratum" style="font-family:var(--mono)">gulf.moneroocean.stream:10128</span>
+      </div>
+    </div>
+
+    <!-- Quick config -->
+    <div class="card">
+      <div class="card-title">Config rapide</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:6px">Commandes prêtes à copier pour vos CPU :</div>
+      <div id="xmr-quick-config">
+        <pre style="background:var(--bg);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:10px;font-size:10px;overflow-x:auto;color:var(--text);white-space:pre-wrap">./xmrig --url gulf.moneroocean.stream:10128 --user YOUR_XMR_WALLET --pass x --http-enabled --http-port 8080</pre>
+      </div>
     </div>
   </div>
 
   <!-- KAS PAGE -->
   <div id="page-kas" class="page">
-    <div class="card">
-      <div class="card-title">Kaspa — KAS</div>
-      <div class="card-value" id="kas-total">— KAS</div>
-      <div class="card-sub">Pool · K1Pool</div>
+    <!-- Hero -->
+    <div class="card" style="background:linear-gradient(135deg,rgba(112,238,166,.12),rgba(73,209,138,.06));border:1px solid rgba(112,238,166,.25)">
+      <div class="card-title">Kaspa — KAS <span style="background:#70eea6;color:#000;padding:1px 8px;border-radius:10px;font-size:9px;font-weight:700">kHeavyHash</span> <span id="kas-price-live" style="float:right;font-size:11px;color:#70eea6">—</span></div>
+      <div class="card-value" id="kas-hero-hr" style="font-size:28px;color:#70eea6">— GH/s</div>
+      <div id="kas-hero-rev" style="font-size:16px;color:var(--green);margin:4px 0">$0.00/jour</div>
+      <div id="kas-hero-sub" style="font-size:11px;color:var(--muted)">— KAS/jour · $0.00/mois</div>
     </div>
+
+    <!-- Revenue -->
     <div class="grid grid-2">
+      <div class="card"><div class="card-title">Revenu brut/j</div><div class="card-value" id="kas-rev-day-gross">$0.00</div></div>
+      <div class="card"><div class="card-title">Revenu net/j</div><div class="card-value" id="kas-rev-day-net" style="color:var(--green)">$0.00</div></div>
+      <div class="card"><div class="card-title">Revenu/mois</div><div class="card-value" id="kas-rev-month">$0.00</div></div>
+      <div class="card"><div class="card-title">KAS/jour</div><div class="card-value" id="kas-coin-day" style="color:#70eea6">—</div></div>
+      <div class="card"><div class="card-title">Puissance</div><div class="card-value" id="kas-watt-total">—</div></div>
+      <div class="card"><div class="card-title">Elec/jour</div><div class="card-value" id="kas-elec-day">—</div></div>
+    </div>
+
+    <!-- Pool stats -->
+    <div class="grid grid-2">
+      <div class="card"><div class="card-title">Balance totale</div><div class="card-value" id="kas-total">— KAS</div></div>
       <div class="card"><div class="card-title">Hashrate pool</div><div class="card-value" id="kas-pool-hr">—</div></div>
       <div class="card"><div class="card-title">En attente</div><div class="card-value" id="kas-pending">—</div></div>
+      <div class="card"><div class="card-title">Marge profit</div><div class="card-value" id="kas-margin">—</div></div>
+    </div>
+
+    <!-- GPU Rigs -->
+    <div class="card">
+      <div class="card-title" style="display:flex;justify-content:space-between;align-items:center">
+        GPU Rigs KAS (kHeavyHash)
+        <span id="kas-rigs-count" style="font-size:11px;color:#70eea6">0 rigs</span>
+      </div>
+      <div id="kas-gpu-rigs-list"></div>
+      <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px">
+        <div style="font-size:11px;font-weight:600;margin-bottom:8px;color:var(--text)">Ajouter un GPU</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+          <input id="kas-rig-add-name" placeholder="Nom (ex: KAS-RTX4090)" style="width:120px;font-size:11px">
+          <input id="kas-rig-add-gpu" placeholder="GPU (ex: RTX 4090)" style="width:120px;font-size:11px">
+          <input id="kas-rig-add-hr" placeholder="GH/s" value="1.2" style="width:60px;font-size:11px">
+          <input id="kas-rig-add-power" placeholder="Watts" value="300" style="width:60px;font-size:11px">
+          <button class="btn btn-primary btn-sm" onclick="addKASGPURig()">+ Ajouter</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Network -->
+    <div class="card">
+      <div class="card-title">Réseau Kaspa</div>
+      <div class="grid grid-2" style="gap:8px">
+        <div><span style="font-size:10px;color:var(--muted)">Hashrate réseau</span><div id="kas-net-hr" style="font-size:14px;font-weight:600">—</div></div>
+        <div><span style="font-size:10px;color:var(--muted)">Votre part</span><div id="kas-net-share" style="font-size:14px;font-weight:600;color:#70eea6">—</div></div>
+        <div><span style="font-size:10px;color:var(--muted)">Récompense bloc</span><div id="kas-net-reward" style="font-size:14px;font-weight:600">146 KAS/bloc</div></div>
+        <div><span style="font-size:10px;color:var(--muted)">Temps de bloc</span><div id="kas-net-time" style="font-size:14px;font-weight:600">~1s/bloc</div></div>
+      </div>
+    </div>
+
+    <!-- Pool selector -->
+    <div class="card">
+      <div class="card-title">Pool KAS</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
+        <button class="btn btn-primary" id="kas-pool-btn-k1pool" onclick="switchKASPool('k1pool')" style="font-size:11px">K1Pool (1%)</button>
+        <button class="btn" id="kas-pool-btn-acc-pool" onclick="switchKASPool('acc-pool')" style="font-size:11px">ACC Pool (1%)</button>
+        <button class="btn" id="kas-pool-btn-woolypooly" onclick="switchKASPool('woolypooly')" style="font-size:11px">WoolyPooly (0.9%)</button>
+      </div>
+      <div id="kas-pool-info" style="font-size:10px;color:#70eea6;font-family:var(--mono)">K1Pool — kHeavyHash GPU, 1% frais</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:4px">
+        Stratum: <span id="kas-pool-stratum" style="font-family:var(--mono)">kaspa.k1pool.com:3333</span>
+      </div>
+    </div>
+
+    <!-- Quick config -->
+    <div class="card">
+      <div class="card-title">Config rapide</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:6px">Commandes prêtes à copier pour vos GPU :</div>
+      <div id="kas-quick-config">
+        <pre style="background:var(--bg);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:10px;font-size:10px;overflow-x:auto;color:var(--text);white-space:pre-wrap">miner --algo kheavyhash --server kaspa.k1pool.com --port 3333 --user YOUR_KAS_WALLET.rig1 --pass x</pre>
+      </div>
     </div>
   </div>
 
