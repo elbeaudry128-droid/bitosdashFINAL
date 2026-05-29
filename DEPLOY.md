@@ -6,7 +6,7 @@ A GitHub Actions workflow auto-deploys on every push to `main`.
 
 ### First-time setup (once)
 
-1. Go to **https://github.com/elbeaudry128-droid/bitosdashFINAL/settings/pages**
+1. Go to **<https://github.com/elbeaudry128-droid/bitosdashFINAL/settings/pages>**
 2. Under **Source**, select: **"GitHub Actions"**
 3. Done.
 
@@ -24,7 +24,7 @@ https://elbeaudry128-droid.github.io/bitosdashFINAL/
 
 ### Manual deploy trigger
 
-- https://github.com/elbeaudry128-droid/bitosdashFINAL/actions
+- <https://github.com/elbeaudry128-droid/bitosdashFINAL/actions>
 - Select "Deploy to GitHub Pages" → "Run workflow"
 
 ---
@@ -49,6 +49,7 @@ python bitos-termux.py
 Opens Chrome automatically on `http://localhost:8765`.
 
 Options:
+
 ```
 --port N      Custom port (default: 8765)
 --no-open     Don't open Chrome automatically
