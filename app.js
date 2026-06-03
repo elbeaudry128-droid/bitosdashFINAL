@@ -67,8 +67,8 @@ function toast(type, title, msg, duration) {
     danger: 'var(--red)', warn: 'var(--yellow)', warning: 'var(--yellow)', info: 'var(--accent)'
   };
   const icons = { success: '✅', ok: '✅', error: '❌', err: '❌', danger: '❌', warn: '⚠️', warning: '⚠️', info: 'ℹ️' };
-  const color = colors[type] || 'var(--accent)';
-  const icon = icons[type] || 'ℹ️';
+  const color = (colors)[type] || 'var(--accent)';
+  const icon = (icons)[type] || 'ℹ️';
   const t = document.createElement('div');
   t.className = 'toast';
   t.style.cssText = 'border-left:3px solid ' + color + ';cursor:pointer;';
