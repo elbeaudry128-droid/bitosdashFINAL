@@ -108,6 +108,7 @@ function saveRVNRigs() {
   try { localStorage.setItem('bitos_rvn_gpu_rigs', JSON.stringify(RVN_GPU_RIGS)); } catch (_e) { }
 }
 
+/** @type {Array<{name?:string, status?:string, watt?:number, worker?:string, hash?:number, id?:string}>} */
 var KAS_GPU_RIGS = [];
 
 function loadKASRigs() {
