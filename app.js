@@ -95,6 +95,9 @@ let NET_STATS = {
   RVN: { networkHashrate: 0, blockReward: 2500, blockTime: 60, height: 0, lastFetch: 0 },
 };
 
+/**
+ * @type {Array<{name?:string, status?:string, watt?:number, worker?:string, hash?:number, id?:string, hr?:number}>}
+ */
 var RVN_GPU_RIGS = [];
 
 function loadRVNRigs() {
@@ -207,8 +210,44 @@ async function fetchKASNetworkStats() {
   NET_STATS.KAS.blockReward = NET_STATS.KAS.blockReward || 146;
 }
 
+/**
+ * @typedef {Object} MiningRevenueResult
+ * @property {number} daily - Revenu journalier brut en USD
+ * @property {number} monthly - Revenu mensuel brut en USD
+ * @property {number} coinPerDay - Pièces générées par jour
+ * @property {number} hr - Hashrate de la flotte en HR
+ * @property {number} hrHS - Hashrate de la flotte en HS
+ * @property {number} share - Part du hashrate réseau
+ * @property {number} netDaily - Revenu net journalier après électricité et frais
+ * @property {number} netMonthly - Revenu net mensuel après électricité et frais
+ * @property {number} elecDay - Coût électricité journalier en USD
+ * @property {number} watt - Puissance totale en watts
+ */
+
+/**
+ * @typedef {Object} NetworkStats
+ * @property {number} networkHashrate - Hashrate réseau total en HS
+ * @property {number} blockReward - Récompense bloc en pièces
+ * @property {number} blockTime - Temps bloc en secondes
+ * @property {number} height - Hauteur bloc réseau
+ * @property {number} lastFetch - Timestamp dernière récupération API
+ */
+
+/**
+ * @typedef {Object} RigInfo
+ * @property {string} coin - Type de pièce minée ('XMR'|'KAS'|'RVN')
+ * @property {string} status - État du rig ('online'|'offline')
+ * @property {number} [hrn] - Hashrate en HR
+ * @property {number} [hr] - Hashrate en HR (GPU rigs)
+ * @property {number} [watt] - Puissance en watts
+ * @property {number} [price] - Prix du matériel en USD
+ */
+
 // Revenus miniers réels pour un coin
-/** @param {'XMR'|'KAS'|'RVN'} coin */
+/**
+ * @param {'XMR'|'KAS'|'RVN'} coin - Type de pièce
+ * @returns {MiningRevenueResult} Résultat du calcul de revenu minier
+ */
 function calcMiningRevenue(coin) {
   const ns = NET_STATS[coin];
   var hrUnit = RIGS.filter(r => r.coin === coin && r.status !== 'offline')
@@ -225,7 +264,7 @@ function calcMiningRevenue(coin) {
     KAS_GPU_RIGS.filter(r => r.status === 'online').forEach(r => { hrUnit += (r.hr || 0); wattBase += (r.watt || 0); });
   }
   if (!hrUnit || !ns || !ns.networkHashrate || !ns.blockReward)
-    return { daily: 0, monthly: 0, coinPerDay: 0, hr: hrUnit, hrHS: 0, netDaily: 0, netMonthly: 0 };
+    return { daily: 0, monthly: 0, coinPerDay: 0, hr: hrUnit, hrHS: 0, netDaily: 0, netMonthly: 0, elecDay: 0, watt: 0, share: 0 };
   const hrHS = coin === 'XMR' ? hrUnit * 1000 : coin === 'RVN' ? hrUnit * 1e6 : hrUnit * 1e9;
   const blocksPerDay = 86400 / (ns.blockTime || (coin === 'XMR' ? 120 : coin === 'RVN' ? 60 : 1));
   const share = hrHS / ns.networkHashrate;
