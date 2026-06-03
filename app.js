@@ -62,13 +62,15 @@ const chartInited = {};
 function toast(type, title, msg, duration) {
   const wrap = document.getElementById('toast-wrap');
   if (!wrap) return;
+  /** @type {{[key: string]: string}} */
   const colors = {
     success: 'var(--green)', ok: 'var(--green)', error: 'var(--red)', err: 'var(--red)',
     danger: 'var(--red)', warn: 'var(--yellow)', warning: 'var(--yellow)', info: 'var(--accent)'
   };
+  /** @type {{[key: string]: string}} */
   const icons = { success: '✅', ok: '✅', error: '❌', err: '❌', danger: '❌', warn: '⚠️', warning: '⚠️', info: 'ℹ️' };
-  const color = (colors)[type] || 'var(--accent)';
-  const icon = (icons)[type] || 'ℹ️';
+  const color = colors[type] || 'var(--accent)';
+  const icon = icons[type] || 'ℹ️';
   const t = document.createElement('div');
   t.className = 'toast';
   t.style.cssText = 'border-left:3px solid ' + color + ';cursor:pointer;';
@@ -141,8 +143,9 @@ async function fetchRVNNetworkStats() {
     NET_STATS.RVN.lastFetch = Date.now();
     console.log('[NET-RVN]', (NET_STATS.RVN.networkHashrate / 1e12).toFixed(2), 'TH/s | reward:', NET_STATS.RVN.blockReward, 'RVN');
   } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
     // No fallback — show 0 if API unreachable
-    console.warn('[NET-RVN] offline:', e.message);
+    console.warn('[NET-RVN] offline:', msg);
   }
 }
 
@@ -160,8 +163,9 @@ async function fetchXMRNetworkStats() {
     console.log('[NET-XMR]', (NET_STATS.XMR.networkHashrate / 1e9).toFixed(2), 'GH/s | reward:', NET_STATS.XMR.blockReward.toFixed(4), 'XMR');
     setAPIBadge('xmrnet', 'live');
   } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
     // No fallback — show 0 if API unreachable
-    console.warn('[NET-XMR] offline:', e.message);
+    console.warn('[NET-XMR] offline:', msg);
     setAPIBadge('xmrnet', 'off');
   }
 }
@@ -255,7 +259,11 @@ function calcMiningRevenue(coin) {
   var wattBase = RIGS.filter(r => r.coin === coin && r.status !== 'offline')
     .reduce((s, r) => s + (r.watt || 0), 0);
   if (coin === 'XMR' && typeof XMRIG_RIGS !== 'undefined') {
-    XMRIG_RIGS.filter(r => r.status === 'online').forEach(r => { hrUnit += (r.hr || 0) / 1000; wattBase += (r.watt || 0); });
+    async function async (params) => {
+      name
+    }(params) {
+      XMRIG_RIGS
+    }.filter(r => r.status === 'online').forEach(r => { hrUnit += (r.hr || 0) / 1000; wattBase += (r.watt || 0); });
   }
   if (coin === 'RVN' && typeof RVN_GPU_RIGS !== 'undefined') {
     RVN_GPU_RIGS.filter(r => r.status === 'online').forEach(r => { hrUnit += (r.hr || 0); wattBase += (r.watt || 0); });
@@ -1858,6 +1866,9 @@ async function fetchPaymentHistory() {
 // Endpoint: GET /2/backends → GPU temp, fan, hashrate par device
 // ══════════════════════════════════════════════════════════════════
 
+/**
+ * @type {any[]}
+ */
 let XMRIG_RIGS = [];
 
 function loadXmrigRigs() {
