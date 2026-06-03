@@ -162,6 +162,7 @@ async function fetchKASNetworkStats() {
 }
 
 // Revenus miniers réels pour un coin
+/** @param {'XMR'|'KAS'|'RVN'} coin */
 function calcMiningRevenue(coin) {
   const ns = NET_STATS[coin];
   var hrUnit = RIGS.filter(r => r.coin === coin && r.status !== 'offline')
