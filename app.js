@@ -612,6 +612,7 @@ const FEES = {
   XMR:{ slow:0.0001, normal:0.0002, fast:0.0004 },
   KAS:{ slow:0.2, normal:0.5, fast:1.5 }
 };
+/** @type {Array<{coin:string,status:string,hrn?:number,watt?:number,price?:number,worker?:string,hashrate?:number}>} */
 const RIGS=[];  // Alimenté par HiveOS (syncWorkersToRigs)
 let ALERTS=[];  // Générées par HiveOS + pool
 const PAYMENTS=[];  // Alimenté par pool APIs
