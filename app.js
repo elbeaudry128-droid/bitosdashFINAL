@@ -259,11 +259,7 @@ function calcMiningRevenue(coin) {
   var wattBase = RIGS.filter(r => r.coin === coin && r.status !== 'offline')
     .reduce((s, r) => s + (r.watt || 0), 0);
   if (coin === 'XMR' && typeof XMRIG_RIGS !== 'undefined') {
-    async function async(params) => {
-      name
-    } (params) {
-      XMRIG_RIGS
-    }.filter(r => r.status === 'online').forEach(r => { hrUnit += (r.hr || 0) / 1000; wattBase += (r.watt || 0); });
+    XMRIG_RIGS.filter(r => r.status === 'online').forEach(r => { hrUnit += (r.hr || 0) / 1000; wattBase += (r.watt || 0); });
   }
   if (coin === 'RVN' && typeof RVN_GPU_RIGS !== 'undefined') {
     RVN_GPU_RIGS.filter(r => r.status === 'online').forEach(r => { hrUnit += (r.hr || 0); wattBase += (r.watt || 0); });
