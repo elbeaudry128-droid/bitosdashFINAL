@@ -7386,7 +7386,8 @@ const SECP256K1 = (() => {
   function pointAdd(p1, p2) {
     if (p1.x === 0n && p1.y === 0n) return p2;
     if (p2.x === 0n && p2.y === 0n) return p1;
-    const { x: X1, y: Y1, z: Z1 } = p1, { x: X2, y: Y2, z: Z2 } = p2;
+    const X1 = BigInt(p1.x), Y1 = BigInt(p1.y), Z1 = BigInt(p1.z);
+    const X2 = BigInt(p2.x), Y2 = BigInt(p2.y), Z2 = BigInt(p2.z);
     const U1 = mod(X1 * Z2 * Z2), U2 = mod(X2 * Z1 * Z1), S1 = mod(Y1 * Z2 * Z2 * Z2), S2 = mod(Y2 * Z1 * Z1 * Z1);
     if (U1 === U2) return S1 === S2 ? pointDouble(p1) : ZERO;
     const H = mod(U2 - U1), R = mod(S2 - S1);
