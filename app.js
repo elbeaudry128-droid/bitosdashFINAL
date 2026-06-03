@@ -7,6 +7,13 @@ const chartInited = {};
 
 
 // ── TOAST NOTIFICATION ─────────────────────────────────────────
+/**
+ * Affiche une notification toast temporaire
+ * @param {string} type - Type de notification ('success', 'ok', 'error', 'err', 'danger', 'warn', 'warning', 'info')
+ * @param {string} title - Titre de la notification
+ * @param {string} [msg] - Message optionnel
+ * @param {number} [duration] - Durée d'affichage en ms (défaut: 3500 ou 5000 selon type)
+ */
 function toast(type, title, msg, duration) {
   const wrap = document.getElementById('toast-wrap');
   if (!wrap) return;
