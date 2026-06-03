@@ -1,7 +1,7 @@
 // BitOS v4
 // ── ERROR BOUNDARY GLOBAL ──────────────────────────────────────
-try{window.addEventListener('error',function(e){console.error('[BitOS]',e.message,e.lineno);});}catch(_e){}
-try{window.addEventListener('unhandledrejection',function(e){e.preventDefault();console.warn('[BitOS] Promise rejection:',e.reason);});}catch(_e){}
+try { window.addEventListener('error', function (e) { console.error('[BitOS]', e.message, e.lineno); }); } catch (_e) { }
+try { window.addEventListener('unhandledrejection', function (e) { e.preventDefault(); console.warn('[BitOS] Promise rejection:', e.reason); }); } catch (_e) { }
 let _currentTheme = 'dark';
 const chartInited = {};
 
@@ -17,23 +17,25 @@ const chartInited = {};
 function toast(type, title, msg, duration) {
   const wrap = document.getElementById('toast-wrap');
   if (!wrap) return;
-  const colors = {success:'var(--green)',ok:'var(--green)',error:'var(--red)',err:'var(--red)',
-    danger:'var(--red)',warn:'var(--yellow)',warning:'var(--yellow)',info:'var(--accent)'};
-  const icons = {success:'✅',ok:'✅',error:'❌',err:'❌',danger:'❌',warn:'⚠️',warning:'⚠️',info:'ℹ️'};
+  const colors = {
+    success: 'var(--green)', ok: 'var(--green)', error: 'var(--red)', err: 'var(--red)',
+    danger: 'var(--red)', warn: 'var(--yellow)', warning: 'var(--yellow)', info: 'var(--accent)'
+  };
+  const icons = { success: '✅', ok: '✅', error: '❌', err: '❌', danger: '❌', warn: '⚠️', warning: '⚠️', info: 'ℹ️' };
   const color = colors[type] || 'var(--accent)';
-  const icon  = icons[type]  || 'ℹ️';
+  const icon = icons[type] || 'ℹ️';
   const t = document.createElement('div');
   t.className = 'toast';
-  t.style.cssText = 'border-left:3px solid '+color+';cursor:pointer;';
+  t.style.cssText = 'border-left:3px solid ' + color + ';cursor:pointer;';
   t.innerHTML = '<div style="display:flex;align-items:flex-start;gap:8px;padding:10px 14px">'
-    +'<span style="font-size:15px;flex-shrink:0">'+icon+'</span>'
-    +'<div style="min-width:0"><div style="font-weight:600;font-size:12px;color:var(--text)">'+title+'</div>'
-    +(msg?'<div style="font-size:11px;color:var(--muted);margin-top:2px">'+msg+'</div>':'')+'</div>'
-    +'<span style="margin-left:auto;font-size:14px;color:var(--muted);flex-shrink:0;padding-left:6px">×</span></div>';
-  t.onclick = () => { t.style.opacity='0'; setTimeout(()=>t.remove(),300); };
+    + '<span style="font-size:15px;flex-shrink:0">' + icon + '</span>'
+    + '<div style="min-width:0"><div style="font-weight:600;font-size:12px;color:var(--text)">' + title + '</div>'
+    + (msg ? '<div style="font-size:11px;color:var(--muted);margin-top:2px">' + msg + '</div>' : '') + '</div>'
+    + '<span style="margin-left:auto;font-size:14px;color:var(--muted);flex-shrink:0;padding-left:6px">×</span></div>';
+  t.onclick = () => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); };
   wrap.appendChild(t);
-  if(navigator.vibrate){if(type==='success'||type==='ok')navigator.vibrate(30);if(type==='error'||type==='err')navigator.vibrate([50,30,50]);}
-  setTimeout(()=>{if(t.parentNode){t.style.opacity='0';setTimeout(()=>t.remove(),300);}},duration||(type==='error'||type==='err'?5000:3500));
+  if (navigator.vibrate) { if (type === 'success' || type === 'ok') navigator.vibrate(30); if (type === 'error' || type === 'err') navigator.vibrate([50, 30, 50]); }
+  setTimeout(() => { if (t.parentNode) { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); } }, duration || (type === 'error' || type === 'err' ? 5000 : 3500));
 }
 
 // ══════════════════════════════════════════════════════════════════════
@@ -43,9 +45,9 @@ function toast(type, title, msg, duration) {
 // ══════════════════════════════════════════════════════════════════════
 
 let NET_STATS = {
-  XMR:{ networkHashrate:0, blockReward:0.6,  blockTime:120, height:0, lastFetch:0 },
-  KAS:{ networkHashrate:0, blockReward:146,   blockTime:1,   height:0, lastFetch:0 },
-  RVN:{ networkHashrate:0, blockReward:2500,  blockTime:60,  height:0, lastFetch:0 },
+  XMR: { networkHashrate: 0, blockReward: 0.6, blockTime: 120, height: 0, lastFetch: 0 },
+  KAS: { networkHashrate: 0, blockReward: 146, blockTime: 1, height: 0, lastFetch: 0 },
+  RVN: { networkHashrate: 0, blockReward: 2500, blockTime: 60, height: 0, lastFetch: 0 },
 };
 
 var RVN_GPU_RIGS = [];
@@ -54,11 +56,11 @@ function loadRVNRigs() {
   try {
     var saved = localStorage.getItem('bitos_rvn_gpu_rigs');
     if (saved) RVN_GPU_RIGS = JSON.parse(saved);
-  } catch(_e) {}
+  } catch (_e) { }
 }
 
 function saveRVNRigs() {
-  try { localStorage.setItem('bitos_rvn_gpu_rigs', JSON.stringify(RVN_GPU_RIGS)); } catch(_e) {}
+  try { localStorage.setItem('bitos_rvn_gpu_rigs', JSON.stringify(RVN_GPU_RIGS)); } catch (_e) { }
 }
 
 var KAS_GPU_RIGS = [];
@@ -67,18 +69,18 @@ function loadKASRigs() {
   try {
     var saved = localStorage.getItem('bitos_kas_gpu_rigs');
     if (saved) KAS_GPU_RIGS = JSON.parse(saved);
-  } catch(_e) {}
+  } catch (_e) { }
 }
 
 function saveKASRigs() {
-  try { localStorage.setItem('bitos_kas_gpu_rigs', JSON.stringify(KAS_GPU_RIGS)); } catch(_e) {}
+  try { localStorage.setItem('bitos_kas_gpu_rigs', JSON.stringify(KAS_GPU_RIGS)); } catch (_e) { }
 }
 
 async function fetchRVNNetworkStats() {
   if (Date.now() - NET_STATS.RVN.lastFetch < 300000) return;
   try {
     var url = 'https://rvn.2miners.com/api/stats';
-    var res = await fetch(url, {signal: AbortSignal.timeout(8000)});
+    var res = await fetch(url, { signal: AbortSignal.timeout(8000) });
     if (!res.ok) throw new Error('HTTP ' + res.status);
     var d = await res.json();
     if (d.nodes && d.nodes[0]) {
@@ -89,73 +91,73 @@ async function fetchRVNNetworkStats() {
     if (d.blockReward) NET_STATS.RVN.blockReward = d.blockReward / 1e8;
     NET_STATS.RVN.lastFetch = Date.now();
     console.log('[NET-RVN]', (NET_STATS.RVN.networkHashrate / 1e12).toFixed(2), 'TH/s | reward:', NET_STATS.RVN.blockReward, 'RVN');
-  } catch(e) {
+  } catch (e) {
     // No fallback — show 0 if API unreachable
     console.warn('[NET-RVN] offline:', e.message);
   }
 }
 
 async function fetchXMRNetworkStats() {
-  if(Date.now()-NET_STATS.XMR.lastFetch < 300000) return; // cache 5 min
+  if (Date.now() - NET_STATS.XMR.lastFetch < 300000) return; // cache 5 min
   try {
-    const r=await fetch(getApiBase('xmrchain')+'/networkinfo',{signal:AbortSignal.timeout(10000)});
-    if(!r.ok) throw new Error('HTTP '+r.status);
-    const d=await r.json();
-    NET_STATS.XMR.networkHashrate = d.hash_rate  || 0;
-    NET_STATS.XMR.blockReward     = (d.reward    || 600000000000)/1e12; // piconero→XMR
-    NET_STATS.XMR.blockTime       = d.target      || 120;
-    NET_STATS.XMR.height          = d.height      || 0;
-    NET_STATS.XMR.lastFetch       = Date.now();
-    console.log('[NET-XMR]',(NET_STATS.XMR.networkHashrate/1e9).toFixed(2),'GH/s | reward:',NET_STATS.XMR.blockReward.toFixed(4),'XMR');
-    setAPIBadge('xmrnet','live');
-  } catch(e) {
+    const r = await fetch(getApiBase('xmrchain') + '/networkinfo', { signal: AbortSignal.timeout(10000) });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const d = await r.json();
+    NET_STATS.XMR.networkHashrate = d.hash_rate || 0;
+    NET_STATS.XMR.blockReward = (d.reward || 600000000000) / 1e12; // piconero→XMR
+    NET_STATS.XMR.blockTime = d.target || 120;
+    NET_STATS.XMR.height = d.height || 0;
+    NET_STATS.XMR.lastFetch = Date.now();
+    console.log('[NET-XMR]', (NET_STATS.XMR.networkHashrate / 1e9).toFixed(2), 'GH/s | reward:', NET_STATS.XMR.blockReward.toFixed(4), 'XMR');
+    setAPIBadge('xmrnet', 'live');
+  } catch (e) {
     // No fallback — show 0 if API unreachable
-    console.warn('[NET-XMR] offline:',e.message);
-    setAPIBadge('xmrnet','off');
+    console.warn('[NET-XMR] offline:', e.message);
+    setAPIBadge('xmrnet', 'off');
   }
 }
 
 async function fetchKASNetworkStats() {
-  if(Date.now()-NET_STATS.KAS.lastFetch < 300000) return;
-  let ok=false;
+  if (Date.now() - NET_STATS.KAS.lastFetch < 300000) return;
+  let ok = false;
   // Essai 1: hashrate direct
   try {
-    const r=await fetch(getApiBase('kaspa')+'/info/hashrate?stringOnly=false',{signal:AbortSignal.timeout(8000)});
-    if(r.ok){const d=await r.json(); const hr=parseFloat(d.hashrate||d.value||0); if(hr>0){NET_STATS.KAS.networkHashrate=hr;ok=true;}}
-  } catch(e){}
+    const r = await fetch(getApiBase('kaspa') + '/info/hashrate?stringOnly=false', { signal: AbortSignal.timeout(8000) });
+    if (r.ok) { const d = await r.json(); const hr = parseFloat(d.hashrate || d.value || 0); if (hr > 0) { NET_STATS.KAS.networkHashrate = hr; ok = true; } }
+  } catch (e) { }
   // Essai 2: network-info
-  if(!ok) {
+  if (!ok) {
     try {
-      const r=await fetch(getApiBase('kaspa')+'/info/network-info',{signal:AbortSignal.timeout(8000)});
-      if(r.ok){const d=await r.json(); const hr=d.networkHashrate||d.hashRate||0; if(hr>0){NET_STATS.KAS.networkHashrate=hr;ok=true;}}
-    } catch(e){}
+      const r = await fetch(getApiBase('kaspa') + '/info/network-info', { signal: AbortSignal.timeout(8000) });
+      if (r.ok) { const d = await r.json(); const hr = d.networkHashrate || d.hashRate || 0; if (hr > 0) { NET_STATS.KAS.networkHashrate = hr; ok = true; } }
+    } catch (e) { }
   }
   // Essai 3: blockdag difficulty
-  if(!ok) {
+  if (!ok) {
     try {
-      const r=await fetch(getApiBase('kaspa')+'/info/blockdag',{signal:AbortSignal.timeout(8000)});
-      if(r.ok){const d=await r.json(); if(d.difficulty){NET_STATS.KAS.networkHashrate=d.difficulty;ok=true;}}
-    } catch(e){}
+      const r = await fetch(getApiBase('kaspa') + '/info/blockdag', { signal: AbortSignal.timeout(8000) });
+      if (r.ok) { const d = await r.json(); if (d.difficulty) { NET_STATS.KAS.networkHashrate = d.difficulty; ok = true; } }
+    } catch (e) { }
   }
-  if(ok) {
-    NET_STATS.KAS.lastFetch=Date.now();
-    console.log('[NET-KAS]',(NET_STATS.KAS.networkHashrate/1e12).toFixed(2),'TH/s');
-    setAPIBadge('kasnet','live');
+  if (ok) {
+    NET_STATS.KAS.lastFetch = Date.now();
+    console.log('[NET-KAS]', (NET_STATS.KAS.networkHashrate / 1e12).toFixed(2), 'TH/s');
+    setAPIBadge('kasnet', 'live');
   } else {
-    NET_STATS.KAS.networkHashrate=NET_STATS.KAS.networkHashrate||6.2e14; // ~620 TH/s fallback
+    NET_STATS.KAS.networkHashrate = NET_STATS.KAS.networkHashrate || 6.2e14; // ~620 TH/s fallback
     console.warn('[NET-KAS] toutes APIs offline');
-    setAPIBadge('kasnet','off');
+    setAPIBadge('kasnet', 'off');
   }
   // Récupérer blockReward depuis api.kaspa.org/info/blockdag
   try {
-    var _rb = await fetch(getApiBase('kaspa')+'/info/blockdag', {signal:AbortSignal.timeout(6000)});
+    var _rb = await fetch(getApiBase('kaspa') + '/info/blockdag', { signal: AbortSignal.timeout(6000) });
     if (_rb.ok) {
       var _db = await _rb.json();
       var _br = (_db.subsidyPerBlock || _db.rewardPerBlock || _db.blockReward || 0);
       if (_br > 1e6) _br = _br / 1e8;  // somori → KAS si valeur > 1e6
       if (_br > 0 && _br < 10000) NET_STATS.KAS.blockReward = _br;
     }
-  } catch(_e) {}
+  } catch (_e) { }
   NET_STATS.KAS.blockReward = NET_STATS.KAS.blockReward || 146;
 }
 
@@ -163,9 +165,9 @@ async function fetchKASNetworkStats() {
 function calcMiningRevenue(coin) {
   const ns = NET_STATS[coin];
   var hrUnit = RIGS.filter(r => r.coin === coin && r.status !== 'offline')
-                     .reduce((s, r) => s + (r.hrn || 0), 0);
+    .reduce((s, r) => s + (r.hrn || 0), 0);
   var wattBase = RIGS.filter(r => r.coin === coin && r.status !== 'offline')
-                     .reduce((s, r) => s + (r.watt || 0), 0);
+    .reduce((s, r) => s + (r.watt || 0), 0);
   if (coin === 'XMR' && typeof XMRIG_RIGS !== 'undefined') {
     XMRIG_RIGS.filter(r => r.status === 'online').forEach(r => { hrUnit += (r.hr || 0) / 1000; wattBase += (r.watt || 0); });
   }
@@ -176,83 +178,85 @@ function calcMiningRevenue(coin) {
     KAS_GPU_RIGS.filter(r => r.status === 'online').forEach(r => { hrUnit += (r.hr || 0); wattBase += (r.watt || 0); });
   }
   if (!hrUnit || !ns || !ns.networkHashrate || !ns.blockReward)
-    return {daily:0, monthly:0, coinPerDay:0, hr:hrUnit, hrHS:0, netDaily:0, netMonthly:0};
-  const hrHS       = coin === 'XMR' ? hrUnit * 1000 : coin === 'RVN' ? hrUnit * 1e6 : hrUnit * 1e9;
+    return { daily: 0, monthly: 0, coinPerDay: 0, hr: hrUnit, hrHS: 0, netDaily: 0, netMonthly: 0 };
+  const hrHS = coin === 'XMR' ? hrUnit * 1000 : coin === 'RVN' ? hrUnit * 1e6 : hrUnit * 1e9;
   const blocksPerDay = 86400 / (ns.blockTime || (coin === 'XMR' ? 120 : coin === 'RVN' ? 60 : 1));
-  const share      = hrHS / ns.networkHashrate;
+  const share = hrHS / ns.networkHashrate;
   const coinPerDay = share * ns.blockReward * blocksPerDay;
-  const price      = coin === 'XMR' ? xmrP : coin === 'RVN' ? rvnP : kasP;
-  const daily      = coinPerDay * (price || 0);
-  const watt       = wattBase;
-  const elecRate   = parseFloat(el('m-elec')?.value || '0.20') || 0.20;
-  const elecDay    = (watt / 1000) * elecRate * 24;
-  const feeDay     = daily * 0.006;
-  const netDaily   = daily - elecDay - feeDay;
-  return {daily, monthly: daily*30, coinPerDay, hr: hrUnit,
-          hrHS, share, netDaily, netMonthly: netDaily*30, elecDay, watt};
+  const price = coin === 'XMR' ? xmrP : coin === 'RVN' ? rvnP : kasP;
+  const daily = coinPerDay * (price || 0);
+  const watt = wattBase;
+  const elecRate = parseFloat(el('m-elec')?.value || '0.20') || 0.20;
+  const elecDay = (watt / 1000) * elecRate * 24;
+  const feeDay = daily * 0.006;
+  const netDaily = daily - elecDay - feeDay;
+  return {
+    daily, monthly: daily * 30, coinPerDay, hr: hrUnit,
+    hrHS, share, netDaily, netMonthly: netDaily * 30, elecDay, watt
+  };
 }
 
 // Profitabilité complète — met à jour TOUS les KPI
 function calcRealProfitability() {
-  const xR=calcMiningRevenue('XMR'), kR=calcMiningRevenue('KAS'), rR=calcMiningRevenue('RVN');
-  const rev=xR.monthly+kR.monthly+rR.monthly;
-  const elecRate=parseFloat(el('m-elec')?.value||'0.20')||0.20;
-  var watts=RIGS.filter(r=>r.status!=='offline').reduce((s,r)=>s+(r.watt||0),0);
-  if(typeof XMRIG_RIGS!=='undefined') XMRIG_RIGS.filter(r=>r.status==='online').forEach(r=>{watts+=(r.watt||0);});
-  if(typeof RVN_GPU_RIGS!=='undefined') RVN_GPU_RIGS.filter(r=>r.status==='online').forEach(r=>{watts+=(r.watt||0);});
-  if(typeof KAS_GPU_RIGS!=='undefined') KAS_GPU_RIGS.filter(r=>r.status==='online').forEach(r=>{watts+=(r.watt||0);});
-  const elec=(watts/1000)*elecRate*24*30;
-  const fee=rev*0.006;
-  const net=Math.max(0,rev-elec-fee);
-  const margin=rev>0?(net/rev*100):0;
-  const invest=RIGS.reduce((s,r)=>s+(r.price||800),0)||3200;
-  const roi=net>0?(net*12/invest*100):0;
-  const pb=net>0?Math.round(invest/net):0;
-  const rev24=xR.daily+kR.daily+rR.daily;
-  const f=(n,d=0)=>n>0?'$'+n.toLocaleString('fr-CA',{minimumFractionDigits:d,maximumFractionDigits:d}):'—';
+  const xR = calcMiningRevenue('XMR'), kR = calcMiningRevenue('KAS'), rR = calcMiningRevenue('RVN');
+  const rev = xR.monthly + kR.monthly + rR.monthly;
+  const elecRate = parseFloat(el('m-elec')?.value || '0.20') || 0.20;
+  var watts = RIGS.filter(r => r.status !== 'offline').reduce((s, r) => s + (r.watt || 0), 0);
+  if (typeof XMRIG_RIGS !== 'undefined') XMRIG_RIGS.filter(r => r.status === 'online').forEach(r => { watts += (r.watt || 0); });
+  if (typeof RVN_GPU_RIGS !== 'undefined') RVN_GPU_RIGS.filter(r => r.status === 'online').forEach(r => { watts += (r.watt || 0); });
+  if (typeof KAS_GPU_RIGS !== 'undefined') KAS_GPU_RIGS.filter(r => r.status === 'online').forEach(r => { watts += (r.watt || 0); });
+  const elec = (watts / 1000) * elecRate * 24 * 30;
+  const fee = rev * 0.006;
+  const net = Math.max(0, rev - elec - fee);
+  const margin = rev > 0 ? (net / rev * 100) : 0;
+  const invest = RIGS.reduce((s, r) => s + (r.price || 800), 0) || 3200;
+  const roi = net > 0 ? (net * 12 / invest * 100) : 0;
+  const pb = net > 0 ? Math.round(invest / net) : 0;
+  const rev24 = xR.daily + kR.daily + rR.daily;
+  const f = (n, d = 0) => n > 0 ? '$' + n.toLocaleString('fr-CA', { minimumFractionDigits: d, maximumFractionDigits: d }) : '—';
 
-  setText('kpi-rev',   f(rev));
-  setText('kpi-cost',  f(elec));
-  setText('kpi-net',   f(net));
-  setText('kpi-margin','Marge: '+Math.round(margin)+'%');
-  setText('kpi-roi',   roi>0?Math.round(roi)+'%':'—');
-  setText('kpi-pb',    pb>0?pb+' mois':'—');
-  setText('d-rev-day',  f(rev24,2));
-  setText('d-rev-month',f(rev));
-  setText('d-elec',     f(elec));
-  setText('d-net',      f(net));
-  setText('d-margin',   Math.round(margin)+'%');
-  if(xR.coinPerDay>0) setText('d-xmr-day',xR.coinPerDay.toFixed(4)+' XMR/j');
-  if(kR.coinPerDay>0) setText('d-kas-day',kR.coinPerDay.toFixed(1)+' KAS/j');
-  if(rR.coinPerDay>0) setText('d-rvn-rev','+$'+rR.daily.toFixed(2)+'/j');
-  if(xR.hr>0){ setText('d-xmr-hr',(xR.hr/1000).toFixed(1)+' KH/s'); setText('d-xmr-hr-side',(xR.hr/1000).toFixed(1)+' KH/s'); }
-  if(kR.hr>0)  setText('d-kas-hr',(kR.hr/1e9).toFixed(2)+' GH/s');
-  if(rR.hr>0) setText('d-rvn-hr',rR.hr.toFixed(1)+' MH/s');
-  if(watts>0){ setText('d-watt',watts+'W'); setText('s-watt',watts+'W'); }
-  setText('s-rev', f(rev24,2));
+  setText('kpi-rev', f(rev));
+  setText('kpi-cost', f(elec));
+  setText('kpi-net', f(net));
+  setText('kpi-margin', 'Marge: ' + Math.round(margin) + '%');
+  setText('kpi-roi', roi > 0 ? Math.round(roi) + '%' : '—');
+  setText('kpi-pb', pb > 0 ? pb + ' mois' : '—');
+  setText('d-rev-day', f(rev24, 2));
+  setText('d-rev-month', f(rev));
+  setText('d-elec', f(elec));
+  setText('d-net', f(net));
+  setText('d-margin', Math.round(margin) + '%');
+  if (xR.coinPerDay > 0) setText('d-xmr-day', xR.coinPerDay.toFixed(4) + ' XMR/j');
+  if (kR.coinPerDay > 0) setText('d-kas-day', kR.coinPerDay.toFixed(1) + ' KAS/j');
+  if (rR.coinPerDay > 0) setText('d-rvn-rev', '+$' + rR.daily.toFixed(2) + '/j');
+  if (xR.hr > 0) { setText('d-xmr-hr', (xR.hr / 1000).toFixed(1) + ' KH/s'); setText('d-xmr-hr-side', (xR.hr / 1000).toFixed(1) + ' KH/s'); }
+  if (kR.hr > 0) setText('d-kas-hr', (kR.hr / 1e9).toFixed(2) + ' GH/s');
+  if (rR.hr > 0) setText('d-rvn-hr', rR.hr.toFixed(1) + ' MH/s');
+  if (watts > 0) { setText('d-watt', watts + 'W'); setText('s-watt', watts + 'W'); }
+  setText('s-rev', f(rev24, 2));
   // Carte calculateur réel
-  if(xmrP>0) setText('rc-xmr-price','$'+xmrP.toLocaleString('fr-CA',{minimumFractionDigits:2,maximumFractionDigits:2}));
-  if(kasP>0) setText('rc-kas-price','$'+kasP.toFixed(4));
-  if(xR.hr>0) setText('rc-xmr-hr',(xR.hr/1000).toFixed(1)+' KH/s');
-  if(kR.hr>0) setText('rc-kas-hr',(kR.hr/1e9).toFixed(2)+' GH/s');
-  const activeN=RIGS.filter(r=>r.status!=='offline').length;
-  setText('rc-rigs', RIGS.length>0 ? activeN+' / '+RIGS.length : '—');
-  setText('rc-elec-display','$'+elecRate.toFixed(2)+' / kWh');
-  setText('s-profit',f(net));
-  setText('s-margin', Math.round(margin)+'%');
-  setText('s-roi',    roi>0?Math.round(roi)+'%':'—');
+  if (xmrP > 0) setText('rc-xmr-price', '$' + xmrP.toLocaleString('fr-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+  if (kasP > 0) setText('rc-kas-price', '$' + kasP.toFixed(4));
+  if (xR.hr > 0) setText('rc-xmr-hr', (xR.hr / 1000).toFixed(1) + ' KH/s');
+  if (kR.hr > 0) setText('rc-kas-hr', (kR.hr / 1e9).toFixed(2) + ' GH/s');
+  const activeN = RIGS.filter(r => r.status !== 'offline').length;
+  setText('rc-rigs', RIGS.length > 0 ? activeN + ' / ' + RIGS.length : '—');
+  setText('rc-elec-display', '$' + elecRate.toFixed(2) + ' / kWh');
+  setText('s-profit', f(net));
+  setText('s-margin', Math.round(margin) + '%');
+  setText('s-roi', roi > 0 ? Math.round(roi) + '%' : '—');
   // Conseil dynamique
-  const adv=el('s-advice');
-  if(adv){
-    if(!activeN) adv.textContent='⏳ HiveOS non synchronisé…';
-    else if(!xmrP&&!kasP) adv.textContent='⏳ En attente des prix CoinGecko…';
-    else if(net<=0) adv.textContent='⚠️ Déficitaire au tarif actuel. Réduisez la conso ou augmentez les hashrates.';
-    else if(roi>80) adv.textContent='🚀 Excellente rentabilité — ROI '+Math.round(roi)+'% · Profit: '+f(net)+'/mois';
-    else if(roi>40) adv.textContent='✅ Rentable — Profit net: '+f(net)+'/mois · ROI: '+Math.round(roi)+'%';
-    else adv.textContent='📊 Rentabilité modérée. Optimisez l\'électricité ou les hashrates.';
+  const adv = el('s-advice');
+  if (adv) {
+    if (!activeN) adv.textContent = '⏳ HiveOS non synchronisé…';
+    else if (!xmrP && !kasP) adv.textContent = '⏳ En attente des prix CoinGecko…';
+    else if (net <= 0) adv.textContent = '⚠️ Déficitaire au tarif actuel. Réduisez la conso ou augmentez les hashrates.';
+    else if (roi > 80) adv.textContent = '🚀 Excellente rentabilité — ROI ' + Math.round(roi) + '% · Profit: ' + f(net) + '/mois';
+    else if (roi > 40) adv.textContent = '✅ Rentable — Profit net: ' + f(net) + '/mois · ROI: ' + Math.round(roi) + '%';
+    else adv.textContent = '📊 Rentabilité modérée. Optimisez l\'électricité ou les hashrates.';
   }
   // Scénarios
-  setTimeout(renderScenarios,0);
+  setTimeout(renderScenarios, 0);
   // ── Graphique Revenus vs Coûts (ch-rent) ──────────────
   try {
     const cv = el('ch-rent');
@@ -261,18 +265,18 @@ function calcRealProfitability() {
       if (ctx) {
         const W = cv.offsetWidth || 400, H = cv.offsetHeight || 180;
         cv.width = W; cv.height = H;
-        ctx.clearRect(0,0,W,H);
+        ctx.clearRect(0, 0, W, H);
         const bars = [
-          { label:'Revenus',    val: rev,  color: '#10b981' },
-          { label:'Électricité',val: elec, color: '#f59e0b' },
-          { label:'Net',        val: net,  color: net>0?'#3b82f6':'#ef4444' },
+          { label: 'Revenus', val: rev, color: '#10b981' },
+          { label: 'Électricité', val: elec, color: '#f59e0b' },
+          { label: 'Net', val: net, color: net > 0 ? '#3b82f6' : '#ef4444' },
         ];
-        const maxV = Math.max(...bars.map(b=>b.val), 1);
-        const padX=16, padY=20, BW=Math.floor((W-padX*2)/bars.length)-12;
-        bars.forEach((b,i) => {
-          const x = padX + i*((W-padX*2)/bars.length) + 6;
-          const barH = Math.max(2,(b.val/maxV)*(H-padY*2));
-          const y = padY + (H-padY*2) - barH;
+        const maxV = Math.max(...bars.map(b => b.val), 1);
+        const padX = 16, padY = 20, BW = Math.floor((W - padX * 2) / bars.length) - 12;
+        bars.forEach((b, i) => {
+          const x = padX + i * ((W - padX * 2) / bars.length) + 6;
+          const barH = Math.max(2, (b.val / maxV) * (H - padY * 2));
+          const y = padY + (H - padY * 2) - barH;
           ctx.fillStyle = b.color;
           ctx.globalAlpha = 0.85;
           ctx.fillRect(x, y, BW, barH);
@@ -280,66 +284,66 @@ function calcRealProfitability() {
           ctx.fillStyle = 'var(--text,#e2e8f0)';
           ctx.font = 'bold 10px monospace';
           ctx.textAlign = 'center';
-          const lbl = b.val>0?'$'+Math.round(b.val):'—';
-          ctx.fillText(lbl, x+BW/2, Math.max(y-4, padY+8));
+          const lbl = b.val > 0 ? '$' + Math.round(b.val) : '—';
+          ctx.fillText(lbl, x + BW / 2, Math.max(y - 4, padY + 8));
           ctx.fillStyle = 'var(--muted,#64748b)';
           ctx.font = '9px monospace';
-          ctx.fillText(b.label, x+BW/2, H-5);
+          ctx.fillText(b.label, x + BW / 2, H - 5);
         });
       }
     }
-  } catch(_e){}
-  return {xR,kR,rev,elec,net,margin,roi,pb,rev24};
+  } catch (_e) { }
+  return { xR, kR, rev, elec, net, margin, roi, pb, rev24 };
 }
 
 async function fetchNetworkStats() {
-  await Promise.allSettled([fetchXMRNetworkStats(),fetchKASNetworkStats()]);
+  await Promise.allSettled([fetchXMRNetworkStats(), fetchKASNetworkStats()]);
   calcRealProfitability();
 }
 
 // Scénarios de prix calculés dynamiquement
 function renderScenarios() {
-  const tbody=el('scenarios-tbody'); if(!tbody) return;
-  const xHR=RIGS.filter(r=>r.coin==='XMR'&&r.status!=='offline').reduce((s,r)=>s+(r.hrn||0),0);
-  const kHR=RIGS.filter(r=>r.coin==='KAS'&&r.status!=='offline').reduce((s,r)=>s+(r.hrn||0),0);
-  const watts=RIGS.filter(r=>r.status!=='offline').reduce((s,r)=>s+(r.watt||0),0);
-  const elecRate=parseFloat(el('m-elec')?.value||'0.20')||0.20;
-  const elecM=(watts/1000)*elecRate*24*30;
-  const invest=RIGS.reduce((s,r)=>s+(r.price||800),0)||3200;
-  if(!xHR&&!kHR) {
-    tbody.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--yellow);padding:16px">⚠ HiveOS non synchronisé — Configurez votre token dans Paramètres</td></tr>';
+  const tbody = el('scenarios-tbody'); if (!tbody) return;
+  const xHR = RIGS.filter(r => r.coin === 'XMR' && r.status !== 'offline').reduce((s, r) => s + (r.hrn || 0), 0);
+  const kHR = RIGS.filter(r => r.coin === 'KAS' && r.status !== 'offline').reduce((s, r) => s + (r.hrn || 0), 0);
+  const watts = RIGS.filter(r => r.status !== 'offline').reduce((s, r) => s + (r.watt || 0), 0);
+  const elecRate = parseFloat(el('m-elec')?.value || '0.20') || 0.20;
+  const elecM = (watts / 1000) * elecRate * 24 * 30;
+  const invest = RIGS.reduce((s, r) => s + (r.price || 800), 0) || 3200;
+  if (!xHR && !kHR) {
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--yellow);padding:16px">⚠ HiveOS non synchronisé — Configurez votre token dans Paramètres</td></tr>';
     return;
   }
-  const SCENS=[
-    ['🐻 Bear',    150,  0.02, 't-warn','Difficile'],
-    ['📉 Correct', 250, 0.03, 't-warn','Modéré'],
-    ['📊 Actuel',  xmrP||327, kasP||0.033, 't-info','Actuel'],
-    ['📈 Haussier',450, 0.08, 't-best','Bon'],
-    ['🚀 Bullrun', 600, 0.20, 't-best','Excellent'],
-    ['💎 Moon',    1000, 0.50, 't-best','Max'],
+  const SCENS = [
+    ['🐻 Bear', 150, 0.02, 't-warn', 'Difficile'],
+    ['📉 Correct', 250, 0.03, 't-warn', 'Modéré'],
+    ['📊 Actuel', xmrP || 327, kasP || 0.033, 't-info', 'Actuel'],
+    ['📈 Haussier', 450, 0.08, 't-best', 'Bon'],
+    ['🚀 Bullrun', 600, 0.20, 't-best', 'Excellent'],
+    ['💎 Moon', 1000, 0.50, 't-best', 'Max'],
   ];
-  function sc(xp,kp) {
-    const calc=(hr,coin,p)=>{const ns=NET_STATS[coin];if(!hr||!ns.networkHashrate)return 0;return(hr/ns.networkHashrate)*ns.blockReward*(86400/(ns.blockTime||120))*30*p;};
-    const r=calc(xHR,'XMR',xp)+calc(kHR,'KAS',kp);
-    const n=Math.max(0,r-elecM-r*(POOL_CONFIG.XMR.fee||0));
-    return{net:n,roi:invest>0?Math.round(n*12/invest*100):0,pb:n>0?Math.round(invest/n):'∞'};
+  function sc(xp, kp) {
+    const calc = (hr, coin, p) => { const ns = NET_STATS[coin]; if (!hr || !ns.networkHashrate) return 0; return (hr / ns.networkHashrate) * ns.blockReward * (86400 / (ns.blockTime || 120)) * 30 * p; };
+    const r = calc(xHR, 'XMR', xp) + calc(kHR, 'KAS', kp);
+    const n = Math.max(0, r - elecM - r * (POOL_CONFIG.XMR.fee || 0));
+    return { net: n, roi: invest > 0 ? Math.round(n * 12 / invest * 100) : 0, pb: n > 0 ? Math.round(invest / n) : '∞' };
   }
-  tbody.innerHTML=SCENS.map(([l,xp,kp,tc,tl])=>{
-    const s=sc(xp,kp), c=s.net>0?'var(--green)':'var(--red)';
-    return`<tr><td><b>${l}</b></td><td style="color:var(--orange)">$${xp}</td><td style="color:var(--accent)">$${kp}</td><td>$${elecRate.toFixed(2)}</td><td style="color:${c};font-weight:700">$${Math.round(s.net).toLocaleString('fr-CA')}</td><td style="color:${c}">${s.roi>0?s.roi+'%':'—'}</td><td>${s.pb} mois</td><td><span class="tag ${tc}">${tl}</span></td></tr>`;
+  tbody.innerHTML = SCENS.map(([l, xp, kp, tc, tl]) => {
+    const s = sc(xp, kp), c = s.net > 0 ? 'var(--green)' : 'var(--red)';
+    return `<tr><td><b>${l}</b></td><td style="color:var(--orange)">$${xp}</td><td style="color:var(--accent)">$${kp}</td><td>$${elecRate.toFixed(2)}</td><td style="color:${c};font-weight:700">$${Math.round(s.net).toLocaleString('fr-CA')}</td><td style="color:${c}">${s.roi > 0 ? s.roi + '%' : '—'}</td><td>${s.pb} mois</td><td><span class="tag ${tc}">${tl}</span></td></tr>`;
   }).join('');
 }
 
 function onElecChange(inp) {
-  const v=parseFloat(inp.value);
-  if(!isNaN(v)&&v>=0){setText('s-elec-d','$'+v.toFixed(2)+' / kWh');scheduleSave();calcRealProfitability();}
+  const v = parseFloat(inp.value);
+  if (!isNaN(v) && v >= 0) { setText('s-elec-d', '$' + v.toFixed(2) + ' / kWh'); scheduleSave(); calcRealProfitability(); }
 }
 
 
 // ══════════════════════════════════════════════════════
 // SERVICE WORKER (offline)
 // ══════════════════════════════════════════════════════
-if('serviceWorker' in navigator){
+if ('serviceWorker' in navigator) {
   // ── Service Worker adaptatif ────────────────────────────────
   // HTTP/HTTPS → sw.js externe (déploiement Cloudflare/Netlify/local)
   // file://    → blob: SW inline (ouverture directe du HTML)
@@ -352,12 +356,12 @@ if('serviceWorker' in navigator){
         navigator.serviceWorker.addEventListener('message', e => {
           if (e.data?.type !== 'API_UPDATED') return;
           const h = e.data.hostname;
-          if      (h === 'api.coingecko.com')     fetchCoinGeckoPrices?.();
-          else if (h === 'api.kaspa.org')          fetchKASNetworkStats?.();
-          else if (h === 'api-kas.k1pool.com')     fetchKASPool?.();
-          else if (h === 'supportxmr.com')         fetchXMRPool?.();
-          else if (h === 'xmrchain.net')           fetchXMRNetworkStats?.();
-          else if (h === 'api2.hiveos.farm')        fetchHiveOS?.();
+          if (h === 'api.coingecko.com') fetchCoinGeckoPrices?.();
+          else if (h === 'api.kaspa.org') fetchKASNetworkStats?.();
+          else if (h === 'api-kas.k1pool.com') fetchKASPool?.();
+          else if (h === 'supportxmr.com') fetchXMRPool?.();
+          else if (h === 'xmrchain.net') fetchXMRNetworkStats?.();
+          else if (h === 'api2.hiveos.farm') fetchHiveOS?.();
         });
         console.log('[BitOS SW] sw.js externe OK (' + location.protocol + ')');
       }).catch(e => console.warn('[BitOS SW] Erreur sw.js:', e.message));
@@ -370,36 +374,36 @@ if('serviceWorker' in navigator){
         navigator.serviceWorker.addEventListener('message', e => {
           if (e.data?.type !== 'API_UPDATED') return;
           const h = e.data.hostname;
-          if      (h === 'api.coingecko.com')     fetchCoinGeckoPrices?.();
-          else if (h === 'api.kaspa.org')          fetchKASNetworkStats?.();
-          else if (h === 'api-kas.k1pool.com')     fetchKASPool?.();
-          else if (h === 'supportxmr.com')         fetchXMRPool?.();
-          else if (h === 'xmrchain.net')           fetchXMRNetworkStats?.();
-          else if (h === 'api2.hiveos.farm')        fetchHiveOS?.();
+          if (h === 'api.coingecko.com') fetchCoinGeckoPrices?.();
+          else if (h === 'api.kaspa.org') fetchKASNetworkStats?.();
+          else if (h === 'api-kas.k1pool.com') fetchKASPool?.();
+          else if (h === 'supportxmr.com') fetchXMRPool?.();
+          else if (h === 'xmrchain.net') fetchXMRNetworkStats?.();
+          else if (h === 'api2.hiveos.farm') fetchHiveOS?.();
         });
         console.log('[BitOS SW] blob: SW inline OK (file://)');
-      }).catch(() => {});
+      }).catch(() => { });
   }
 }
 
 // -- Connectivite offline
-function updateOnlineStatus(){
-  const b=el('connectivity-badge');
-  if(!b)return;
-  if(navigator.onLine){b.style.display='none';}
-  else{b.style.display='inline-flex';b.textContent='Hors ligne - donnees en cache';}
+function updateOnlineStatus() {
+  const b = el('connectivity-badge');
+  if (!b) return;
+  if (navigator.onLine) { b.style.display = 'none'; }
+  else { b.style.display = 'inline-flex'; b.textContent = 'Hors ligne - donnees en cache'; }
 }
-try{
-  window.addEventListener('online', ()=>{updateOnlineStatus();setTimeout(()=>fetchAllAPIs?.(),500);});
-  window.addEventListener('offline',updateOnlineStatus);
-}catch(_e){}
+try {
+  window.addEventListener('online', () => { updateOnlineStatus(); setTimeout(() => fetchAllAPIs?.(), 500); });
+  window.addEventListener('offline', updateOnlineStatus);
+} catch (_e) { }
 
 // ══════════════════════════════════════════════════════
 // PWA INSTALL
 // ══════════════════════════════════════════════════════
 
 
-try{window.addEventListener('appinstalled',()=>{document.getElementById('install-banner').classList.remove('visible');toast('success','BitOS installé !','App ajoutée à l\'écran d\'accueil.');});}catch(_e){}
+try { window.addEventListener('appinstalled', () => { document.getElementById('install-banner').classList.remove('visible'); toast('success', 'BitOS installé !', 'App ajoutée à l\'écran d\'accueil.'); }); } catch (_e) { }
 
 // ══════════════════════════════════════════════════════
 // PERSISTANCE — localStorage engine
@@ -426,10 +430,10 @@ const LS_DEFAULTS = {
   rigs: [],
   lastSaved: null,
   hiveXmrWalletId: '',
-  hiveXmrFsId:     '',
+  hiveXmrFsId: '',
   hiveKasWalletId: '',
-  hiveKasFsId:     '',
-  hiveKasFarmId:   '',
+  hiveKasFsId: '',
+  hiveKasFarmId: '',
 };
 
 // Lecture / écriture localStorage avec fallback silencieux
@@ -438,15 +442,15 @@ function lsGet() {
     const raw = localStorage.getItem(LS_KEY);
     if (!raw) return null;
     return JSON.parse(raw);
-  } catch(e) { return null; }
+  } catch (e) { return null; }
 }
 // ── Configuration réseaux pour wallets externes ──────────────────────────
 const NET_CONFIG = {
-  XMR:   { name:'Monero',    icon:'⬡', coins:['XMR'],        addrLen:[95,97] },
-  KAS:   { name:'Kaspa',     icon:'◈', coins:['KAS'],         addrLen:[61,70] },
-  TRC20: { name:'Tron',      icon:'◉', coins:['USDT','TRX'],  addrLen:[34,34] },
-  BTC:   { name:'Bitcoin',   icon:'₿', coins:['BTC'],         addrLen:[25,62] },
-  ETH:   { name:'Ethereum',  icon:'Ξ', coins:['ETH','USDT'],  addrLen:[42,42] },
+  XMR: { name: 'Monero', icon: '⬡', coins: ['XMR'], addrLen: [95, 97] },
+  KAS: { name: 'Kaspa', icon: '◈', coins: ['KAS'], addrLen: [61, 70] },
+  TRC20: { name: 'Tron', icon: '◉', coins: ['USDT', 'TRX'], addrLen: [34, 34] },
+  BTC: { name: 'Bitcoin', icon: '₿', coins: ['BTC'], addrLen: [25, 62] },
+  ETH: { name: 'Ethereum', icon: 'Ξ', coins: ['ETH', 'USDT'], addrLen: [42, 42] },
 };
 
 let EXT_WALLETS = [];  // Wallets externes (ajoutés via UI)
@@ -454,17 +458,17 @@ function lsSave() {
   try {
     const data = {
       walletXMR: WALLET.XMR.addr,
-      hiveToken:  HIVE_TOKEN   || '',
+      hiveToken: HIVE_TOKEN || '',
       hiveFarmId: HIVE_FARM_ID || '',
-      hiveFarms:  HIVE_FARMS.map(function(f){return Object.assign({},f);}),
+      hiveFarms: HIVE_FARMS.map(function (f) { return Object.assign({}, f); }),
       walletKAS: WALLET.KAS.addr,
       walletKASxpub: WALLET.KAS.xpub || '',
       walletKASxpubIndex: WALLET.KAS.xpubIndex || 0,
-      hiveKasWalletId:HIVE_KAS_WALLET_ID||'',
-      hiveKasFsId:HIVE_KAS_FS_ID||'',
-      hiveKasFarmId:HIVE_KAS_FARM_ID||'',
-      hiveXmrWalletId:HIVE_XMR_WALLET_ID||'',
-      hiveXmrFsId:HIVE_XMR_FS_ID||'',
+      hiveKasWalletId: HIVE_KAS_WALLET_ID || '',
+      hiveKasFsId: HIVE_KAS_FS_ID || '',
+      hiveKasFarmId: HIVE_KAS_FARM_ID || '',
+      hiveXmrWalletId: HIVE_XMR_WALLET_ID || '',
+      hiveXmrFsId: HIVE_XMR_FS_ID || '',
       balanceXMR: WALLET.XMR.balance,
       balanceKAS: WALLET.KAS.balance,
       // PIN : stocké uniquement en SHA-256 dans 'bitosdash_pin_hash' (clé séparée)
@@ -472,25 +476,25 @@ function lsSave() {
       txHistory: TX_HISTORY,
       payments: PAYMENTS,
       alerts: ALERTS,
-      rigs: RIGS.map(r=>({...r})),
-      externalWallets: EXT_WALLETS.map(w=>({...w})),
+      rigs: RIGS.map(r => ({ ...r })),
+      externalWallets: EXT_WALLETS.map(w => ({ ...w })),
       actionDone: ACTION_DONE,
-      scheduledWithdrawals: SCHEDULED_WITHDRAWALS.map(s=>({...s})),
-      convHistory: CONV_HISTORY.map(c=>({...c})),
+      scheduledWithdrawals: SCHEDULED_WITHDRAWALS.map(s => ({ ...s })),
+      convHistory: CONV_HISTORY.map(c => ({ ...c })),
       taxCountry: TAX_COUNTRY,
       lastSaved: new Date().toISOString(),
     };
     localStorage.setItem(LS_KEY, JSON.stringify(data));
     updateStorageIndicator();
     return true;
-  } catch(e) {
+  } catch (e) {
     console.warn('localStorage save failed:', e);
     return false;
   }
 }
 
 function lsClear() {
-  try { localStorage.removeItem(LS_KEY); } catch(e) {}
+  try { localStorage.removeItem(LS_KEY); } catch (e) { }
 }
 
 function updateStorageIndicator() {
@@ -500,16 +504,16 @@ function updateStorageIndicator() {
     const d = el('ls-size');
     const t = el('ls-time');
     const b = el('ls-badge');
-    if(d) d.textContent = kb + ' KB utilisés';
-    if(t) {
+    if (d) d.textContent = kb + ' KB utilisés';
+    if (t) {
       const data = lsGet();
-      if(data?.lastSaved) {
+      if (data?.lastSaved) {
         const dt = new Date(data.lastSaved);
-        t.textContent = 'Sauvegardé ' + dt.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+        t.textContent = 'Sauvegardé ' + dt.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
       }
     }
-    if(b) { b.className='api-badge api-live'; b.innerHTML='<div class="api-dot blink"></div>Actif'; }
-  } catch(e) {}
+    if (b) { b.className = 'api-badge api-live'; b.innerHTML = '<div class="api-dot blink"></div>Actif'; }
+  } catch (e) { }
 }
 
 // Restaurer l'état depuis localStorage
@@ -520,22 +524,22 @@ function lsRestore() {
     return false;
   }
   // Wallets
-  if(data.hiveToken)  HIVE_TOKEN   = data.hiveToken;
-  if(data.hiveFarms && Array.isArray(data.hiveFarms) && data.hiveFarms.length > 0) {
+  if (data.hiveToken) HIVE_TOKEN = data.hiveToken;
+  if (data.hiveFarms && Array.isArray(data.hiveFarms) && data.hiveFarms.length > 0) {
     HIVE_FARMS = data.hiveFarms;
   }
-  if(data.hiveFarmId) HIVE_FARM_ID = data.hiveFarmId;
-  if(data.walletXMR) WALLET.XMR.addr = data.walletXMR;
-  if(data.walletKAS) WALLET.KAS.addr = data.walletKAS;
-  if(data.walletKASxpub)          WALLET.KAS.xpub       = data.walletKASxpub;
-  if(data.walletKASxpubIndex != null) WALLET.KAS.xpubIndex = data.walletKASxpubIndex;
-  if(data.hiveKasWalletId) HIVE_KAS_WALLET_ID=data.hiveKasWalletId;
-  if(data.hiveKasFsId) HIVE_KAS_FS_ID=data.hiveKasFsId;
-  if(data.hiveKasFarmId) HIVE_KAS_FARM_ID=data.hiveKasFarmId;
-  if(data.hiveXmrWalletId) HIVE_XMR_WALLET_ID=data.hiveXmrWalletId;
-  if(data.hiveXmrFsId)     HIVE_XMR_FS_ID=data.hiveXmrFsId;
-  if(typeof data.balanceXMR === 'number') WALLET.XMR.balance = data.balanceXMR;
-  if(typeof data.balanceKAS === 'number') WALLET.KAS.balance = data.balanceKAS;
+  if (data.hiveFarmId) HIVE_FARM_ID = data.hiveFarmId;
+  if (data.walletXMR) WALLET.XMR.addr = data.walletXMR;
+  if (data.walletKAS) WALLET.KAS.addr = data.walletKAS;
+  if (data.walletKASxpub) WALLET.KAS.xpub = data.walletKASxpub;
+  if (data.walletKASxpubIndex != null) WALLET.KAS.xpubIndex = data.walletKASxpubIndex;
+  if (data.hiveKasWalletId) HIVE_KAS_WALLET_ID = data.hiveKasWalletId;
+  if (data.hiveKasFsId) HIVE_KAS_FS_ID = data.hiveKasFsId;
+  if (data.hiveKasFarmId) HIVE_KAS_FARM_ID = data.hiveKasFarmId;
+  if (data.hiveXmrWalletId) HIVE_XMR_WALLET_ID = data.hiveXmrWalletId;
+  if (data.hiveXmrFsId) HIVE_XMR_FS_ID = data.hiveXmrFsId;
+  if (typeof data.balanceXMR === 'number') WALLET.XMR.balance = data.balanceXMR;
+  if (typeof data.balanceKAS === 'number') WALLET.KAS.balance = data.balanceKAS;
   // PIN — chargement sécurisé (migration depuis ancien format en clair)
   try {
     const storedHash = localStorage.getItem('bitosdash_pin_hash');
@@ -544,52 +548,52 @@ function lsRestore() {
     } else if (data.pin && /^\d{4}$/.test(data.pin)) {
       _pinPlain = data.pin; // Temporaire : sera hashé par migratePin()
     }
-  } catch(e) {}
+  } catch (e) { }
   // Électricité
-  if(data.elec && data.elec > 0) {
-    const inp = el('m-elec'); if(inp) inp.value = data.elec;
-    setText('s-elec-d','$'+parseFloat(data.elec).toFixed(2)+' / kWh');
+  if (data.elec && data.elec > 0) {
+    const inp = el('m-elec'); if (inp) inp.value = data.elec;
+    setText('s-elec-d', '$' + parseFloat(data.elec).toFixed(2) + ' / kWh');
   }
   // Transactions envoyées
-  if(Array.isArray(data.txHistory) && data.txHistory.length) {
+  if (Array.isArray(data.txHistory) && data.txHistory.length) {
     TX_HISTORY.length = 0;
     data.txHistory.forEach(t => TX_HISTORY.push(t));
   }
   // Paiements pool reçus
-  if(Array.isArray(data.payments) && data.payments.length) {
+  if (Array.isArray(data.payments) && data.payments.length) {
     PAYMENTS.length = 0;
     data.payments.forEach(p => PAYMENTS.push(p));
   }
   // Alertes
-  if(Array.isArray(data.alerts)) {
+  if (Array.isArray(data.alerts)) {
     ALERTS = data.alerts;
   }
   // Rigs
-  if(Array.isArray(data.rigs) && data.rigs.length) {
+  if (Array.isArray(data.rigs) && data.rigs.length) {
     RIGS.length = 0;
-    data.rigs.forEach(r => RIGS.push({...r}));
+    data.rigs.forEach(r => RIGS.push({ ...r }));
   }
   // Wallets externes
-  if(Array.isArray(data.externalWallets)) {
+  if (Array.isArray(data.externalWallets)) {
     EXT_WALLETS.length = 0;
-    data.externalWallets.forEach(w => EXT_WALLETS.push({...w}));
+    data.externalWallets.forEach(w => EXT_WALLETS.push({ ...w }));
   }
   // Actions cochées
-  if(data.actionDone && typeof data.actionDone === 'object') {
+  if (data.actionDone && typeof data.actionDone === 'object') {
     Object.assign(ACTION_DONE, data.actionDone);
   }
   // Retraits planifiés
-  if(Array.isArray(data.scheduledWithdrawals)) {
+  if (Array.isArray(data.scheduledWithdrawals)) {
     SCHEDULED_WITHDRAWALS.length = 0;
-    data.scheduledWithdrawals.forEach(s => SCHEDULED_WITHDRAWALS.push({...s}));
+    data.scheduledWithdrawals.forEach(s => SCHEDULED_WITHDRAWALS.push({ ...s }));
   }
   // Historique conversions
-  if(Array.isArray(data.convHistory)) {
+  if (Array.isArray(data.convHistory)) {
     CONV_HISTORY.length = 0;
-    data.convHistory.forEach(c => CONV_HISTORY.push({...c}));
+    data.convHistory.forEach(c => CONV_HISTORY.push({ ...c }));
   }
   // Pays fiscal
-  if(data.taxCountry) TAX_COUNTRY = data.taxCountry;
+  if (data.taxCountry) TAX_COUNTRY = data.taxCountry;
   console.log('BitOS: données restaurées depuis localStorage', data.lastSaved);
   return true;
 }
@@ -605,69 +609,70 @@ function scheduleSave() {
 // DATA MODEL
 // ══════════════════════════════════════════════════════
 const WALLET = {
-  XMR:{ balance:0, addr:'87eYaDMVqrC7TuLao24P782QDTpohQeQRbcNHUjU2ksjJhH3LvmwAj6aMrRVZp8xtuGoeK56G4KJrYm2mxf2dF4oGF4o4ZN' },
-  KAS:{ balance:0, addr:'kaspa:qpmjj7ksc5ud2jf6drsqf8gerch3fs58h5rakc4a6hf6nfhxerf3g3w3dpauq', xpub:'kpub2Hvd6rjHZMFESSHumgiqMJ3d6h2sCSJueeuN4DrqF2V4jZcgw5Gx1QxrkdNEQ5irhw3ovJ3Uu5o7avD6AkQoCycrfHqvYWrnMi4YmvzZEzD', xpubIndex:0, derivedAddresses:[] }
+  XMR: { balance: 0, addr: '87eYaDMVqrC7TuLao24P782QDTpohQeQRbcNHUjU2ksjJhH3LvmwAj6aMrRVZp8xtuGoeK56G4KJrYm2mxf2dF4oGF4o4ZN' },
+  KAS: { balance: 0, addr: 'kaspa:qpmjj7ksc5ud2jf6drsqf8gerch3fs58h5rakc4a6hf6nfhxerf3g3w3dpauq', xpub: 'kpub2Hvd6rjHZMFESSHumgiqMJ3d6h2sCSJueeuN4DrqF2V4jZcgw5Gx1QxrkdNEQ5irhw3ovJ3Uu5o7avD6AkQoCycrfHqvYWrnMi4YmvzZEzD', xpubIndex: 0, derivedAddresses: [] }
 };
 const FEES = {
-  XMR:{ slow:0.0001, normal:0.0002, fast:0.0004 },
-  KAS:{ slow:0.2, normal:0.5, fast:1.5 }
+  XMR: { slow: 0.0001, normal: 0.0002, fast: 0.0004 },
+  KAS: { slow: 0.2, normal: 0.5, fast: 1.5 }
 };
 /** @type {Array<{coin:string,status:string,hrn?:number,watt?:number,price?:number,worker?:string,hashrate?:number}>} */
-const RIGS=[];  // Alimenté par HiveOS (syncWorkersToRigs)
-let ALERTS=[];  // Générées par HiveOS + pool
-const PAYMENTS=[];  // Alimenté par pool APIs
-const TX_HISTORY=[];
+const RIGS = [];  // Alimenté par HiveOS (syncWorkersToRigs)
+let ALERTS = [];  // Générées par HiveOS + pool
+const PAYMENTS = [];  // Alimenté par pool APIs
+const TX_HISTORY = [];
 // ── PIN SÉCURISÉ — architecture défense en profondeur
-let _pinPlain    = '1234';   // PIN en clair (temporaire, effacé après 1ère connexion)
-let _pinHash     = null;     // SHA-256 du PIN actif
+let _pinPlain = '1234';   // PIN en clair (temporaire, effacé après 1ère connexion)
+let _pinHash = null;     // SHA-256 du PIN actif
 let _pinMigrated = false;    // true = PIN en clair supprimé de la mémoire
 
 // Object.defineProperty bloque la lecture directe depuis la console
 Object.defineProperty(window, 'USER_PIN', {
-  get()  { return _pinMigrated ? '[PROTÉGÉ]' : _pinPlain; },
+  get() { return _pinMigrated ? '[PROTÉGÉ]' : _pinPlain; },
   set(v) { /* bloqué — passer par updatePin() */ },
   configurable: false, enumerable: false
 });
-let currentRig=null;
-let xmrP=0,kasP=0,btcP=0,ethP=0,rvnP=0;
-let xmrPending='—'; let kasPending='—'; // Soldes en attente pool (mis à jour via API)
+let currentRig = null;
+let xmrP = 0, kasP = 0, btcP = 0, ethP = 0, rvnP = 0;
+let xmrPending = '—'; let kasPending = '—'; // Soldes en attente pool (mis à jour via API)
 
 // ── Send state ──
-const S={coin:'XMR',prio:'slow',amount:0,addr:'',note:'',addrValid:false};
+const S = { coin: 'XMR', prio: 'slow', amount: 0, addr: '', note: '', addrValid: false };
 
 // ══════════════════════════════════════════════════════
 // NAVIGATION
 // ══════════════════════════════════════════════════════
-const TITLES={dashboard:'Dashboard',rigs:'Mes Rigs',monitoring:'Monitoring',performances:'Performances',wallet:'Portefeuille',rentabilite:'Rentabilité',actions:'Actions recommandées',alertes:'Alertes',historique:'Historique',convertir:'Convertir en USDT',settings:'Paramètres',
-  xmr:'⬡ Monero XMR',
-  kas:'◈ Kaspa KAS',
-  rvn:'🐦 Ravencoin RVN',
-  minerconfig:'📝 Miner Config',
-  minercontrol:'🎮 Miner Control'
+const TITLES = {
+  dashboard: 'Dashboard', rigs: 'Mes Rigs', monitoring: 'Monitoring', performances: 'Performances', wallet: 'Portefeuille', rentabilite: 'Rentabilité', actions: 'Actions recommandées', alertes: 'Alertes', historique: 'Historique', convertir: 'Convertir en USDT', settings: 'Paramètres',
+  xmr: '⬡ Monero XMR',
+  kas: '◈ Kaspa KAS',
+  rvn: '🐦 Ravencoin RVN',
+  minerconfig: '📝 Miner Config',
+  minercontrol: '🎮 Miner Control'
 };
-const BN_PAGES=['dashboard','wallet','xmr','kas','convertir','actions','alertes','settings'];
+const BN_PAGES = ['dashboard', 'wallet', 'xmr', 'kas', 'convertir', 'actions', 'alertes', 'settings'];
 
 
 // ── initChart — initialisation graphiques par page ───────────────────────
 function initChart(pageId) {
   try {
-    if (pageId === 'dashboard')    { redrawDashboardCharts(); }
-    else if (pageId === 'monitoring')  { renderMon(); }
-    else if (pageId === 'historique')  { renderHistV2(); refreshHistoryInfo(); }
+    if (pageId === 'dashboard') { redrawDashboardCharts(); }
+    else if (pageId === 'monitoring') { renderMon(); }
+    else if (pageId === 'historique') { renderHistV2(); refreshHistoryInfo(); }
     else if (pageId === 'rentabilite') { calcRealProfitability(); }
-    else if (pageId === 'wallet')      { refreshWalletPage(); }
-  } catch(e) { console.warn('[initChart]', pageId, e.message); }
+    else if (pageId === 'wallet') { refreshWalletPage(); }
+  } catch (e) { console.warn('[initChart]', pageId, e.message); }
 }
 
-function showPage(id){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+id).classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.onclick&&n.onclick.toString().includes("'"+id+"'")));
-  BN_PAGES.forEach(p=>{const b=el('bn-'+p);if(b)b.classList.toggle('active',p===id);});
-  setText('topbar-title',TITLES[id]||id);
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.onclick && n.onclick.toString().includes("'" + id + "'")));
+  BN_PAGES.forEach(p => { const b = el('bn-' + p); if (b) b.classList.toggle('active', p === id); });
+  setText('topbar-title', TITLES[id] || id);
   renderPage(id);
-  setTimeout(()=>initChart(id),60);
-  try{window.scrollTo(0,0);}catch(_e){}
+  setTimeout(() => initChart(id), 60);
+  try { window.scrollTo(0, 0); } catch (_e) { }
 }
 
 
@@ -679,11 +684,11 @@ let _jsPDF_loaded = false;
 async function loadJsPDF() {
   if (typeof window !== 'undefined' && window.jspdf) return true;
   if (_jsPDF_loaded) return true;
-  return new Promise(function(resolve) {
+  return new Promise(function (resolve) {
     var s = document.createElement('script');
     s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-    s.onload = function() { _jsPDF_loaded = true; resolve(true); };
-    s.onerror = function() { resolve(false); };
+    s.onload = function () { _jsPDF_loaded = true; resolve(true); };
+    s.onerror = function () { resolve(false); };
     document.head.appendChild(s);
   });
 }
@@ -695,158 +700,158 @@ async function exportRevenuePDF() {
     const ok = await loadJsPDF();
     if (!ok || !window.jspdf) throw new Error('jsPDF indisponible — connexion requise');
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
-    const W = 210, M = 15, CW = W - M*2;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const W = 210, M = 15, CW = W - M * 2;
     let y = 20;
 
     // Header
-    doc.setFillColor(13,27,42); doc.rect(0,0,W,35,'F');
-    doc.setTextColor(0,229,255); doc.setFontSize(22); doc.setFont('helvetica','bold');
+    doc.setFillColor(13, 27, 42); doc.rect(0, 0, W, 35, 'F');
+    doc.setTextColor(0, 229, 255); doc.setFontSize(22); doc.setFont('helvetica', 'bold');
     doc.text('BitOS Cloud Dashboard', M, 16);
-    doc.setFontSize(11); doc.setFont('helvetica','normal'); doc.setTextColor(180,200,220);
-    doc.text('Rapport revenus — ' + new Date().toLocaleDateString('fr-FR',{month:'long',year:'numeric'}), M, 27);
+    doc.setFontSize(11); doc.setFont('helvetica', 'normal'); doc.setTextColor(180, 200, 220);
+    doc.text('Rapport revenus — ' + new Date().toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }), M, 27);
     y = 45;
 
     // KPIs
-    const cmrX = typeof calcMiningRevenue==='function' ? calcMiningRevenue('XMR') : {daily:0,netDaily:0,coinPerDay:0};
-    const cmrK = typeof calcMiningRevenue==='function' ? calcMiningRevenue('KAS') : {daily:0,netDaily:0,coinPerDay:0};
+    const cmrX = typeof calcMiningRevenue === 'function' ? calcMiningRevenue('XMR') : { daily: 0, netDaily: 0, coinPerDay: 0 };
+    const cmrK = typeof calcMiningRevenue === 'function' ? calcMiningRevenue('KAS') : { daily: 0, netDaily: 0, coinPerDay: 0 };
     const kpis = [
-      {label:'XMR/jour',      val:(cmrX.coinPerDay>0?cmrX.coinPerDay.toFixed(6):'—')+' XMR', col:[255,107,43]},
-      {label:'KAS/jour',      val:(cmrK.coinPerDay>0?Math.round(cmrK.coinPerDay)+' KAS':'—'), col:[0,229,255]},
-      {label:'Revenu brut/j', val:'$'+((cmrX.daily||0)+(cmrK.daily||0)).toFixed(3),           col:[52,199,89]},
-      {label:'Revenu net/j',  val:'$'+((cmrX.netDaily||0)+(cmrK.netDaily||0)).toFixed(3),     col:[52,199,89]},
+      { label: 'XMR/jour', val: (cmrX.coinPerDay > 0 ? cmrX.coinPerDay.toFixed(6) : '—') + ' XMR', col: [255, 107, 43] },
+      { label: 'KAS/jour', val: (cmrK.coinPerDay > 0 ? Math.round(cmrK.coinPerDay) + ' KAS' : '—'), col: [0, 229, 255] },
+      { label: 'Revenu brut/j', val: '$' + ((cmrX.daily || 0) + (cmrK.daily || 0)).toFixed(3), col: [52, 199, 89] },
+      { label: 'Revenu net/j', val: '$' + ((cmrX.netDaily || 0) + (cmrK.netDaily || 0)).toFixed(3), col: [52, 199, 89] },
     ];
-    var kw = CW/4;
-    kpis.forEach(function(k,i) {
-      var x = M+i*kw;
-      doc.setFillColor(26,42,58); doc.roundedRect(x,y,kw-2,22,2,2,'F');
-      doc.setTextColor(k.col[0],k.col[1],k.col[2]); doc.setFontSize(13); doc.setFont('helvetica','bold');
-      doc.text(k.val, x+2, y+10);
-      doc.setTextColor(120,140,160); doc.setFontSize(8); doc.setFont('helvetica','normal');
-      doc.text(k.label, x+2, y+18);
+    var kw = CW / 4;
+    kpis.forEach(function (k, i) {
+      var x = M + i * kw;
+      doc.setFillColor(26, 42, 58); doc.roundedRect(x, y, kw - 2, 22, 2, 2, 'F');
+      doc.setTextColor(k.col[0], k.col[1], k.col[2]); doc.setFontSize(13); doc.setFont('helvetica', 'bold');
+      doc.text(k.val, x + 2, y + 10);
+      doc.setTextColor(120, 140, 160); doc.setFontSize(8); doc.setFont('helvetica', 'normal');
+      doc.text(k.label, x + 2, y + 18);
     });
     y += 30;
 
     // Paiements tableau
-    doc.setTextColor(0,229,255); doc.setFontSize(12); doc.setFont('helvetica','bold');
+    doc.setTextColor(0, 229, 255); doc.setFontSize(12); doc.setFont('helvetica', 'bold');
     doc.text('Paiements reçus (SupportXMR + K1Pool)', M, y); y += 6;
-    var headers = ['Date','Coin','Montant','USD','Pool'];
-    var colW = [25,20,40,28,67];
-    doc.setFillColor(26,42,58); doc.rect(M,y,CW,8,'F');
-    doc.setTextColor(0,229,255); doc.setFontSize(8); doc.setFont('helvetica','bold');
-    var cx=M; headers.forEach(function(h,i){doc.text(h,cx+2,y+5.5);cx+=colW[i];}); y+=8;
-    var pays = PAYMENTS.filter(function(p){return p.type==='recv';}).slice(0,35);
+    var headers = ['Date', 'Coin', 'Montant', 'USD', 'Pool'];
+    var colW = [25, 20, 40, 28, 67];
+    doc.setFillColor(26, 42, 58); doc.rect(M, y, CW, 8, 'F');
+    doc.setTextColor(0, 229, 255); doc.setFontSize(8); doc.setFont('helvetica', 'bold');
+    var cx = M; headers.forEach(function (h, i) { doc.text(h, cx + 2, y + 5.5); cx += colW[i]; }); y += 8;
+    var pays = PAYMENTS.filter(function (p) { return p.type === 'recv'; }).slice(0, 35);
     if (!pays.length) {
-      doc.setFillColor(20,35,50); doc.rect(M,y,CW,10,'F');
-      doc.setTextColor(100,120,140); doc.setFontSize(9);
-      doc.text('Aucun paiement — alimenté automatiquement par les APIs pool', M+3, y+7); y+=12;
+      doc.setFillColor(20, 35, 50); doc.rect(M, y, CW, 10, 'F');
+      doc.setTextColor(100, 120, 140); doc.setFontSize(9);
+      doc.text('Aucun paiement — alimenté automatiquement par les APIs pool', M + 3, y + 7); y += 12;
     } else {
-      pays.forEach(function(p,i) {
-        if(y>265){doc.addPage();y=20;}
-        doc.setFillColor(i%2===0?20:26,i%2===0?35:42,i%2===0?50:58); doc.rect(M,y,CW,7,'F');
-        cx=M;
-        [p.date,p.coin,p.amount+' '+p.coin,p.usd,p.pool||''].forEach(function(v,j){
-          doc.setTextColor(j===1?255:j===3?52:200,j===1?(p.coin==='XMR'?107:229):j===3?199:220,j===1?(p.coin==='XMR'?43:255):j===3?89:240);
-          doc.setFontSize(8); doc.setFont('helvetica','normal');
-          doc.text(String(v).slice(0,22),cx+2,y+4.5); cx+=colW[j];
-        }); y+=7;
+      pays.forEach(function (p, i) {
+        if (y > 265) { doc.addPage(); y = 20; }
+        doc.setFillColor(i % 2 === 0 ? 20 : 26, i % 2 === 0 ? 35 : 42, i % 2 === 0 ? 50 : 58); doc.rect(M, y, CW, 7, 'F');
+        cx = M;
+        [p.date, p.coin, p.amount + ' ' + p.coin, p.usd, p.pool || ''].forEach(function (v, j) {
+          doc.setTextColor(j === 1 ? 255 : j === 3 ? 52 : 200, j === 1 ? (p.coin === 'XMR' ? 107 : 229) : j === 3 ? 199 : 220, j === 1 ? (p.coin === 'XMR' ? 43 : 255) : j === 3 ? 89 : 240);
+          doc.setFontSize(8); doc.setFont('helvetica', 'normal');
+          doc.text(String(v).slice(0, 22), cx + 2, y + 4.5); cx += colW[j];
+        }); y += 7;
       });
     }
-    y+=6;
+    y += 6;
 
     // Snapshots stats
-    if (SNAPSHOTS.length>1) {
+    if (SNAPSHOTS.length > 1) {
       var last = SNAPSHOTS.slice(-1440);
-      doc.setTextColor(0,229,255); doc.setFontSize(12); doc.setFont('helvetica','bold');
-      doc.text('Activité mesurée — '+last.length+' snapshots', M, y); y+=6;
-      var aXMR=last.reduce(function(s,p){return s+(p.xmrHR||p.hrXMR||0);},0)/last.length;
-      var aKAS=last.reduce(function(s,p){return s+(p.kasHR||p.hrKAS||0);},0)/last.length;
-      var aT=last.reduce(function(s,p){return s+(p.avgTemp||0);},0)/last.length;
-      var aW=last.reduce(function(s,p){return s+(p.totalWatt||0);},0)/last.length;
-      doc.setFillColor(20,35,50); doc.rect(M,y,CW,20,'F');
-      doc.setTextColor(200,220,240); doc.setFontSize(9); doc.setFont('helvetica','normal');
-      doc.text('Hashrate XMR moy: '+aXMR.toFixed(2)+' KH/s',M+4,y+7);
-      doc.text('Hashrate KAS moy: '+aKAS.toFixed(2)+' GH/s',M+4+CW/4,y+7);
-      doc.text('Temp moy: '+aT.toFixed(0)+'°C',M+4+CW/2,y+7);
-      doc.text('Conso moy: '+aW.toFixed(0)+' W',M+4+3*CW/4,y+7);
+      doc.setTextColor(0, 229, 255); doc.setFontSize(12); doc.setFont('helvetica', 'bold');
+      doc.text('Activité mesurée — ' + last.length + ' snapshots', M, y); y += 6;
+      var aXMR = last.reduce(function (s, p) { return s + (p.xmrHR || p.hrXMR || 0); }, 0) / last.length;
+      var aKAS = last.reduce(function (s, p) { return s + (p.kasHR || p.hrKAS || 0); }, 0) / last.length;
+      var aT = last.reduce(function (s, p) { return s + (p.avgTemp || 0); }, 0) / last.length;
+      var aW = last.reduce(function (s, p) { return s + (p.totalWatt || 0); }, 0) / last.length;
+      doc.setFillColor(20, 35, 50); doc.rect(M, y, CW, 20, 'F');
+      doc.setTextColor(200, 220, 240); doc.setFontSize(9); doc.setFont('helvetica', 'normal');
+      doc.text('Hashrate XMR moy: ' + aXMR.toFixed(2) + ' KH/s', M + 4, y + 7);
+      doc.text('Hashrate KAS moy: ' + aKAS.toFixed(2) + ' GH/s', M + 4 + CW / 4, y + 7);
+      doc.text('Temp moy: ' + aT.toFixed(0) + '°C', M + 4 + CW / 2, y + 7);
+      doc.text('Conso moy: ' + aW.toFixed(0) + ' W', M + 4 + 3 * CW / 4, y + 7);
     }
 
     // Footer
-    doc.setFillColor(13,27,42); doc.rect(0,282,W,15,'F');
-    doc.setTextColor(100,120,140); doc.setFontSize(8); doc.setFont('helvetica','normal');
-    doc.text('BitOS Cloud v3 — Généré le '+new Date().toLocaleString('fr-FR')+' — Données live uniquement', M, 290);
+    doc.setFillColor(13, 27, 42); doc.rect(0, 282, W, 15, 'F');
+    doc.setTextColor(100, 120, 140); doc.setFontSize(8); doc.setFont('helvetica', 'normal');
+    doc.text('BitOS Cloud v3 — Généré le ' + new Date().toLocaleString('fr-FR') + ' — Données live uniquement', M, 290);
 
-    doc.save('bitosdash-revenus-'+new Date().toISOString().slice(0,7)+'.pdf');
-    toast('success','PDF exporté','Rapport mensuel généré');
-  } catch(e) {
-    toast('error','Export PDF', e.message.slice(0,60));
+    doc.save('bitosdash-revenus-' + new Date().toISOString().slice(0, 7) + '.pdf');
+    toast('success', 'PDF exporté', 'Rapport mensuel généré');
+  } catch (e) {
+    toast('error', 'Export PDF', e.message.slice(0, 60));
     console.error('[PDF]', e);
   } finally {
-    if (btn) { btn.disabled=false; btn.textContent='📄 Export PDF'; }
+    if (btn) { btn.disabled = false; btn.textContent = '📄 Export PDF'; }
   }
 }
 
-function renderPage(id){
-  if(id==='dashboard'){renderDash();redrawDashboardCharts();}
-  if(id==='actions'){renderActions();if(typeof currentModTab!=='undefined'){const p=el(currentModTab);if(p&&!p.classList.contains('active')){}else if(!el('tab-actions')?.classList.contains('active'))renderActions();}}
-  if(id==='rigs')renderRigs();
-  if(id==='settings'){
-    initHiveSettings();refreshHistoryInfo();updateNotifUI();
-    var _ghb=el('ghpages-info-banner');
-    if(_ghb) _ghb.style.display=ENV.isGHPages?'flex':'none';
+function renderPage(id) {
+  if (id === 'dashboard') { renderDash(); redrawDashboardCharts(); }
+  if (id === 'actions') { renderActions(); if (typeof currentModTab !== 'undefined') { const p = el(currentModTab); if (p && !p.classList.contains('active')) { } else if (!el('tab-actions')?.classList.contains('active')) renderActions(); } }
+  if (id === 'rigs') renderRigs();
+  if (id === 'settings') {
+    initHiveSettings(); refreshHistoryInfo(); updateNotifUI();
+    var _ghb = el('ghpages-info-banner');
+    if (_ghb) _ghb.style.display = ENV.isGHPages ? 'flex' : 'none';
   }
-  if(id==='alertes')renderAlerts();
-  if(id==='historique'){renderHistV2();}
-  if(id==='monitoring')renderMon();
-  if(id==='xmr'){ fetchXMRAll(); }
-  if(id==='kas'){ fetchKASAll(); }
-  if(id==='rvn'){ fetchRVNAll(); }
+  if (id === 'alertes') renderAlerts();
+  if (id === 'historique') { renderHistV2(); }
+  if (id === 'monitoring') renderMon();
+  if (id === 'xmr') { fetchXMRAll(); }
+  if (id === 'kas') { fetchKASAll(); }
+  if (id === 'rvn') { fetchRVNAll(); }
   // page-performances supprimée (non implémentée)
-  if(id==='wallet'){refreshWalletPage();renderExtWallets();renderOwnWallet();}
-  if(id==='convertir'){refreshConvertPage();}
-  if(id==='minerconfig'){initMinerConfigPage();}
-  if(id==='minercontrol'){initMinerControlPage();}
+  if (id === 'wallet') { refreshWalletPage(); renderExtWallets(); renderOwnWallet(); }
+  if (id === 'convertir') { refreshConvertPage(); }
+  if (id === 'minerconfig') { initMinerConfigPage(); }
+  if (id === 'minercontrol') { initMinerControlPage(); }
 }
 
 // ══════════════════════════════════════════════════════
 // SIDEBAR MOBILE
 // ══════════════════════════════════════════════════════
-function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sb-overlay').classList.toggle('open');}
-function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sb-overlay').classList.remove('open');}
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sb-overlay').classList.toggle('open'); }
+function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sb-overlay').classList.remove('open'); }
 
 // ══════════════════════════════════════════════════════
 // RENDER FUNCTIONS
 // ══════════════════════════════════════════════════════
-function rigHTML(r){
-  const sc=r.status==='online'?'r-on':r.status==='warning'?'r-warn':'r-off';
-  const tc=r.temp===0?'to':r.temp>=80?'th':r.temp>=72?'tw':'tc';
-  const tt=r.temp===0?'—':r.temp+'°C'+(r.status==='warning'?' ⚠':'');
-  const hrH=r.status==='offline'?`<div style="color:var(--muted);font-family:var(--mono);font-size:11px">—</div><div class="r-hl">Hors ligne</div>`:`<div class="r-hr">${r.hr}</div><div class="r-hl">${r.coin}</div>`;
-  const btnH=r.status==='offline'?`<button class="btn btn-success btn-sm" onclick="event.stopPropagation();restartRigById('${r.id}')">↺</button>`:`<button class="btn btn-danger btn-sm" onclick="event.stopPropagation();stopRigById('${r.id}')">⏹</button>`;
-  return `<div class="rig-card" onclick="openRigDetail('${r.id}')"><div class="rdot ${sc}"></div><div><div class="r-name">${r.name}${r._farmName ? ' <span style="font-size:9px;color:var(--muted);background:rgba(255,255,255,.06);padding:1px 4px;border-radius:3px">'+r._farmName+'</span>' : ''}</div><div class="r-meta">${r.gpus} · ${r.os}</div></div><div>${hrH}</div><div class="r-temp ${tc}">${tt}</div><div>${btnH}</div></div>`;
+function rigHTML(r) {
+  const sc = r.status === 'online' ? 'r-on' : r.status === 'warning' ? 'r-warn' : 'r-off';
+  const tc = r.temp === 0 ? 'to' : r.temp >= 80 ? 'th' : r.temp >= 72 ? 'tw' : 'tc';
+  const tt = r.temp === 0 ? '—' : r.temp + '°C' + (r.status === 'warning' ? ' ⚠' : '');
+  const hrH = r.status === 'offline' ? `<div style="color:var(--muted);font-family:var(--mono);font-size:11px">—</div><div class="r-hl">Hors ligne</div>` : `<div class="r-hr">${r.hr}</div><div class="r-hl">${r.coin}</div>`;
+  const btnH = r.status === 'offline' ? `<button class="btn btn-success btn-sm" onclick="event.stopPropagation();restartRigById('${r.id}')">↺</button>` : `<button class="btn btn-danger btn-sm" onclick="event.stopPropagation();stopRigById('${r.id}')">⏹</button>`;
+  return `<div class="rig-card" onclick="openRigDetail('${r.id}')"><div class="rdot ${sc}"></div><div><div class="r-name">${r.name}${r._farmName ? ' <span style="font-size:9px;color:var(--muted);background:rgba(255,255,255,.06);padding:1px 4px;border-radius:3px">' + r._farmName + '</span>' : ''}</div><div class="r-meta">${r.gpus} · ${r.os}</div></div><div>${hrH}</div><div class="r-temp ${tc}">${tt}</div><div>${btnH}</div></div>`;
 }
 
-function renderDash(){
+function renderDash() {
   // Wallet strip
-  const xb=WALLET.XMR.balance, kb=WALLET.KAS.balance;
-  const totalUSD = xb*xmrP + kb*kasP;
-  setText('dws-total','$'+totalUSD.toLocaleString('fr',{minimumFractionDigits:2,maximumFractionDigits:2}));
-  setText('dws-xmr',xb.toFixed(4)+' XMR');
-  setText('dws-kas',Math.round(kb).toLocaleString()+' KAS');
+  const xb = WALLET.XMR.balance, kb = WALLET.KAS.balance;
+  const totalUSD = xb * xmrP + kb * kasP;
+  setText('dws-total', '$' + totalUSD.toLocaleString('fr', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+  setText('dws-xmr', xb.toFixed(4) + ' XMR');
+  setText('dws-kas', Math.round(kb).toLocaleString() + ' KAS');
 
   // KPI bar — hashrate & revenus live
-  const activeRigs = RIGS.filter(r=>r.status!=='offline');
-  const totalHR_xmr = activeRigs.filter(r=>r.coin==='XMR').reduce((s,r)=>s+(r.hrn||0),0);
-  const totalHR_kas = activeRigs.filter(r=>r.coin==='KAS').reduce((s,r)=>s+(r.hrn||0),0);
-  const totalWatt = activeRigs.reduce((s,r)=>s+(r.watt||0),0);
-  const avgTemp = activeRigs.length ? Math.round(activeRigs.reduce((s,r)=>s+(r.temp||0),0)/activeRigs.length) : 0;
-  const revDay = activeRigs.reduce((s,r)=>s+(r.profit||0),0)/30;
-  const revMonth = activeRigs.reduce((s,r)=>s+(r.profit||0),0);
-  const hashDisplay = totalHR_xmr > 0 ? totalHR_xmr.toFixed(1)+' KH/s XMR' : totalHR_kas.toFixed(1)+' GH/s KAS';
-  setText('s-hash',(totalHR_xmr+totalHR_kas/100).toFixed(1)+' mix');
-  setText('s-rev','$'+revDay.toFixed(2));
-  setText('s-temp', avgTemp ? avgTemp+'°C' : '—');
-  setText('s-watt',totalWatt ? totalWatt.toLocaleString()+' W' : '—');
+  const activeRigs = RIGS.filter(r => r.status !== 'offline');
+  const totalHR_xmr = activeRigs.filter(r => r.coin === 'XMR').reduce((s, r) => s + (r.hrn || 0), 0);
+  const totalHR_kas = activeRigs.filter(r => r.coin === 'KAS').reduce((s, r) => s + (r.hrn || 0), 0);
+  const totalWatt = activeRigs.reduce((s, r) => s + (r.watt || 0), 0);
+  const avgTemp = activeRigs.length ? Math.round(activeRigs.reduce((s, r) => s + (r.temp || 0), 0) / activeRigs.length) : 0;
+  const revDay = activeRigs.reduce((s, r) => s + (r.profit || 0), 0) / 30;
+  const revMonth = activeRigs.reduce((s, r) => s + (r.profit || 0), 0);
+  const hashDisplay = totalHR_xmr > 0 ? totalHR_xmr.toFixed(1) + ' KH/s XMR' : totalHR_kas.toFixed(1) + ' GH/s KAS';
+  setText('s-hash', (totalHR_xmr + totalHR_kas / 100).toFixed(1) + ' mix');
+  setText('s-rev', '$' + revDay.toFixed(2));
+  setText('s-temp', avgTemp ? avgTemp + '°C' : '—');
+  setText('s-watt', totalWatt ? totalWatt.toLocaleString() + ' W' : '—');
 
   // Pools — revenue depuis calcMiningRevenue() (données live, pas MINE_PARAMS)
   const _cmrXMR = calcMiningRevenue('XMR');
@@ -854,53 +859,53 @@ function renderDash(){
   const xmrRevDay = _cmrXMR.daily || 0;
   const kasRevDay = _cmrKAS.daily || 0;
   const maxHR = Math.max(totalHR_xmr, totalHR_kas, 1);
-  setText('d-xmr-hr', totalHR_xmr.toFixed(1)+' KH/s XMR');
-  setText('d-xmr-hr-side', totalHR_xmr.toFixed(1)+' KH/s');
-  setText('d-xmr-rev', '+$'+xmrRevDay.toFixed(2)+'/j');
-  setText('d-kas-hr', totalHR_kas.toFixed(1)+' GH/s');
-  setText('d-kas-rev', '+$'+kasRevDay.toFixed(2)+'/j');
-  const xBar = el('d-xmr-bar'); if(xBar) xBar.style.width=Math.round(totalHR_xmr/(totalHR_xmr+totalHR_kas||1)*100)+'%';
-  const kBar = el('d-kas-bar'); if(kBar) kBar.style.width=Math.round(totalHR_kas/(totalHR_xmr+totalHR_kas||1)*100)+'%';
-  setText('d-monthly','$'+revMonth.toFixed(0));
-  setText('d-monthly-sub',totalHR_xmr.toFixed(1)+' KH/s · '+totalHR_kas.toFixed(1)+' GH/s actifs');
+  setText('d-xmr-hr', totalHR_xmr.toFixed(1) + ' KH/s XMR');
+  setText('d-xmr-hr-side', totalHR_xmr.toFixed(1) + ' KH/s');
+  setText('d-xmr-rev', '+$' + xmrRevDay.toFixed(2) + '/j');
+  setText('d-kas-hr', totalHR_kas.toFixed(1) + ' GH/s');
+  setText('d-kas-rev', '+$' + kasRevDay.toFixed(2) + '/j');
+  const xBar = el('d-xmr-bar'); if (xBar) xBar.style.width = Math.round(totalHR_xmr / (totalHR_xmr + totalHR_kas || 1) * 100) + '%';
+  const kBar = el('d-kas-bar'); if (kBar) kBar.style.width = Math.round(totalHR_kas / (totalHR_xmr + totalHR_kas || 1) * 100) + '%';
+  setText('d-monthly', '$' + revMonth.toFixed(0));
+  setText('d-monthly-sub', totalHR_xmr.toFixed(1) + ' KH/s · ' + totalHR_kas.toFixed(1) + ' GH/s actifs');
 
   // Alertes
   const alertEl = el('al-dash');
-  if(alertEl) alertEl.innerHTML=ALERTS.slice(0,3).map(a=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(30,45,71,.3);font-size:11px"><div style="width:6px;height:6px;border-radius:50%;background:${a.type==='err'?'var(--red)':a.type==='warn'?'var(--yellow)':'var(--accent)'};flex-shrink:0"></div><div style="flex:1">${a.title}</div></div>`).join('')||'<div style="color:var(--muted);font-size:11px;font-family:var(--mono);padding:8px 0">✓ Aucune alerte</div>';
+  if (alertEl) alertEl.innerHTML = ALERTS.slice(0, 3).map(a => `<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(30,45,71,.3);font-size:11px"><div style="width:6px;height:6px;border-radius:50%;background:${a.type === 'err' ? 'var(--red)' : a.type === 'warn' ? 'var(--yellow)' : 'var(--accent)'};flex-shrink:0"></div><div style="flex:1">${a.title}</div></div>`).join('') || '<div style="color:var(--muted);font-size:11px;font-family:var(--mono);padding:8px 0">✓ Aucune alerte</div>';
   const abadge = el('d-alert-badge');
-  if(abadge){abadge.textContent=ALERTS.length; abadge.style.display=ALERTS.length?'inline':'none';}
+  if (abadge) { abadge.textContent = ALERTS.length; abadge.style.display = ALERTS.length ? 'inline' : 'none'; }
 
   // Rigs mini
   const rigEl = el('rig-dash');
-  if(rigEl) rigEl.innerHTML=RIGS.map(r=>`<div class="rig-mini">
-    <div class="rig-mini-dot ${r.status==='online'?'dot-online':r.status==='warning'?'dot-warning':'dot-offline'}"></div>
-    <div class="rig-mini-name">${r.name.split(' ')[0]+' '+(r.name.split(' ')[1]||'')}</div>
+  if (rigEl) rigEl.innerHTML = RIGS.map(r => `<div class="rig-mini">
+    <div class="rig-mini-dot ${r.status === 'online' ? 'dot-online' : r.status === 'warning' ? 'dot-warning' : 'dot-offline'}"></div>
+    <div class="rig-mini-name">${r.name.split(' ')[0] + ' ' + (r.name.split(' ')[1] || '')}</div>
     <div class="rig-mini-info">
-      <div class="rig-mini-temp" style="color:${r.temp>=80?'var(--red)':r.temp>=70?'var(--yellow)':'var(--muted)'}">${r.temp?r.temp+'°C':'—'}</div>
-      <div>${r.coin||'—'} · ${r.hr||'—'}</div>
+      <div class="rig-mini-temp" style="color:${r.temp >= 80 ? 'var(--red)' : r.temp >= 70 ? 'var(--yellow)' : 'var(--muted)'}">${r.temp ? r.temp + '°C' : '—'}</div>
+      <div>${r.coin || '—'} · ${r.hr || '—'}</div>
     </div>
   </div>`).join('');
 
   // GPU load — depuis RIGS réels (gpuDetails HiveOS)
   const gpuEl = el('gpu-dash');
-  if(gpuEl) {
+  if (gpuEl) {
     var _allGpus = [];
-    var _firstRig = RIGS.find(r=>r.status!=='offline'&&r.gpuDetails&&r.gpuDetails.length>0);
+    var _firstRig = RIGS.find(r => r.status !== 'offline' && r.gpuDetails && r.gpuDetails.length > 0);
     if (_firstRig && _firstRig.gpuDetails) {
       _allGpus = _firstRig.gpuDetails;
       var _rigTitle = el('gpu-dash')?.closest('.card')?.querySelector('.card-title');
-      if (_rigTitle) _rigTitle.textContent = 'Charge GPU \u00b7 '+_firstRig.name;
+      if (_rigTitle) _rigTitle.textContent = 'Charge GPU \u00b7 ' + _firstRig.name;
     }
     if (_allGpus.length > 0) {
-      gpuEl.innerHTML = _allGpus.map(function(g){
-        var t=g.temp||0, col=t>=80?'var(--red)':t>=70?'var(--yellow)':'var(--green)';
-        var hr=g.hr||0, hrDisp=hr>1e8?(hr/1e9).toFixed(2)+' GH/s':hr>1000?(hr/1000).toFixed(1)+' KH/s':hr+' H/s';
+      gpuEl.innerHTML = _allGpus.map(function (g) {
+        var t = g.temp || 0, col = t >= 80 ? 'var(--red)' : t >= 70 ? 'var(--yellow)' : 'var(--green)';
+        var hr = g.hr || 0, hrDisp = hr > 1e8 ? (hr / 1e9).toFixed(2) + ' GH/s' : hr > 1000 ? (hr / 1000).toFixed(1) + ' KH/s' : hr + ' H/s';
         return '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px">'
-          +'<span style="color:var(--muted);font-size:10px;min-width:50px">'+(g.model||('GPU#'+g.idx)).split(' ').pop()+'</span>'
-          +'<span style="font-family:var(--mono);font-size:10px;color:'+col+'">'+t+'\u00b0C</span>'
-          +'<div class="pbar" style="flex:1"><div class="pbar-fill" style="width:'+Math.min(100,t/85*100).toFixed(0)+'%;background:'+col+'"></div></div>'
-          +'<span style="font-family:var(--mono);font-size:9px;color:var(--muted);min-width:60px;text-align:right">'+hrDisp+'</span>'
-          +'</div>';
+          + '<span style="color:var(--muted);font-size:10px;min-width:50px">' + (g.model || ('GPU#' + g.idx)).split(' ').pop() + '</span>'
+          + '<span style="font-family:var(--mono);font-size:10px;color:' + col + '">' + t + '\u00b0C</span>'
+          + '<div class="pbar" style="flex:1"><div class="pbar-fill" style="width:' + Math.min(100, t / 85 * 100).toFixed(0) + '%;background:' + col + '"></div></div>'
+          + '<span style="font-family:var(--mono);font-size:9px;color:var(--muted);min-width:60px;text-align:right">' + hrDisp + '</span>'
+          + '</div>';
       }).join('');
     } else {
       gpuEl.innerHTML = '<div style="color:var(--muted);font-size:11px;text-align:center;padding:12px">En attente de HiveOS\u2026</div>';
@@ -910,7 +915,7 @@ function renderDash(){
 
   // Paiements
   const payEl = el('pay-dash');
-  if(payEl) payEl.innerHTML=`<thead><tr><th style="padding:8px 12px">Date</th><th>Coin</th><th>Montant</th><th>USD</th></tr></thead><tbody>${PAYMENTS.slice(0,5).map(p=>`<tr><td style="padding:7px 12px;font-size:10.5px">${p.date.slice(0,5)}</td><td><span class="cdot" style="background:${p.coin==='XMR'?'var(--orange)':'var(--accent)'}"></span>${p.coin}</td><td style="font-family:var(--mono);font-size:10px">${p.amount}</td><td style="color:var(--green);font-family:var(--mono);font-size:10.5px">${p.usd}</td></tr>`).join('')}</tbody>`;
+  if (payEl) payEl.innerHTML = `<thead><tr><th style="padding:8px 12px">Date</th><th>Coin</th><th>Montant</th><th>USD</th></tr></thead><tbody>${PAYMENTS.slice(0, 5).map(p => `<tr><td style="padding:7px 12px;font-size:10.5px">${p.date.slice(0, 5)}</td><td><span class="cdot" style="background:${p.coin === 'XMR' ? 'var(--orange)' : 'var(--accent)'}"></span>${p.coin}</td><td style="font-family:var(--mono);font-size:10px">${p.amount}</td><td style="color:var(--green);font-family:var(--mono);font-size:10.5px">${p.usd}</td></tr>`).join('')}</tbody>`;
 
   // Recommandations chips
   renderRecoChips();
@@ -929,19 +934,19 @@ function renderAlertes() {
       '<div style="font-size:13px;margin-top:8px">Tous les rigs fonctionnent normalement</div></div>';
     return;
   }
-  cont.innerHTML = ALERTS.map(function(a) {
+  cont.innerHTML = ALERTS.map(function (a) {
     var icon = a.type === 'err' ? '🔴' : a.type === 'warn' ? '🟡' : '🔵';
-    var col  = a.type === 'err' ? 'var(--red)' : a.type === 'warn' ? 'var(--yellow)' : 'var(--accent)';
-    return '<div class="card" style="margin-bottom:8px;border-left:3px solid '+col+';opacity:'+(a.read?'0.6':'1')+'">' +
+    var col = a.type === 'err' ? 'var(--red)' : a.type === 'warn' ? 'var(--yellow)' : 'var(--accent)';
+    return '<div class="card" style="margin-bottom:8px;border-left:3px solid ' + col + ';opacity:' + (a.read ? '0.6' : '1') + '">' +
       '<div style="display:flex;justify-content:space-between;align-items:flex-start">' +
-        '<div><span style="font-size:16px">'+icon+'</span><strong style="margin-left:6px">'+a.title+'</strong>' +
-        (a.coin ? '<span class="badge" style="margin-left:6px">'+a.coin+'</span>' : '') + '</div>' +
-        '<span style="font-size:11px;color:var(--muted)">'+(a.date||'')+'</span>' +
+      '<div><span style="font-size:16px">' + icon + '</span><strong style="margin-left:6px">' + a.title + '</strong>' +
+      (a.coin ? '<span class="badge" style="margin-left:6px">' + a.coin + '</span>' : '') + '</div>' +
+      '<span style="font-size:11px;color:var(--muted)">' + (a.date || '') + '</span>' +
       '</div>' +
-      '<div style="font-size:13px;color:var(--muted);margin-top:6px">'+(a.message||'')+'</div>' +
-    '</div>';
+      '<div style="font-size:13px;color:var(--muted);margin-top:6px">' + (a.message || '') + '</div>' +
+      '</div>';
   }).join('');
-  ALERTS.forEach(function(a) { a.read = true; });
+  ALERTS.forEach(function (a) { a.read = true; });
   var badge = el('alerts-badge') || el('alert-count');
   if (badge) { badge.textContent = '0'; badge.style.display = 'none'; }
 }
@@ -951,7 +956,7 @@ function renderAlertes() {
 function renderHistorique() {
   var cont = el('hist-list') || el('historique-list') || el('history-list');
   if (!cont) return;
-  var pays = PAYMENTS.slice().sort(function(a,b){ return (b.ts||0)-(a.ts||0); });
+  var pays = PAYMENTS.slice().sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });
   if (pays.length === 0) {
     cont.innerHTML = '<div style="text-align:center;padding:48px;color:var(--muted)">' +
       '<div style="font-size:40px;margin-bottom:12px">📋</div>' +
@@ -959,422 +964,427 @@ function renderHistorique() {
       '<div style="font-size:13px;margin-top:8px">Les paiements pool apparaîtront ici automatiquement</div></div>';
     return;
   }
-  var totalXMR = pays.filter(function(p){return p.coin==='XMR'&&p.type==='recv';})
-    .reduce(function(s,p){return s+parseFloat(p.amount||0);},0);
-  var totalKAS = pays.filter(function(p){return p.coin==='KAS'&&p.type==='recv';})
-    .reduce(function(s,p){return s+parseFloat((p.amount||'0').replace(',','').replace(/\s/g,''));},0);
+  var totalXMR = pays.filter(function (p) { return p.coin === 'XMR' && p.type === 'recv'; })
+    .reduce(function (s, p) { return s + parseFloat(p.amount || 0); }, 0);
+  var totalKAS = pays.filter(function (p) { return p.coin === 'KAS' && p.type === 'recv'; })
+    .reduce(function (s, p) { return s + parseFloat((p.amount || '0').replace(',', '').replace(/\s/g, '')); }, 0);
   var summary = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">' +
     '<div class="card" style="text-align:center"><div style="color:var(--muted);font-size:11px">Total XMR reçu</div>' +
-    '<div style="font-size:20px;font-weight:700">'+totalXMR.toFixed(4)+' XMR</div>' +
-    '<div style="color:var(--muted);font-size:12px">≈ $'+(totalXMR*(xmrP||0)).toFixed(2)+'</div></div>' +
+    '<div style="font-size:20px;font-weight:700">' + totalXMR.toFixed(4) + ' XMR</div>' +
+    '<div style="color:var(--muted);font-size:12px">≈ $' + (totalXMR * (xmrP || 0)).toFixed(2) + '</div></div>' +
     '<div class="card" style="text-align:center"><div style="color:var(--muted);font-size:11px">Total KAS reçu</div>' +
-    '<div style="font-size:20px;font-weight:700">'+totalKAS.toLocaleString('fr',{maximumFractionDigits:0})+' KAS</div>' +
-    '<div style="color:var(--muted);font-size:12px">≈ $'+(totalKAS*(kasP||0)).toFixed(2)+'</div></div></div>';
-  var rows = pays.map(function(p) {
-    var icon = p.coin==='XMR' ? '⬡' : '◈';
-    var col  = p.type==='recv' ? 'var(--green)' : 'var(--yellow)';
-    var label = p.type==='recv' ? 'Reçu' : 'En attente';
+    '<div style="font-size:20px;font-weight:700">' + totalKAS.toLocaleString('fr', { maximumFractionDigits: 0 }) + ' KAS</div>' +
+    '<div style="color:var(--muted);font-size:12px">≈ $' + (totalKAS * (kasP || 0)).toFixed(2) + '</div></div></div>';
+  var rows = pays.map(function (p) {
+    var icon = p.coin === 'XMR' ? '⬡' : '◈';
+    var col = p.type === 'recv' ? 'var(--green)' : 'var(--yellow)';
+    var label = p.type === 'recv' ? 'Reçu' : 'En attente';
     return '<div class="card" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;padding:10px 14px">' +
-      '<div style="display:flex;align-items:center;gap:10px"><span style="font-size:20px">'+icon+'</span>' +
-      '<div><div style="font-weight:600">'+label+' — '+(p.pool||p.coin)+'</div>' +
-      '<div style="font-size:11px;color:var(--muted)">'+p.date+' • '+p.coin+'</div></div></div>' +
-      '<div style="text-align:right"><div style="font-weight:700;color:'+col+'">'+p.amount+' '+p.coin+'</div>' +
-      '<div style="font-size:11px;color:var(--muted)">'+p.usd+'</div></div></div>';
+      '<div style="display:flex;align-items:center;gap:10px"><span style="font-size:20px">' + icon + '</span>' +
+      '<div><div style="font-weight:600">' + label + ' — ' + (p.pool || p.coin) + '</div>' +
+      '<div style="font-size:11px;color:var(--muted)">' + p.date + ' • ' + p.coin + '</div></div></div>' +
+      '<div style="text-align:right"><div style="font-weight:700;color:' + col + '">' + p.amount + ' ' + p.coin + '</div>' +
+      '<div style="font-size:11px;color:var(--muted)">' + p.usd + '</div></div></div>';
   }).join('');
   cont.innerHTML = summary + rows;
 }
 
-function renderRigs(){
-  if(RIGS.length===0){
-    var _tok=HIVE_TOKEN?'Token OK - sync en cours':'Token HiveOS manquant';
-    el('rig-full').innerHTML='<div style="text-align:center;padding:48px;color:var(--muted)">'+'<div style="font-size:40px;margin-bottom:12px">&#9935;</div>'+'<div style="font-size:18px;font-weight:600;color:var(--text)">En attente de HiveOS</div>'+'<div style="margin-top:8px;font-size:13px">'+_tok+'</div></div>';
+function renderRigs() {
+  if (RIGS.length === 0) {
+    var _tok = HIVE_TOKEN ? 'Token OK - sync en cours' : 'Token HiveOS manquant';
+    el('rig-full').innerHTML = '<div style="text-align:center;padding:48px;color:var(--muted)">' + '<div style="font-size:40px;margin-bottom:12px">&#9935;</div>' + '<div style="font-size:18px;font-weight:600;color:var(--text)">En attente de HiveOS</div>' + '<div style="margin-top:8px;font-size:13px">' + _tok + '</div></div>';
     return;
   }
-  el('rig-full').innerHTML=RIGS.map(r=>rigHTML(r)).join('');}
-
-function aHTML(a){return `<div class="ait ${a.type}" id="ait-${a.id}"><div class="adot"></div><div style="flex:1"><div class="at-title">${a.title}</div><div class="at-time">Il y a ${a.time} · ${a.detail}</div></div><span class="a-dis" onclick="dismissAlert('${a.id}')">×</span></div>`;}
-
-function renderAlerts(){
-  el('al-full').innerHTML=ALERTS.length?ALERTS.map(aHTML).join(''):'<div style="color:var(--muted);font-size:13px;font-family:var(--mono);text-align:center;padding:30px 0">&#10003; Aucune alerte active</div>';
-  const c=ALERTS.length;
-  const unread=ALERTS.filter(function(a){return !a.read;}).length;
-  setText('alert-count-txt',c+' alerte'+(c!==1?'s':'')+' active'+(c!==1?'s':''));
-  setText('nb-alerts',unread||'');
-  const bnb=el('bn-badge');if(bnb){bnb.textContent=unread;bnb.style.display=unread?'flex':'none';}
-  const bnNb=el('bn-alertes')&&el('bn-alertes').querySelector('.bn-badge');
-  const alertBadge=el('d-alert-badge');if(alertBadge){alertBadge.textContent=unread;alertBadge.style.display=unread?'':'none';}
+  el('rig-full').innerHTML = RIGS.map(r => rigHTML(r)).join('');
 }
 
-function renderHist(){
+function aHTML(a) { return `<div class="ait ${a.type}" id="ait-${a.id}"><div class="adot"></div><div style="flex:1"><div class="at-title">${a.title}</div><div class="at-time">Il y a ${a.time} · ${a.detail}</div></div><span class="a-dis" onclick="dismissAlert('${a.id}')">×</span></div>`; }
+
+function renderAlerts() {
+  el('al-full').innerHTML = ALERTS.length ? ALERTS.map(aHTML).join('') : '<div style="color:var(--muted);font-size:13px;font-family:var(--mono);text-align:center;padding:30px 0">&#10003; Aucune alerte active</div>';
+  const c = ALERTS.length;
+  const unread = ALERTS.filter(function (a) { return !a.read; }).length;
+  setText('alert-count-txt', c + ' alerte' + (c !== 1 ? 's' : '') + ' active' + (c !== 1 ? 's' : ''));
+  setText('nb-alerts', unread || '');
+  const bnb = el('bn-badge'); if (bnb) { bnb.textContent = unread; bnb.style.display = unread ? 'flex' : 'none'; }
+  const bnNb = el('bn-alertes') && el('bn-alertes').querySelector('.bn-badge');
+  const alertBadge = el('d-alert-badge'); if (alertBadge) { alertBadge.textContent = unread; alertBadge.style.display = unread ? '' : 'none'; }
+}
+
+function renderHist() {
   // Déléguer à renderHistV2 (version unifiée)
   renderHistV2();
 }
 
-function renderMon(){
+function renderMon() {
   // ── Températures chart ──────────────────────────────────────────
-  const onlineRigs = RIGS.filter(r=>r.status!=='offline');
-  if(onlineRigs.length>0 && typeof drawChart==='function'){
-    const labels = onlineRigs.map(function(r){return r.name.split('-').slice(-1)[0]||r.name;});
-    const temps  = onlineRigs.map(function(r){return r.maxTemp||r.temp||0;});
-    const watts  = onlineRigs.map(function(r){return r.watt||0;});
-    drawChart('ch-mon-temp','bar',[{label:'Temp max (°C)',data:temps,backgroundColor:temps.map(function(t){return t>=80?'rgba(255,45,85,0.7)':t>=70?'rgba(255,165,0,0.6)':'rgba(16,185,129,0.6)';})}],labels);
-    drawChart('ch-mon-watt','bar',[{label:'Conso (W)',data:watts,backgroundColor:'rgba(0,229,255,0.5)'}],labels);
+  const onlineRigs = RIGS.filter(r => r.status !== 'offline');
+  if (onlineRigs.length > 0 && typeof drawChart === 'function') {
+    const labels = onlineRigs.map(function (r) { return r.name.split('-').slice(-1)[0] || r.name; });
+    const temps = onlineRigs.map(function (r) { return r.maxTemp || r.temp || 0; });
+    const watts = onlineRigs.map(function (r) { return r.watt || 0; });
+    drawChart('ch-mon-temp', 'bar', [{ label: 'Temp max (°C)', data: temps, backgroundColor: temps.map(function (t) { return t >= 80 ? 'rgba(255,45,85,0.7)' : t >= 70 ? 'rgba(255,165,0,0.6)' : 'rgba(16,185,129,0.6)'; }) }], labels);
+    drawChart('ch-mon-watt', 'bar', [{ label: 'Conso (W)', data: watts, backgroundColor: 'rgba(0,229,255,0.5)' }], labels);
   }
   // ── Détail GPU tous rigs ────────────────────────────────────────
   var gpuAll = el('mon-gpu-all');
-  if(gpuAll){
-    if(onlineRigs.length===0){
-      gpuAll.innerHTML='<div style="color:var(--muted);padding:24px;text-align:center">En attente de HiveOS…</div>';
+  if (gpuAll) {
+    if (onlineRigs.length === 0) {
+      gpuAll.innerHTML = '<div style="color:var(--muted);padding:24px;text-align:center">En attente de HiveOS…</div>';
     } else {
-      gpuAll.innerHTML = onlineRigs.map(function(r){
-        var gpus = r.gpuDetails&&r.gpuDetails.length>0 ? r.gpuDetails : [];
-        var coinCol = r.coin==='KAS'?'var(--accent)':'var(--orange)';
+      gpuAll.innerHTML = onlineRigs.map(function (r) {
+        var gpus = r.gpuDetails && r.gpuDetails.length > 0 ? r.gpuDetails : [];
+        var coinCol = r.coin === 'KAS' ? 'var(--accent)' : 'var(--orange)';
         var rigHdr = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">'
-          +'<strong style="color:'+coinCol+'">'+r.name+'</strong>'
-          +'<span style="font-size:11px;color:var(--muted)">'+r.coin+' · '+(r.hr||'—')+'</span></div>';
-        var gpuRows = gpus.length>0 ? gpus.map(function(g){
-          var t=g.temp||0; var tCol=t>=80?'var(--red)':t>=70?'var(--yellow)':'var(--green)';
-          var hrVal=g.hr||0; var hrDisp=hrVal>1e9?(hrVal/1e9).toFixed(2)+' GH/s':hrVal>1000?(hrVal/1000).toFixed(1)+' KH/s':hrVal>0?hrVal+' H/s':'—';
+          + '<strong style="color:' + coinCol + '">' + r.name + '</strong>'
+          + '<span style="font-size:11px;color:var(--muted)">' + r.coin + ' · ' + (r.hr || '—') + '</span></div>';
+        var gpuRows = gpus.length > 0 ? gpus.map(function (g) {
+          var t = g.temp || 0; var tCol = t >= 80 ? 'var(--red)' : t >= 70 ? 'var(--yellow)' : 'var(--green)';
+          var hrVal = g.hr || 0; var hrDisp = hrVal > 1e9 ? (hrVal / 1e9).toFixed(2) + ' GH/s' : hrVal > 1000 ? (hrVal / 1000).toFixed(1) + ' KH/s' : hrVal > 0 ? hrVal + ' H/s' : '—';
           return '<div style="display:grid;grid-template-columns:1fr auto auto auto;gap:8px;align-items:center;font-size:11px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.04)">'
-            +'<span style="color:var(--muted)">'+(g.model||'GPU#'+g.idx)+'</span>'
-            +'<span style="font-family:var(--mono);color:'+tCol+'">'+t+'°C</span>'
-            +'<span style="font-family:var(--mono);color:var(--muted)">'+g.fan+'%</span>'
-            +'<span style="font-family:var(--mono);color:var(--accent)">'+hrDisp+'</span></div>';
+            + '<span style="color:var(--muted)">' + (g.model || 'GPU#' + g.idx) + '</span>'
+            + '<span style="font-family:var(--mono);color:' + tCol + '">' + t + '°C</span>'
+            + '<span style="font-family:var(--mono);color:var(--muted)">' + g.fan + '%</span>'
+            + '<span style="font-family:var(--mono);color:var(--accent)">' + hrDisp + '</span></div>';
         }).join('') : '<div style="color:var(--muted);font-size:11px;padding:4px 0">GPU details non disponibles</div>';
-        return '<div class="card" style="padding:12px 14px"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">&#9889; '+r.watt+'W · '+(r.avgTemp||r.temp||0)+'°C moy</div>'+rigHdr+gpuRows+'</div>';
+        return '<div class="card" style="padding:12px 14px"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">&#9889; ' + r.watt + 'W · ' + (r.avgTemp || r.temp || 0) + '°C moy</div>' + rigHdr + gpuRows + '</div>';
       }).join('');
     }
   }
 
   // ── Hub XMR : pool + workers + flight sheets ────────────────────
   var hubXMR = el('mon-xmr-hub');
-  if(hubXMR){
-    var xmrRigs = RIGS.filter(function(r){return r.coin==='XMR';});
-    var xmrOnline = xmrRigs.filter(function(r){return r.status!=='offline';}).length;
-    var xmrHR = xmrRigs.filter(function(r){return r.status!=='offline';}).reduce(function(s,r){return s+(r.hrn||0);},0);
-    var xmrWatt = xmrRigs.filter(function(r){return r.status!=='offline';}).reduce(function(s,r){return s+(r.watt||0);},0);
-    var poolConnected = POOL_CONFIG.XMR.walletAddr&&POOL_CONFIG.XMR.walletAddr.length>90;
+  if (hubXMR) {
+    var xmrRigs = RIGS.filter(function (r) { return r.coin === 'XMR'; });
+    var xmrOnline = xmrRigs.filter(function (r) { return r.status !== 'offline'; }).length;
+    var xmrHR = xmrRigs.filter(function (r) { return r.status !== 'offline'; }).reduce(function (s, r) { return s + (r.hrn || 0); }, 0);
+    var xmrWatt = xmrRigs.filter(function (r) { return r.status !== 'offline'; }).reduce(function (s, r) { return s + (r.watt || 0); }, 0);
+    var poolConnected = POOL_CONFIG.XMR.walletAddr && POOL_CONFIG.XMR.walletAddr.length > 90;
     var cmr = calcMiningRevenue('XMR');
 
     // Flight sheets XMR
-    var fsXMR = (typeof hiveFS!=='undefined'?hiveFS:[]).filter(function(f){
-      return f.name&&(f.name.toLowerCase().includes('xmr')||f.name.toLowerCase().includes('monero')||f.name.toLowerCase().includes('randomx'));
+    var fsXMR = (typeof hiveFS !== 'undefined' ? hiveFS : []).filter(function (f) {
+      return f.name && (f.name.toLowerCase().includes('xmr') || f.name.toLowerCase().includes('monero') || f.name.toLowerCase().includes('randomx'));
     });
 
     hubXMR.innerHTML =
       '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:14px">'
-        +'<div class="card" style="text-align:center;padding:12px">'
-          +'<div style="font-size:10px;color:var(--muted)">Hashrate XMR</div>'
-          +'<div style="font-size:20px;font-weight:700;color:var(--orange)">'+(xmrHR>0?xmrHR.toFixed(2)+' KH/s':'—')+'</div>'
-          +'<div style="font-size:10px;color:var(--muted)">'+xmrOnline+'/'+xmrRigs.length+' rigs actifs</div>'
-        +'</div>'
-        +'<div class="card" style="text-align:center;padding:12px">'
-          +'<div style="font-size:10px;color:var(--muted)">Revenu XMR/jour</div>'
-          +'<div style="font-size:20px;font-weight:700;color:var(--green)">$'+(cmr.daily>0?cmr.daily.toFixed(3):'0.000')+'</div>'
-          +'<div style="font-size:10px;color:var(--muted)">'+(cmr.coinPerDay>0?cmr.coinPerDay.toFixed(6):'—')+' XMR/j</div>'
-        +'</div>'
-        +'<div class="card" style="text-align:center;padding:12px">'
-          +'<div style="font-size:10px;color:var(--muted)">Consommation XMR</div>'
-          +'<div style="font-size:20px;font-weight:700;color:var(--accent2)">'+(xmrWatt?xmrWatt.toLocaleString()+' W':'—')+'</div>'
-          +'<div style="font-size:10px;color:var(--muted)">Net: $'+(cmr.netDaily?cmr.netDaily.toFixed(3):'—')+'/j</div>'
-        +'</div>'
-        +'<div class="card" style="text-align:center;padding:12px">'
-          +'<div style="font-size:10px;color:var(--muted)">Pool SupportXMR</div>'
-          +'<div style="font-size:16px;font-weight:700;color:'+(poolConnected?'var(--green)':'var(--red)')+'">'+( poolConnected?'✅ Connecté':'❌ Non configuré')+'</div>'
-          +'<div style="font-size:10px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(poolConnected?POOL_CONFIG.XMR.walletAddr.slice(0,14)+'…':'Configurer dans Paramètres')+'</div>'
-        +'</div>'
-      +'</div>'
+      + '<div class="card" style="text-align:center;padding:12px">'
+      + '<div style="font-size:10px;color:var(--muted)">Hashrate XMR</div>'
+      + '<div style="font-size:20px;font-weight:700;color:var(--orange)">' + (xmrHR > 0 ? xmrHR.toFixed(2) + ' KH/s' : '—') + '</div>'
+      + '<div style="font-size:10px;color:var(--muted)">' + xmrOnline + '/' + xmrRigs.length + ' rigs actifs</div>'
+      + '</div>'
+      + '<div class="card" style="text-align:center;padding:12px">'
+      + '<div style="font-size:10px;color:var(--muted)">Revenu XMR/jour</div>'
+      + '<div style="font-size:20px;font-weight:700;color:var(--green)">$' + (cmr.daily > 0 ? cmr.daily.toFixed(3) : '0.000') + '</div>'
+      + '<div style="font-size:10px;color:var(--muted)">' + (cmr.coinPerDay > 0 ? cmr.coinPerDay.toFixed(6) : '—') + ' XMR/j</div>'
+      + '</div>'
+      + '<div class="card" style="text-align:center;padding:12px">'
+      + '<div style="font-size:10px;color:var(--muted)">Consommation XMR</div>'
+      + '<div style="font-size:20px;font-weight:700;color:var(--accent2)">' + (xmrWatt ? xmrWatt.toLocaleString() + ' W' : '—') + '</div>'
+      + '<div style="font-size:10px;color:var(--muted)">Net: $' + (cmr.netDaily ? cmr.netDaily.toFixed(3) : '—') + '/j</div>'
+      + '</div>'
+      + '<div class="card" style="text-align:center;padding:12px">'
+      + '<div style="font-size:10px;color:var(--muted)">Pool SupportXMR</div>'
+      + '<div style="font-size:16px;font-weight:700;color:' + (poolConnected ? 'var(--green)' : 'var(--red)') + '">' + (poolConnected ? '✅ Connecté' : '❌ Non configuré') + '</div>'
+      + '<div style="font-size:10px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + (poolConnected ? POOL_CONFIG.XMR.walletAddr.slice(0, 14) + '…' : 'Configurer dans Paramètres') + '</div>'
+      + '</div>'
+      + '</div>'
       // Flight sheets XMR
-      +'<div style="margin-bottom:10px">'
-        +'<div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:600">FLIGHT SHEETS XMR</div>'
-        +(fsXMR.length>0
-          ? fsXMR.map(function(f){return '<div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;margin-bottom:4px">'
-              +'<div><span style="color:var(--orange);font-size:13px">⬡</span><strong style="margin-left:6px;font-size:12px">'+f.name+'</strong></div>'
-              +'<span style="font-size:10px;color:var(--muted)">ID: '+f.id+'</span></div>';}).join('')
-          : '<div style="color:var(--muted);font-size:12px;padding:8px;background:rgba(255,255,255,0.03);border-radius:6px">'
-            +'Aucun flight sheet XMR — <button class="btn btn-ghost btn-sm" style="padding:2px 8px;font-size:11px" onclick="createXMRFarm()">🔧 Créer automatiquement</button></div>'
-        )
-      +'</div>'
+      + '<div style="margin-bottom:10px">'
+      + '<div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:600">FLIGHT SHEETS XMR</div>'
+      + (fsXMR.length > 0
+        ? fsXMR.map(function (f) {
+          return '<div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;margin-bottom:4px">'
+            + '<div><span style="color:var(--orange);font-size:13px">⬡</span><strong style="margin-left:6px;font-size:12px">' + f.name + '</strong></div>'
+            + '<span style="font-size:10px;color:var(--muted)">ID: ' + f.id + '</span></div>';
+        }).join('')
+        : '<div style="color:var(--muted);font-size:12px;padding:8px;background:rgba(255,255,255,0.03);border-radius:6px">'
+        + 'Aucun flight sheet XMR — <button class="btn btn-ghost btn-sm" style="padding:2px 8px;font-size:11px" onclick="createXMRFarm()">🔧 Créer automatiquement</button></div>'
+      )
+      + '</div>'
       // Workers XMR
-      +'<div>'
-        +'<div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:600">WORKERS XMR (RandomX)</div>'
-        +(xmrRigs.length>0
-          ? xmrRigs.map(function(r){
-              var col=r.status==='online'?'var(--green)':r.status==='warning'?'var(--yellow)':'var(--red)';
-              return '<div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;margin-bottom:4px">'
-                +'<div style="display:flex;align-items:center;gap:8px">'
-                  +'<div style="width:8px;height:8px;border-radius:50%;background:'+col+'"></div>'
-                  +'<div><strong style="font-size:12px">'+r.name+'</strong><div style="font-size:10px;color:var(--muted)">'+r.gpus+' · '+(r.watt||'—')+'W</div></div>'
-                +'</div>'
-                +'<div style="text-align:right">'
-                  +'<div style="font-family:var(--mono);font-size:12px;color:var(--orange)">'+(r.hr||'—')+'</div>'
-                  +'<div style="font-size:10px;color:var(--muted)">'+(r.maxTemp||r.temp||0)+'°C max · '+(r.avgFan||0)+'% fan</div>'
-                +'</div></div>';
-            }).join('')
-          : '<div style="color:var(--muted);font-size:12px;padding:8px">Aucun worker XMR — en attente HiveOS</div>'
-        )
-      +'</div>';
+      + '<div>'
+      + '<div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:600">WORKERS XMR (RandomX)</div>'
+      + (xmrRigs.length > 0
+        ? xmrRigs.map(function (r) {
+          var col = r.status === 'online' ? 'var(--green)' : r.status === 'warning' ? 'var(--yellow)' : 'var(--red)';
+          return '<div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;margin-bottom:4px">'
+            + '<div style="display:flex;align-items:center;gap:8px">'
+            + '<div style="width:8px;height:8px;border-radius:50%;background:' + col + '"></div>'
+            + '<div><strong style="font-size:12px">' + r.name + '</strong><div style="font-size:10px;color:var(--muted)">' + r.gpus + ' · ' + (r.watt || '—') + 'W</div></div>'
+            + '</div>'
+            + '<div style="text-align:right">'
+            + '<div style="font-family:var(--mono);font-size:12px;color:var(--orange)">' + (r.hr || '—') + '</div>'
+            + '<div style="font-size:10px;color:var(--muted)">' + (r.maxTemp || r.temp || 0) + '°C max · ' + (r.avgFan || 0) + '% fan</div>'
+            + '</div></div>';
+        }).join('')
+        : '<div style="color:var(--muted);font-size:12px;padding:8px">Aucun worker XMR — en attente HiveOS</div>'
+      )
+      + '</div>';
   }
 }
-function refreshWalletPage(){
+function refreshWalletPage() {
   // Déclencher fetch on-chain KAS si adresse disponible
   if (WALLET.KAS.addr && WALLET.KAS.addr.length >= 60) {
     fetchKASOnChainBalance().then(() => {
-      const xb=WALLET.XMR.balance, kb=WALLET.KAS.balance;
-      const total=xb*(xmrP||0)+kb*(kasP||0);
-      setText('w-total','$'+total.toLocaleString('fr',{minimumFractionDigits:2,maximumFractionDigits:2}));
+      const xb = WALLET.XMR.balance, kb = WALLET.KAS.balance;
+      const total = xb * (xmrP || 0) + kb * (kasP || 0);
+      setText('w-total', '$' + total.toLocaleString('fr', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
     });
   }
   if (WALLET.XMR.addr && WALLET.XMR.addr.length >= 90) {
     fetchXMROnChainBalance();
   }
-  const xb=WALLET.XMR.balance,kb=WALLET.KAS.balance;
-  const total=xb*xmrP+kb*kasP;
-  setText('w-total','$'+total.toLocaleString('fr',{minimumFractionDigits:2,maximumFractionDigits:2}));
-  setText('w-sub',xb.toFixed(4)+' XMR + '+Math.round(kb)+' KAS');
-  setText('w-xmr-a',xb.toFixed(4)+' XMR');
-  setText('w-xmr-u','$'+(xb*xmrP).toLocaleString('fr',{minimumFractionDigits:2,maximumFractionDigits:2}));
-  setText('w-kas-a',Math.round(kb)+' KAS');
-  setText('w-kas-u','$'+(kb*kasP).toLocaleString('fr',{minimumFractionDigits:2,maximumFractionDigits:2}));
-  setText('w-xmr-addr',WALLET.XMR.addr);
-  setText('w-kas-addr',WALLET.KAS.addr);
+  const xb = WALLET.XMR.balance, kb = WALLET.KAS.balance;
+  const total = xb * xmrP + kb * kasP;
+  setText('w-total', '$' + total.toLocaleString('fr', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+  setText('w-sub', xb.toFixed(4) + ' XMR + ' + Math.round(kb) + ' KAS');
+  setText('w-xmr-a', xb.toFixed(4) + ' XMR');
+  setText('w-xmr-u', '$' + (xb * xmrP).toLocaleString('fr', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+  setText('w-kas-a', Math.round(kb) + ' KAS');
+  setText('w-kas-u', '$' + (kb * kasP).toLocaleString('fr', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+  setText('w-xmr-addr', WALLET.XMR.addr);
+  setText('w-kas-addr', WALLET.KAS.addr);
   renderTxList();
   // ── Graphique pool rewards ch-wallet ───────────────────
   try {
     const cv = el('ch-wallet');
     if (cv && PAYMENTS.length > 0) {
-      const last = PAYMENTS.slice(0,8).reverse();
-      const labels = last.map(p => p.date||'—');
-      const xmrVals = last.map(p => p.coin==='XMR' ? parseFloat(p.amount)||0 : 0);
-      const kasVals = last.map(p => p.coin==='KAS' ? parseFloat((p.amount||'').replace(',',''))||0 : 0);
+      const last = PAYMENTS.slice(0, 8).reverse();
+      const labels = last.map(p => p.date || '—');
+      const xmrVals = last.map(p => p.coin === 'XMR' ? parseFloat(p.amount) || 0 : 0);
+      const kasVals = last.map(p => p.coin === 'KAS' ? parseFloat((p.amount || '').replace(',', '')) || 0 : 0);
       // Normaliser KAS en USD pour comparaison
-      const xmrUSD = last.map(p => p.coin==='XMR' ? parseFloat((p.usd||'$0').replace('$',''))||0 : 0);
-      const kasUSD  = last.map(p => p.coin==='KAS' ? parseFloat((p.usd||'$0').replace('$',''))||0 : 0);
-      drawChart('ch-wallet','bar',
+      const xmrUSD = last.map(p => p.coin === 'XMR' ? parseFloat((p.usd || '$0').replace('$', '')) || 0 : 0);
+      const kasUSD = last.map(p => p.coin === 'KAS' ? parseFloat((p.usd || '$0').replace('$', '')) || 0 : 0);
+      drawChart('ch-wallet', 'bar',
         [
-          { data: xmrUSD, color:'#ff6b2b', label:'XMR (USD)' },
-          { data: kasUSD, color:'#00e5ff', label:'KAS (USD)' },
+          { data: xmrUSD, color: '#ff6b2b', label: 'XMR (USD)' },
+          { data: kasUSD, color: '#00e5ff', label: 'KAS (USD)' },
         ],
         labels);
     } else if (cv) {
       const ctx = cv.getContext('2d');
       if (ctx) {
-        const W=cv.offsetWidth||300,H=cv.offsetHeight||180;
-        cv.width=W; cv.height=H; ctx.clearRect(0,0,W,H);
-        ctx.fillStyle='var(--muted,#64748b)'; ctx.font='11px monospace';
-        ctx.textAlign='center';
-        ctx.fillText('Aucun paiement enregistré', W/2, H/2);
+        const W = cv.offsetWidth || 300, H = cv.offsetHeight || 180;
+        cv.width = W; cv.height = H; ctx.clearRect(0, 0, W, H);
+        ctx.fillStyle = 'var(--muted,#64748b)'; ctx.font = '11px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('Aucun paiement enregistré', W / 2, H / 2);
       }
     }
-  } catch(_e){}
+  } catch (_e) { }
 
   // ── Hub KAS dans monitoring ─────────────────────────────────────────────
   var hubKAS = el('mon-kas-hub');
   if (hubKAS) {
-    var kasRigs   = RIGS.filter(function(r){ return r.coin==='KAS'; });
-    var kasOnline = kasRigs.filter(function(r){ return r.status!=='offline'; });
-    var kasHR     = kasOnline.reduce(function(s,r){ return s+(r.hrn||0); }, 0);
-    var kasWatt   = kasOnline.reduce(function(s,r){ return s+(r.watt||0); }, 0);
-    var poolConn  = POOL_CONFIG.KAS.walletAddr && POOL_CONFIG.KAS.walletAddr.length > 60;
-    var cmrK      = calcMiningRevenue('KAS');
-    var fsKAS     = (typeof hiveFS!=='undefined'?hiveFS:[]).filter(function(f){
-      return f.name&&(f.name.toLowerCase().includes('kas')||f.name.toLowerCase().includes('kheavy'));
+    var kasRigs = RIGS.filter(function (r) { return r.coin === 'KAS'; });
+    var kasOnline = kasRigs.filter(function (r) { return r.status !== 'offline'; });
+    var kasHR = kasOnline.reduce(function (s, r) { return s + (r.hrn || 0); }, 0);
+    var kasWatt = kasOnline.reduce(function (s, r) { return s + (r.watt || 0); }, 0);
+    var poolConn = POOL_CONFIG.KAS.walletAddr && POOL_CONFIG.KAS.walletAddr.length > 60;
+    var cmrK = calcMiningRevenue('KAS');
+    var fsKAS = (typeof hiveFS !== 'undefined' ? hiveFS : []).filter(function (f) {
+      return f.name && (f.name.toLowerCase().includes('kas') || f.name.toLowerCase().includes('kheavy'));
     });
     hubKAS.innerHTML =
       '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:14px">'
-        +'<div class="card" style="text-align:center;padding:12px">'
-          +'<div style="font-size:10px;color:var(--muted)">Hashrate KAS</div>'
-          +'<div style="font-size:20px;font-weight:700;color:var(--accent)">'+(kasHR>0?kasHR.toFixed(2)+' GH/s':'—')+'</div>'
-          +'<div style="font-size:10px;color:var(--muted)">'+kasOnline.length+'/'+kasRigs.length+' rigs actifs</div>'
-        +'</div>'
-        +'<div class="card" style="text-align:center;padding:12px">'
-          +'<div style="font-size:10px;color:var(--muted)">Revenu KAS/jour</div>'
-          +'<div style="font-size:20px;font-weight:700;color:var(--green)">$'+(cmrK.daily>0?cmrK.daily.toFixed(2):'0.00')+'</div>'
-          +'<div style="font-size:10px;color:var(--muted)">'+(cmrK.coinPerDay>0?Math.round(cmrK.coinPerDay)+' KAS/j':'—')+'</div>'
-        +'</div>'
-        +'<div class="card" style="text-align:center;padding:12px">'
-          +'<div style="font-size:10px;color:var(--muted)">Conso KAS</div>'
-          +'<div style="font-size:20px;font-weight:700;color:var(--accent2)">'+(kasWatt?kasWatt.toLocaleString()+' W':'—')+'</div>'
-          +'<div style="font-size:10px;color:var(--muted)">Net: $'+(cmrK.netDaily?cmrK.netDaily.toFixed(2):'—')+'/j</div>'
-        +'</div>'
-        +'<div class="card" style="text-align:center;padding:12px">'
-          +'<div style="font-size:10px;color:var(--muted)">Pool K1Pool</div>'
-          +'<div style="font-size:16px;font-weight:700;color:'+(poolConn?'var(--green)':'var(--red)')+'">'+( poolConn?'✅ Connecté':'❌ Non config.')+'</div>'
-          +'<div style="font-size:10px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(poolConn?POOL_CONFIG.KAS.walletAddr.slice(0,14)+'…':'Configurer dans Paramètres')+'</div>'
-        +'</div>'
-      +'</div>'
+      + '<div class="card" style="text-align:center;padding:12px">'
+      + '<div style="font-size:10px;color:var(--muted)">Hashrate KAS</div>'
+      + '<div style="font-size:20px;font-weight:700;color:var(--accent)">' + (kasHR > 0 ? kasHR.toFixed(2) + ' GH/s' : '—') + '</div>'
+      + '<div style="font-size:10px;color:var(--muted)">' + kasOnline.length + '/' + kasRigs.length + ' rigs actifs</div>'
+      + '</div>'
+      + '<div class="card" style="text-align:center;padding:12px">'
+      + '<div style="font-size:10px;color:var(--muted)">Revenu KAS/jour</div>'
+      + '<div style="font-size:20px;font-weight:700;color:var(--green)">$' + (cmrK.daily > 0 ? cmrK.daily.toFixed(2) : '0.00') + '</div>'
+      + '<div style="font-size:10px;color:var(--muted)">' + (cmrK.coinPerDay > 0 ? Math.round(cmrK.coinPerDay) + ' KAS/j' : '—') + '</div>'
+      + '</div>'
+      + '<div class="card" style="text-align:center;padding:12px">'
+      + '<div style="font-size:10px;color:var(--muted)">Conso KAS</div>'
+      + '<div style="font-size:20px;font-weight:700;color:var(--accent2)">' + (kasWatt ? kasWatt.toLocaleString() + ' W' : '—') + '</div>'
+      + '<div style="font-size:10px;color:var(--muted)">Net: $' + (cmrK.netDaily ? cmrK.netDaily.toFixed(2) : '—') + '/j</div>'
+      + '</div>'
+      + '<div class="card" style="text-align:center;padding:12px">'
+      + '<div style="font-size:10px;color:var(--muted)">Pool K1Pool</div>'
+      + '<div style="font-size:16px;font-weight:700;color:' + (poolConn ? 'var(--green)' : 'var(--red)') + '">' + (poolConn ? '✅ Connecté' : '❌ Non config.') + '</div>'
+      + '<div style="font-size:10px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + (poolConn ? POOL_CONFIG.KAS.walletAddr.slice(0, 14) + '…' : 'Configurer dans Paramètres') + '</div>'
+      + '</div>'
+      + '</div>'
       // Flight sheets KAS
-      +'<div style="margin-bottom:10px">'
-        +'<div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:600">FLIGHT SHEETS KAS</div>'
-        +(fsKAS.length>0
-          ? fsKAS.map(function(f){return '<div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;margin-bottom:4px">'
-              +'<div><span style="color:var(--accent)">◈</span><strong style="margin-left:6px;font-size:12px">'+f.name+'</strong></div>'
-              +'<span style="font-size:10px;color:var(--muted)">ID: '+f.id+'</span></div>';}).join('')
-          : '<div style="color:var(--muted);font-size:12px;padding:8px;background:rgba(255,255,255,.03);border-radius:6px">'
-            +'Aucun flight sheet KAS — <button class="btn btn-ghost btn-sm" style="padding:2px 8px;font-size:11px;color:var(--accent)" onclick="createKASFarm()">◈ Créer automatiquement</button></div>'
-        )
-      +'</div>'
+      + '<div style="margin-bottom:10px">'
+      + '<div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:600">FLIGHT SHEETS KAS</div>'
+      + (fsKAS.length > 0
+        ? fsKAS.map(function (f) {
+          return '<div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;margin-bottom:4px">'
+            + '<div><span style="color:var(--accent)">◈</span><strong style="margin-left:6px;font-size:12px">' + f.name + '</strong></div>'
+            + '<span style="font-size:10px;color:var(--muted)">ID: ' + f.id + '</span></div>';
+        }).join('')
+        : '<div style="color:var(--muted);font-size:12px;padding:8px;background:rgba(255,255,255,.03);border-radius:6px">'
+        + 'Aucun flight sheet KAS — <button class="btn btn-ghost btn-sm" style="padding:2px 8px;font-size:11px;color:var(--accent)" onclick="createKASFarm()">◈ Créer automatiquement</button></div>'
+      )
+      + '</div>'
       // Workers KAS
-      +'<div>'
-        +'<div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:600">WORKERS KAS (kHeavyHash)</div>'
-        +(kasRigs.length>0
-          ? kasRigs.map(function(r){
-              var col=r.status==='online'?'var(--green)':r.status==='warning'?'var(--yellow)':'var(--red)';
-              return '<div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;margin-bottom:4px">'
-                +'<div style="display:flex;align-items:center;gap:8px">'
-                  +'<div style="width:8px;height:8px;border-radius:50%;background:'+col+'"></div>'
-                  +'<div><strong style="font-size:12px">'+r.name+'</strong><div style="font-size:10px;color:var(--muted)">'+r.gpus+' &bull; '+(r.watt||0)+'W</div></div>'
-                +'</div>'
-                +'<div style="text-align:right">'
-                  +'<div style="font-family:var(--mono);font-size:12px;color:var(--accent)">'+(r.hr||'—')+'</div>'
-                  +'<div style="font-size:10px;color:var(--muted)">'+(r.maxTemp||0)+'&deg;C &bull; '+(r.avgFan||0)+'% fan</div>'
-                +'</div></div>';
-            }).join('')
-          : '<div style="color:var(--muted);font-size:12px;padding:8px">Aucun worker KAS — en attente HiveOS</div>'
-        )
-      +'</div>';
+      + '<div>'
+      + '<div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:600">WORKERS KAS (kHeavyHash)</div>'
+      + (kasRigs.length > 0
+        ? kasRigs.map(function (r) {
+          var col = r.status === 'online' ? 'var(--green)' : r.status === 'warning' ? 'var(--yellow)' : 'var(--red)';
+          return '<div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;margin-bottom:4px">'
+            + '<div style="display:flex;align-items:center;gap:8px">'
+            + '<div style="width:8px;height:8px;border-radius:50%;background:' + col + '"></div>'
+            + '<div><strong style="font-size:12px">' + r.name + '</strong><div style="font-size:10px;color:var(--muted)">' + r.gpus + ' &bull; ' + (r.watt || 0) + 'W</div></div>'
+            + '</div>'
+            + '<div style="text-align:right">'
+            + '<div style="font-family:var(--mono);font-size:12px;color:var(--accent)">' + (r.hr || '—') + '</div>'
+            + '<div style="font-size:10px;color:var(--muted)">' + (r.maxTemp || 0) + '&deg;C &bull; ' + (r.avgFan || 0) + '% fan</div>'
+            + '</div></div>';
+        }).join('')
+        : '<div style="color:var(--muted);font-size:12px;padding:8px">Aucun worker KAS — en attente HiveOS</div>'
+      )
+      + '</div>';
   }
 
 }
 
-function renderTxList(){
-  if(!TX_HISTORY.length){
-    el('tx-empty').style.display='block';
-    el('tx-list').innerHTML='';
+function renderTxList() {
+  if (!TX_HISTORY.length) {
+    el('tx-empty').style.display = 'block';
+    el('tx-list').innerHTML = '';
     return;
   }
-  el('tx-empty').style.display='none';
-  el('tx-list').innerHTML=TX_HISTORY.map(t=>`
+  el('tx-empty').style.display = 'none';
+  el('tx-list').innerHTML = TX_HISTORY.map(t => `
     <div class="tx-item">
       <div class="tx-dir-icon tx-dir-out">↗</div>
       <div style="flex:1">
         <div class="tx-coin-label">${t.coin} <span style="font-size:10px;color:var(--muted);font-weight:400">· Envoi</span></div>
         <div class="tx-dest">${t.dest}</div>
-        ${t.note?`<div style="font-size:9.5px;font-family:var(--mono);color:var(--muted);margin-top:2px">${t.note}</div>`:''}
+        ${t.note ? `<div style="font-size:9.5px;font-family:var(--mono);color:var(--muted);margin-top:2px">${t.note}</div>` : ''}
       </div>
       <div class="tx-amount">
-        <div class="tx-amount-val" style="color:var(--red)">-${parseFloat(t.amount).toFixed(t.coin==='XMR'?4:0)} ${t.coin}</div>
+        <div class="tx-amount-val" style="color:var(--red)">-${parseFloat(t.amount).toFixed(t.coin === 'XMR' ? 4 : 0)} ${t.coin}</div>
         <div class="tx-amount-usd">${t.usd}</div>
       </div>
-      <div class="tx-date">${t.date.slice(0,5)}</div>
+      <div class="tx-date">${t.date.slice(0, 5)}</div>
     </div>`).join('');
 }
 
-function exportTxCSV(){
-  if(!TX_HISTORY.length){toast('warn','Export','Aucune transaction à exporter.');return;}
-  const rows=[['Date','Coin','Montant','USD','Destination','Frais','Note','TX ID'],...TX_HISTORY.map(t=>[t.date,t.coin,t.amount,t.usd,t.dest,t.fee,t.note,t.txid])];
-  const csv=rows.map(r=>r.map(v=>`"${v}"`).join(',')).join('\n');
-  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='bitosdash-transactions.csv';a.click();
-  toast('success','Export','bitosdash-transactions.csv téléchargé.');
+function exportTxCSV() {
+  if (!TX_HISTORY.length) { toast('warn', 'Export', 'Aucune transaction à exporter.'); return; }
+  const rows = [['Date', 'Coin', 'Montant', 'USD', 'Destination', 'Frais', 'Note', 'TX ID'], ...TX_HISTORY.map(t => [t.date, t.coin, t.amount, t.usd, t.dest, t.fee, t.note, t.txid])];
+  const csv = rows.map(r => r.map(v => `"${v}"`).join(',')).join('\n');
+  const a = document.createElement('a'); a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv); a.download = 'bitosdash-transactions.csv'; a.click();
+  toast('success', 'Export', 'bitosdash-transactions.csv téléchargé.');
 }
 
 // ══════════════════════════════════════════════════════
 // SEND FLOW
 // ══════════════════════════════════════════════════════
-function openSend(coin){
-  S.coin=coin;S.prio='slow';S.amount=0;S.addr='';S.note='';S.addrValid=false;
-  const isX=coin==='XMR';
-  const col=isX?'var(--orange)':'var(--accent)';
-  const bg=isX?'rgba(255,107,43,.15)':'rgba(0,229,255,.15)';
-  const bal=WALLET[coin].balance;
-  const unit=coin==='XMR'?'XMR':'KAS';
-  const dp=coin==='XMR'?4:0;
-  setText('send-title','↗ Envoyer '+coin);
-  el('send-coin-ico').style.background=bg;
-  el('send-coin-ico').style.color=col;
-  el('send-coin-ico').textContent=isX?'⬡':'◈';
-  setText('send-avail',bal.toFixed(dp)+' '+unit);
-  setText('send-avail-usd','≈ $'+(bal*(isX?xmrP:kasP)).toFixed(2)+' USD');
-  const fees=FEES[coin];
-  setText('p-slow-fee','~'+fees.slow+' '+unit);
-  setText('p-normal-fee','~'+fees.normal+' '+unit);
-  setText('p-fast-fee','~'+fees.fast+' '+unit);
-  el('send-addr').value='';el('send-amount').value='';
-  el('send-addr-hint').textContent='';el('send-addr-hint').className='addr-hint';
-  el('send-addr').className='form-input';
-  el('send-addr-hint').textContent='';
-  setText('send-amount-usd','≈ $0.00 USD');
+function openSend(coin) {
+  S.coin = coin; S.prio = 'slow'; S.amount = 0; S.addr = ''; S.note = ''; S.addrValid = false;
+  const isX = coin === 'XMR';
+  const col = isX ? 'var(--orange)' : 'var(--accent)';
+  const bg = isX ? 'rgba(255,107,43,.15)' : 'rgba(0,229,255,.15)';
+  const bal = WALLET[coin].balance;
+  const unit = coin === 'XMR' ? 'XMR' : 'KAS';
+  const dp = coin === 'XMR' ? 4 : 0;
+  setText('send-title', '↗ Envoyer ' + coin);
+  el('send-coin-ico').style.background = bg;
+  el('send-coin-ico').style.color = col;
+  el('send-coin-ico').textContent = isX ? '⬡' : '◈';
+  setText('send-avail', bal.toFixed(dp) + ' ' + unit);
+  setText('send-avail-usd', '≈ $' + (bal * (isX ? xmrP : kasP)).toFixed(2) + ' USD');
+  const fees = FEES[coin];
+  setText('p-slow-fee', '~' + fees.slow + ' ' + unit);
+  setText('p-normal-fee', '~' + fees.normal + ' ' + unit);
+  setText('p-fast-fee', '~' + fees.fast + ' ' + unit);
+  el('send-addr').value = ''; el('send-amount').value = '';
+  el('send-addr-hint').textContent = ''; el('send-addr-hint').className = 'addr-hint';
+  el('send-addr').className = 'form-input';
+  el('send-addr-hint').textContent = '';
+  setText('send-amount-usd', '≈ $0.00 USD');
   el('send-recap').classList.remove('visible');
-  el('btn-proceed').disabled=true;el('btn-proceed').style.opacity='.4';
-  el('send-note').value='';
+  el('btn-proceed').disabled = true; el('btn-proceed').style.opacity = '.4';
+  el('send-note').value = '';
   setPriority('slow');
   openModal('modal-send');
 }
 
-function onSendAddrChange(){
-  const addr=el('send-addr').value.trim();
-  const hint=el('send-addr-hint');
-  S.addr='';S.addrValid=false;
-  if(!addr){hint.textContent='Collez ou saisissez l\'adresse du portefeuille destinataire';hint.className='addr-hint addr-warn';el('send-addr').className='form-input';refreshSendReady();return;}
-  let ok=false,msg='',cls='';
-  if(S.coin==='XMR'){
-    ok=/^[48][1-9A-HJ-NP-Za-km-z]{94}$/.test(addr);
-    if(ok){msg='✓ Adresse Monero valide';cls='addr-ok';}
-    else if(addr.length<20){msg='⚠ Adresse incomplète (95 caractères)';cls='addr-warn';}
-    else{msg='✗ Format invalide — doit commencer par 4 ou 8, 95 caractères';cls='addr-err';}
+function onSendAddrChange() {
+  const addr = el('send-addr').value.trim();
+  const hint = el('send-addr-hint');
+  S.addr = ''; S.addrValid = false;
+  if (!addr) { hint.textContent = 'Collez ou saisissez l\'adresse du portefeuille destinataire'; hint.className = 'addr-hint addr-warn'; el('send-addr').className = 'form-input'; refreshSendReady(); return; }
+  let ok = false, msg = '', cls = '';
+  if (S.coin === 'XMR') {
+    ok = /^[48][1-9A-HJ-NP-Za-km-z]{94}$/.test(addr);
+    if (ok) { msg = '✓ Adresse Monero valide'; cls = 'addr-ok'; }
+    else if (addr.length < 20) { msg = '⚠ Adresse incomplète (95 caractères)'; cls = 'addr-warn'; }
+    else { msg = '✗ Format invalide — doit commencer par 4 ou 8, 95 caractères'; cls = 'addr-err'; }
   } else {
-    ok=/^kaspa:[a-z0-9]{30,80}$/.test(addr.toLowerCase());
-    if(ok){msg='✓ Adresse Kaspa valide';cls='addr-ok';}
-    else if(addr.length<6){msg='⚠ Format attendu: kaspa:qxxx...';cls='addr-warn';}
-    else{msg='✗ Format invalide — attendu: kaspa:q...';cls='addr-err';}
+    ok = /^kaspa:[a-z0-9]{30,80}$/.test(addr.toLowerCase());
+    if (ok) { msg = '✓ Adresse Kaspa valide'; cls = 'addr-ok'; }
+    else if (addr.length < 6) { msg = '⚠ Format attendu: kaspa:qxxx...'; cls = 'addr-warn'; }
+    else { msg = '✗ Format invalide — attendu: kaspa:q...'; cls = 'addr-err'; }
   }
-  hint.textContent=msg;hint.className='addr-hint '+cls;
-  el('send-addr').className='form-input '+(ok?'valid':addr.length>6?'invalid':'');
-  if(ok){S.addr=addr;S.addrValid=true;}
+  hint.textContent = msg; hint.className = 'addr-hint ' + cls;
+  el('send-addr').className = 'form-input ' + (ok ? 'valid' : addr.length > 6 ? 'invalid' : '');
+  if (ok) { S.addr = addr; S.addrValid = true; }
   refreshSendReady();
 }
 
-function onSendAmountChange(){
-  const v=parseFloat(el('send-amount').value)||0;
-  S.amount=v;
-  const price=S.coin==='XMR'?xmrP:kasP;
-  setText('send-amount-usd','≈ $'+(v*price).toFixed(2)+' USD');
+function onSendAmountChange() {
+  const v = parseFloat(el('send-amount').value) || 0;
+  S.amount = v;
+  const price = S.coin === 'XMR' ? xmrP : kasP;
+  setText('send-amount-usd', '≈ $' + (v * price).toFixed(2) + ' USD');
   updateRecap();
   refreshSendReady();
 }
 
-function updateRecap(){
-  if(!S.amount||S.amount<=0){el('send-recap').classList.remove('visible');return;}
-  const fee=FEES[S.coin][S.prio];
-  const total=S.amount+fee;
-  const bal=WALLET[S.coin].balance;
-  const rem=bal-total;
-  const unit=S.coin==='XMR'?'XMR':'KAS';
-  const dp=S.coin==='XMR'?6:2;
-  setText('rc-amount',S.amount.toFixed(dp)+' '+unit);
-  setText('rc-fee',fee.toFixed(dp)+' '+unit);
-  setText('rc-total',total.toFixed(dp)+' '+unit);
-  el('rc-remain').textContent=rem>=0?rem.toFixed(dp)+' '+unit:'⚠ Solde insuffisant';
-  el('rc-remain').style.color=rem>=0?'var(--green)':'var(--red)';
+function updateRecap() {
+  if (!S.amount || S.amount <= 0) { el('send-recap').classList.remove('visible'); return; }
+  const fee = FEES[S.coin][S.prio];
+  const total = S.amount + fee;
+  const bal = WALLET[S.coin].balance;
+  const rem = bal - total;
+  const unit = S.coin === 'XMR' ? 'XMR' : 'KAS';
+  const dp = S.coin === 'XMR' ? 6 : 2;
+  setText('rc-amount', S.amount.toFixed(dp) + ' ' + unit);
+  setText('rc-fee', fee.toFixed(dp) + ' ' + unit);
+  setText('rc-total', total.toFixed(dp) + ' ' + unit);
+  el('rc-remain').textContent = rem >= 0 ? rem.toFixed(dp) + ' ' + unit : '⚠ Solde insuffisant';
+  el('rc-remain').style.color = rem >= 0 ? 'var(--green)' : 'var(--red)';
   el('send-recap').classList.add('visible');
 }
 
-function setPriority(p){
-  S.prio=p;
-  ['slow','normal','fast'].forEach(x=>el('p-'+x).classList.toggle('active',x===p));
-  updateRecap();refreshSendReady();
+function setPriority(p) {
+  S.prio = p;
+  ['slow', 'normal', 'fast'].forEach(x => el('p-' + x).classList.toggle('active', x === p));
+  updateRecap(); refreshSendReady();
 }
 
-function refreshSendReady(){
-  const fee=FEES[S.coin][S.prio];
-  const ok=S.addrValid&&S.amount>0&&(S.amount+fee)<=WALLET[S.coin].balance;
-  el('btn-proceed').disabled=!ok;el('btn-proceed').style.opacity=ok?'1':'.4';
+function refreshSendReady() {
+  const fee = FEES[S.coin][S.prio];
+  const ok = S.addrValid && S.amount > 0 && (S.amount + fee) <= WALLET[S.coin].balance;
+  el('btn-proceed').disabled = !ok; el('btn-proceed').style.opacity = ok ? '1' : '.4';
 }
 
-function setMax(){
-  const fee=FEES[S.coin][S.prio];
-  const max=Math.max(0,WALLET[S.coin].balance-fee);
-  el('send-amount').value=max.toFixed(S.coin==='XMR'?6:2);
-  S.amount=max;onSendAmountChange();
+function setMax() {
+  const fee = FEES[S.coin][S.prio];
+  const max = Math.max(0, WALLET[S.coin].balance - fee);
+  el('send-amount').value = max.toFixed(S.coin === 'XMR' ? 6 : 2);
+  S.amount = max; onSendAmountChange();
 }
-function setHalf(){
-  const half=WALLET[S.coin].balance/2;
-  el('send-amount').value=half.toFixed(S.coin==='XMR'?6:2);
-  S.amount=half;onSendAmountChange();
+function setHalf() {
+  const half = WALLET[S.coin].balance / 2;
+  el('send-amount').value = half.toFixed(S.coin === 'XMR' ? 6 : 2);
+  S.amount = half; onSendAmountChange();
 }
-async function pasteAddr(){
-  try{const t=await navigator.clipboard.readText();el('send-addr').value=t;onSendAddrChange();toast('info','Coller','Adresse collée.');}
-  catch{toast('warn','Presse-papier','Collez manuellement dans le champ.');}
+async function pasteAddr() {
+  try { const t = await navigator.clipboard.readText(); el('send-addr').value = t; onSendAddrChange(); toast('info', 'Coller', 'Adresse collée.'); }
+  catch { toast('warn', 'Presse-papier', 'Collez manuellement dans le champ.'); }
 }
 
 // ── Go to PIN ──
@@ -1382,28 +1392,28 @@ async function pasteAddr(){
 let _txToken = null;
 let _txTokenExpiry = 0;
 
-function goToPin(){
-  const coin=S.coin,amt=S.amount,fee=FEES[coin][S.prio];
-  const unit=coin==='XMR'?'XMR':'KAS';
-  const dp=coin==='XMR'?6:2;
-  const usd=(amt*(coin==='XMR'?xmrP:kasP)).toFixed(2);
-  setText('pin-amount',amt.toFixed(dp)+' '+unit+' + '+fee.toFixed(dp)+' frais');
-  setText('pin-usd','≈ $'+usd+' USD');
-  const addr=S.addr;
-  el('pin-addr').textContent=addr.length>40?addr.slice(0,20)+'...'+addr.slice(-12):addr;
-  pinBuf='';updatePinDots();setText('pin-err','');
+function goToPin() {
+  const coin = S.coin, amt = S.amount, fee = FEES[coin][S.prio];
+  const unit = coin === 'XMR' ? 'XMR' : 'KAS';
+  const dp = coin === 'XMR' ? 6 : 2;
+  const usd = (amt * (coin === 'XMR' ? xmrP : kasP)).toFixed(2);
+  setText('pin-amount', amt.toFixed(dp) + ' ' + unit + ' + ' + fee.toFixed(dp) + ' frais');
+  setText('pin-usd', '≈ $' + usd + ' USD');
+  const addr = S.addr;
+  el('pin-addr').textContent = addr.length > 40 ? addr.slice(0, 20) + '...' + addr.slice(-12) : addr;
+  pinBuf = ''; updatePinDots(); setText('pin-err', '');
 
   // ── Signer l'intent de transaction (snapshot immutable) ──
   // Si S est modifié en console APRÈS goToPin(), le token sera invalide
   const txPayload = `${coin}|${amt.toFixed(8)}|${fee.toFixed(8)}|${S.addr}|${Date.now()}`;
   sha256(txPayload).then(tok => {
-    _txToken       = tok;
+    _txToken = tok;
     _txTokenExpiry = Date.now() + 120000; // Expire en 2 min
     // Snapshot immutable de S au moment de l'intent
     _txSnapshot = { coin, amt, fee, addr: S.addr, prio: S.prio, note: S.note };
   });
 
-  document.querySelectorAll('.modal-bg.open').forEach(m=>m.classList.remove('open'));
+  document.querySelectorAll('.modal-bg.open').forEach(m => m.classList.remove('open'));
   openModal('modal-pin');
 }
 
@@ -1411,122 +1421,128 @@ function goToPin(){
 let _txSnapshot = null;
 
 // ── PIN LOGIC ──
-let pinBuf='';
-function pinKey(d){if(pinBuf.length>=4)return;pinBuf+=d;updatePinDots();if(pinBuf.length===4)setTimeout(pinOK,150);}
-function pinDel(){pinBuf=pinBuf.slice(0,-1);updatePinDots();setText('pin-err','');}
-function updatePinDots(){for(let i=0;i<4;i++){el('pd'+i).classList.toggle('filled',i<pinBuf.length);el('pd'+i).classList.remove('error');}}
+let pinBuf = '';
+function pinKey(d) { if (pinBuf.length >= 4) return; pinBuf += d; updatePinDots(); if (pinBuf.length === 4) setTimeout(pinOK, 150); }
+function pinDel() { pinBuf = pinBuf.slice(0, -1); updatePinDots(); setText('pin-err', ''); }
+function updatePinDots() { for (let i = 0; i < 4; i++) { el('pd' + i).classList.toggle('filled', i < pinBuf.length); el('pd' + i).classList.remove('error'); } }
 // ── EXECUTE ──
-function executeTransaction(){
+function executeTransaction() {
   // ── Vérification du token de transaction ──
   if (!_txToken || Date.now() > _txTokenExpiry) {
-    toast('err','Sécurité','Session de transaction expirée. Recommencez.');
+    toast('err', 'Sécurité', 'Session de transaction expirée. Recommencez.');
     closeModal('modal-pin'); return;
   }
   if (!_txSnapshot) {
-    toast('err','Sécurité','Données de transaction manquantes.');
+    toast('err', 'Sécurité', 'Données de transaction manquantes.');
     closeModal('modal-pin'); return;
   }
   // Utiliser le snapshot signé (pas S qui pourrait avoir été modifié)
-  const coin=_txSnapshot.coin, amt=_txSnapshot.amt, fee=_txSnapshot.fee;
+  const coin = _txSnapshot.coin, amt = _txSnapshot.amt, fee = _txSnapshot.fee;
   _txToken = null; _txTokenExpiry = 0; // Invalider après usage (one-time use)
   const _s = _txSnapshot; _txSnapshot = null; // Consommer le snapshot
-  const total=amt+fee,unit=coin==='XMR'?'XMR':'KAS';
-  const dp=coin==='XMR'?6:2;
-  const usd=(amt*(coin==='XMR'?xmrP:kasP)).toFixed(2);
-  const note=_s.note||(el('send-note')?el('send-note').value.trim():'');
-  WALLET[coin].balance=Math.max(0,WALLET[coin].balance-total);
-  const txid=Array.from({length:64},()=>'0123456789abcdef'[Math.floor(Math.random()*16)]).join('');
-  const now=new Date();
-  const dateStr=now.toLocaleDateString('fr-FR')+' '+now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-  const shortAddr=_s.addr.length>30?_s.addr.slice(0,16)+'...'+_s.addr.slice(-8):_s.addr;
-  TX_HISTORY.unshift({date:dateStr,coin,amount:amt.toFixed(dp),usd:'$'+usd,dest:shortAddr,fee:fee.toFixed(dp),note,txid,addr:_s.addr});
-  PAYMENTS.unshift({date:now.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'2-digit'}),coin,amount:amt.toFixed(dp),usd:'$'+usd,pool:note||'Envoi manuel',type:'send'});
-  ALERTS.unshift({id:'tx'+Date.now(),type:'info',title:'Envoi '+coin+' confirmé',time:'À l\'instant',detail:amt.toFixed(4)+' '+unit+' → '+shortAddr});
+  const total = amt + fee, unit = coin === 'XMR' ? 'XMR' : 'KAS';
+  const dp = coin === 'XMR' ? 6 : 2;
+  const usd = (amt * (coin === 'XMR' ? xmrP : kasP)).toFixed(2);
+  const note = _s.note || (el('send-note') ? el('send-note').value.trim() : '');
+  WALLET[coin].balance = Math.max(0, WALLET[coin].balance - total);
+  const txid = Array.from({ length: 64 }, () => '0123456789abcdef'[Math.floor(Math.random() * 16)]).join('');
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('fr-FR') + ' ' + now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  const shortAddr = _s.addr.length > 30 ? _s.addr.slice(0, 16) + '...' + _s.addr.slice(-8) : _s.addr;
+  TX_HISTORY.unshift({ date: dateStr, coin, amount: amt.toFixed(dp), usd: '$' + usd, dest: shortAddr, fee: fee.toFixed(dp), note, txid, addr: _s.addr });
+  PAYMENTS.unshift({ date: now.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: '2-digit' }), coin, amount: amt.toFixed(dp), usd: '$' + usd, pool: note || 'Envoi manuel', type: 'send' });
+  ALERTS.unshift({ id: 'tx' + Date.now(), type: 'info', title: 'Envoi ' + coin + ' confirmé', time: 'À l\'instant', detail: amt.toFixed(4) + ' ' + unit + ' → ' + shortAddr });
   closeModal('modal-pin');
-  setText('succ-detail',amt.toFixed(dp)+' '+unit+' (≈ $'+usd+') envoyés avec succès');
-  setText('succ-txid',txid);
+  setText('succ-detail', amt.toFixed(dp) + ' ' + unit + ' (≈ $' + usd + ') envoyés avec succès');
+  setText('succ-txid', txid);
   openModal('modal-success');
-  refreshWalletPage();renderDash();renderAlerts();renderHist();
+  refreshWalletPage(); renderDash(); renderAlerts(); renderHist();
   scheduleSave(); // ← persist TX + nouveau solde
   notifyTxConfirmed(coin, amt.toFixed(dp));
-  toast('success','Transaction envoyée',amt.toFixed(4)+' '+unit+' → '+shortAddr.slice(0,16)+'...');
+  toast('success', 'Transaction envoyée', amt.toFixed(4) + ' ' + unit + ' → ' + shortAddr.slice(0, 16) + '...');
 }
 
 // ══════════════════════════════════════════════════════
 // RECEIVE
 // ══════════════════════════════════════════════════════
-function openReceive(coin){
-  const addr=WALLET[coin].addr;
-  setText('recv-title','↙ Recevoir '+coin);
-  el('recv-addr').textContent=addr;
-  el('recv-warning').textContent='⚠ Envoyez uniquement '+coin+' à cette adresse. Toute autre crypto sera perdue définitivement.';
-  el('recv-warning').style.color=coin==='XMR'?'var(--orange)':'var(--accent)';
+function openReceive(coin) {
+  const addr = WALLET[coin].addr;
+  setText('recv-title', '↙ Recevoir ' + coin);
+  el('recv-addr').textContent = addr;
+  el('recv-warning').textContent = '⚠ Envoyez uniquement ' + coin + ' à cette adresse. Toute autre crypto sera perdue définitivement.';
+  el('recv-warning').style.color = coin === 'XMR' ? 'var(--orange)' : 'var(--accent)';
   buildQR(addr);
   openModal('modal-receive');
 }
-function copyAddr(){
-  const addr=el('recv-addr').textContent;
-  if(navigator.clipboard){navigator.clipboard.writeText(addr).then(()=>toast('success','Copié','Adresse copiée dans le presse-papier.'));}
-  else{const ta=document.createElement('textarea');ta.value=addr;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast('success','Copié','Adresse copiée.');}
+function copyAddr() {
+  const addr = el('recv-addr').textContent;
+  if (navigator.clipboard) { navigator.clipboard.writeText(addr).then(() => toast('success', 'Copié', 'Adresse copiée dans le presse-papier.')); }
+  else { const ta = document.createElement('textarea'); ta.value = addr; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); toast('success', 'Copié', 'Adresse copiée.'); }
 }
 
 // ── QR CODE (simple, no lib) ──
-function buildQR(text){
-  const svg=document.getElementById('recv-qr');
-  const SZ=180,N=25;// 25×25 grid for short strings, else 29
-  const cell=Math.floor(SZ/N);
+function buildQR(text) {
+  const svg = document.getElementById('recv-qr');
+  const SZ = 180, N = 25;// 25×25 grid for short strings, else 29
+  const cell = Math.floor(SZ / N);
   // pseudo-random deterministic from text
-  let hash=0;for(let i=0;i<text.length;i++){hash=(hash*31+text.charCodeAt(i))&0xffffffff;}
-  let rects='';
+  let hash = 0; for (let i = 0; i < text.length; i++) { hash = (hash * 31 + text.charCodeAt(i)) & 0xffffffff; }
+  let rects = '';
   // Draw finder patterns (3 corners)
-  const fp=[[0,0],[0,N-7],[N-7,0]];
-  fp.forEach(([r,c])=>{
-    for(let i=0;i<7;i++)for(let j=0;j<7;j++){
-      const on=(i===0||i===6||j===0||j===6)||(i>=2&&i<=4&&j>=2&&j<=4);
-      if(on)rects+=`<rect x="${(c+j)*cell}" y="${(r+i)*cell}" width="${cell}" height="${cell}" fill="#080c14"/>`;
+  const fp = [[0, 0], [0, N - 7], [N - 7, 0]];
+  fp.forEach(([r, c]) => {
+    for (let i = 0; i < 7; i++)for (let j = 0; j < 7; j++) {
+      const on = (i === 0 || i === 6 || j === 0 || j === 6) || (i >= 2 && i <= 4 && j >= 2 && j <= 4);
+      if (on) rects += `<rect x="${(c + j) * cell}" y="${(r + i) * cell}" width="${cell}" height="${cell}" fill="#080c14"/>`;
     }
   });
   // Data modules — seeded by text content
-  let seed=hash;
-  function rand(){seed=(seed*1664525+1013904223)&0xffffffff;return(seed>>>0)/0xffffffff;}
-  for(let r=0;r<N;r++){
-    for(let c=0;c<N;c++){
+  let seed = hash;
+  function rand() { seed = (seed * 1664525 + 1013904223) & 0xffffffff; return (seed >>> 0) / 0xffffffff; }
+  for (let r = 0; r < N; r++) {
+    for (let c = 0; c < N; c++) {
       // Skip finder areas
-      if((r<8&&c<8)||(r<8&&c>=N-8)||(r>=N-8&&c<8))continue;
+      if ((r < 8 && c < 8) || (r < 8 && c >= N - 8) || (r >= N - 8 && c < 8)) continue;
       // Timing
-      if(r===6||c===6){if((r+c)%2===0)rects+=`<rect x="${c*cell}" y="${r*cell}" width="${cell}" height="${cell}" fill="#080c14"/>`;continue;}
+      if (r === 6 || c === 6) { if ((r + c) % 2 === 0) rects += `<rect x="${c * cell}" y="${r * cell}" width="${cell}" height="${cell}" fill="#080c14"/>`; continue; }
       // Use text char + position XOR for deterministic pattern
-      const charIdx=(r*N+c)%text.length;
-      const bit=(text.charCodeAt(charIdx)>>(c%8))&1;
-      if(bit^((r+c)%2))rects+=`<rect x="${c*cell}" y="${r*cell}" width="${cell}" height="${cell}" fill="#080c14"/>`;
+      const charIdx = (r * N + c) % text.length;
+      const bit = (text.charCodeAt(charIdx) >> (c % 8)) & 1;
+      if (bit ^ ((r + c) % 2)) rects += `<rect x="${c * cell}" y="${r * cell}" width="${cell}" height="${cell}" fill="#080c14"/>`;
     }
   }
-  svg.innerHTML=`<rect width="${SZ}" height="${SZ}" fill="white"/>${rects}`;
+  svg.innerHTML = `<rect width="${SZ}" height="${SZ}" fill="white"/>${rects}`;
 }
 
 // ══════════════════════════════════════════════════════
 // TICKER / LIVE DATA
 // ══════════════════════════════════════════════════════
-function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
-function el(id){return document.getElementById(id);}
+function setText(id, v) { const e = document.getElementById(id); if (e) e.textContent = v; }
+function el(id) { return document.getElementById(id); }
 
 // ── PRIX LIVE (CoinGecko) ──
 // Config: entrez votre adresse wallet pour les pools
 const POOL_CONFIG = {
-  XMR: { walletAddr:'87eYaDMVqrC7TuLao24P782QDTpohQeQRbcNHUjU2ksjJhH3LvmwAj6aMrRVZp8xtuGoeK56G4KJrYm2mxf2dF4oGF4o4ZN', pool:'moneroocean',
-          apiBase:'https://api.moneroocean.stream', minPayout:0.003,
-          stratumTCP:'stratum+tcp://gulf.moneroocean.stream:10128',
-          stratumSSL:'stratum+ssl://gulf.moneroocean.stream:20128',
-          worker:'x', fee:0 },
-  KAS: { walletAddr:'kaspa:qpmjj7ksc5ud2jf6drsqf8gerch3fs58h5rakc4a6hf6nfhxerf3g3w3dpauq', pool:'k1pool',
-          apiBase:'https://api-kas.k1pool.com/api', minPayout:1,
-          stratumTCP:'stratum+tcp://kaspa.k1pool.com:3333',
-          stratumSSL:'stratum+ssl://kaspa.k1pool.com:5555',
-          worker:'x', fee:0.01 },
-  RVN: { walletAddr:'RWGrRi59CjUtRqFhDiXDWiJ3a4ghttpdXD', pool:'2miners',
-          apiBase:'https://rvn.2miners.com/api', minPayout:50,
-          stratumTCP:'stratum+tcp://rvn.2miners.com:6060',
-          worker:'x', fee:0.01 }
+  XMR: {
+    walletAddr: '87eYaDMVqrC7TuLao24P782QDTpohQeQRbcNHUjU2ksjJhH3LvmwAj6aMrRVZp8xtuGoeK56G4KJrYm2mxf2dF4oGF4o4ZN', pool: 'moneroocean',
+    apiBase: 'https://api.moneroocean.stream', minPayout: 0.003,
+    stratumTCP: 'stratum+tcp://gulf.moneroocean.stream:10128',
+    stratumSSL: 'stratum+ssl://gulf.moneroocean.stream:20128',
+    worker: 'x', fee: 0
+  },
+  KAS: {
+    walletAddr: 'kaspa:qpmjj7ksc5ud2jf6drsqf8gerch3fs58h5rakc4a6hf6nfhxerf3g3w3dpauq', pool: 'k1pool',
+    apiBase: 'https://api-kas.k1pool.com/api', minPayout: 1,
+    stratumTCP: 'stratum+tcp://kaspa.k1pool.com:3333',
+    stratumSSL: 'stratum+ssl://kaspa.k1pool.com:5555',
+    worker: 'x', fee: 0.01
+  },
+  RVN: {
+    walletAddr: 'RWGrRi59CjUtRqFhDiXDWiJ3a4ghttpdXD', pool: '2miners',
+    apiBase: 'https://rvn.2miners.com/api', minPayout: 50,
+    stratumTCP: 'stratum+tcp://rvn.2miners.com:6060',
+    worker: 'x', fee: 0.01
+  }
 };
 
 function restoreWallets() {
@@ -1538,7 +1554,7 @@ function restoreWallets() {
       if (w.KAS) POOL_CONFIG.KAS.walletAddr = w.KAS;
       if (w.RVN) POOL_CONFIG.RVN.walletAddr = w.RVN;
     }
-  } catch(e) {}
+  } catch (e) { }
 }
 
 function saveWallet(coin) {
@@ -1561,10 +1577,10 @@ function saveWallet(coin) {
   POOL_CONFIG[coin].walletAddr = addr;
   try {
     var saved = {};
-    try { saved = JSON.parse(localStorage.getItem('bitos_wallets') || '{}'); } catch(e) {}
+    try { saved = JSON.parse(localStorage.getItem('bitos_wallets') || '{}'); } catch (e) { }
     saved[coin] = addr;
     localStorage.setItem('bitos_wallets', JSON.stringify(saved));
-  } catch(e) {}
+  } catch (e) { }
   displayWallets();
   toast('success', 'Wallet ' + coin, addr ? 'Adresse sauvegardée' : 'Adresse supprimée');
 }
@@ -1582,20 +1598,26 @@ function displayWallets() {
 }
 
 const XMR_POOLS = {
-  moneroocean: { name:'MoneroOcean', api:'https://api.moneroocean.stream', fee:0, algoSwitch:true,
-    stratum:'stratum+tcp://gulf.moneroocean.stream:10128', ssl:'stratum+ssl://gulf.moneroocean.stream:20128',
-    note:'+10-20% algo-switching, 0% frais' },
-  supportxmr:  { name:'SupportXMR', api:'https://supportxmr.com/api', fee:0.006, algoSwitch:false,
-    stratum:'stratum+tcp://pool.supportxmr.com:3333', ssl:'stratum+ssl://pool.supportxmr.com:443',
-    note:'Pool stable, 0.6% frais' },
-  p2pool:      { name:'P2Pool', api:null, fee:0, algoSwitch:false,
-    stratum:'stratum+tcp://localhost:3333', ssl:null,
-    note:'Décentralisé, 0% frais, noeud requis' },
+  moneroocean: {
+    name: 'MoneroOcean', api: 'https://api.moneroocean.stream', fee: 0, algoSwitch: true,
+    stratum: 'stratum+tcp://gulf.moneroocean.stream:10128', ssl: 'stratum+ssl://gulf.moneroocean.stream:20128',
+    note: '+10-20% algo-switching, 0% frais'
+  },
+  supportxmr: {
+    name: 'SupportXMR', api: 'https://supportxmr.com/api', fee: 0.006, algoSwitch: false,
+    stratum: 'stratum+tcp://pool.supportxmr.com:3333', ssl: 'stratum+ssl://pool.supportxmr.com:443',
+    note: 'Pool stable, 0.6% frais'
+  },
+  p2pool: {
+    name: 'P2Pool', api: null, fee: 0, algoSwitch: false,
+    stratum: 'stratum+tcp://localhost:3333', ssl: null,
+    note: 'Décentralisé, 0% frais, noeud requis'
+  },
 };
 
 function switchXMRPool(poolKey) {
   const pool = XMR_POOLS[poolKey];
-  if (!pool) { toast('error','Pool','Pool inconnu: '+poolKey); return; }
+  if (!pool) { toast('error', 'Pool', 'Pool inconnu: ' + poolKey); return; }
   POOL_CONFIG.XMR.pool = poolKey;
   POOL_CONFIG.XMR.apiBase = pool.api;
   POOL_CONFIG.XMR.stratumTCP = pool.stratum;
@@ -1603,8 +1625,8 @@ function switchXMRPool(poolKey) {
   POOL_CONFIG.XMR.fee = pool.fee;
   scheduleSave();
   updatePoolUI(poolKey);
-  toast('success','Pool XMR','Basculé vers ' + pool.name + (pool.algoSwitch ? ' (algo-switching actif)' : ''));
-  try { localStorage.setItem('bitosdash_xmr_pool', poolKey); } catch(e) {}
+  toast('success', 'Pool XMR', 'Basculé vers ' + pool.name + (pool.algoSwitch ? ' (algo-switching actif)' : ''));
+  try { localStorage.setItem('bitosdash_xmr_pool', poolKey); } catch (e) { }
   fetchXMRPool && fetchXMRPool();
 }
 function restorePoolSelection() {
@@ -1619,11 +1641,11 @@ function restorePoolSelection() {
       POOL_CONFIG.XMR.fee = pool.fee;
       updatePoolUI(saved);
     }
-  } catch(e) {}
+  } catch (e) { }
 }
 function updatePoolUI(activeKey) {
-  ['moneroocean','supportxmr','p2pool'].forEach(function(k) {
-    const btn = el('pool-btn-'+k);
+  ['moneroocean', 'supportxmr', 'p2pool'].forEach(function (k) {
+    const btn = el('pool-btn-' + k);
     if (btn) {
       btn.className = k === activeKey ? 'btn btn-primary' : 'btn';
     }
@@ -1631,7 +1653,7 @@ function updatePoolUI(activeKey) {
   const pool = XMR_POOLS[activeKey];
   if (pool) {
     setText('pool-info', pool.name + ' — ' + pool.note);
-    setText('pool-stratum', (pool.stratum||'').replace('stratum+tcp://',''));
+    setText('pool-stratum', (pool.stratum || '').replace('stratum+tcp://', ''));
   }
 }
 
@@ -1644,22 +1666,22 @@ async function fetchPayoutThreshold() {
     var url, thresholdXMR;
     if (poolKey === 'moneroocean') {
       url = getApiBase('moneroocean') + '/user/' + addr;
-      const res = await fetch(url, {signal: AbortSignal.timeout(8000)});
-      if (!res.ok) throw new Error('HTTP '+res.status);
+      const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
       const data = await res.json();
       thresholdXMR = (data.payout_threshold || 300000000000) / 1e12;
     } else if (poolKey === 'supportxmr') {
       url = getApiBase('xmrpool') + '/miner/' + addr + '/stats';
-      const res = await fetch(url, {signal: AbortSignal.timeout(8000)});
-      if (!res.ok) throw new Error('HTTP '+res.status);
+      const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
       const data = await res.json();
       thresholdXMR = (data.minPayout || 100000000000) / 1e12;
     } else { return; }
     setText('payout-threshold-val', thresholdXMR.toFixed(4) + ' XMR');
-    setText('payout-threshold-usd', '≈ $' + (thresholdXMR * (xmrP||327)).toFixed(2));
+    setText('payout-threshold-usd', '≈ $' + (thresholdXMR * (xmrP || 327)).toFixed(2));
     const inp = el('payout-threshold-input');
     if (inp && !inp.value) inp.value = thresholdXMR;
-  } catch(e) {
+  } catch (e) {
     console.warn('[PayoutThreshold]', e.message);
     setText('payout-threshold-val', '⚠ Erreur');
   }
@@ -1668,41 +1690,41 @@ async function fetchPayoutThreshold() {
 async function setPayoutThreshold() {
   const poolKey = POOL_CONFIG.XMR.pool;
   if (poolKey !== 'moneroocean') {
-    toast('warn','Payout','Changement de seuil disponible uniquement sur MoneroOcean. Pour SupportXMR, visitez supportxmr.com');
+    toast('warn', 'Payout', 'Changement de seuil disponible uniquement sur MoneroOcean. Pour SupportXMR, visitez supportxmr.com');
     return;
   }
   const inp = el('payout-threshold-input');
   if (!inp) return;
   const val = parseFloat(inp.value);
   if (!val || val < 0.003) {
-    toast('error','Payout','Minimum 0.003 XMR');
+    toast('error', 'Payout', 'Minimum 0.003 XMR');
     return;
   }
   if (val > 100) {
-    toast('error','Payout','Maximum 100 XMR');
+    toast('error', 'Payout', 'Maximum 100 XMR');
     return;
   }
   const addr = POOL_CONFIG.XMR.walletAddr;
-  if (!addr || addr.length < 90) { toast('error','Payout','Adresse XMR non configurée'); return; }
+  if (!addr || addr.length < 90) { toast('error', 'Payout', 'Adresse XMR non configurée'); return; }
   const thresholdAtomic = Math.round(val * 1e12);
   try {
     const url = getApiBase('moneroocean') + '/user/updateThreshold';
     const res = await fetch(url, {
       method: 'POST',
-      headers: {'Content-Type':'application/json'},
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ address: addr, threshold: thresholdAtomic }),
       signal: AbortSignal.timeout(10000)
     });
     if (!res.ok) {
-      const err = await res.json().catch(()=>({}));
-      throw new Error(err.error || 'HTTP '+res.status);
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'HTTP ' + res.status);
     }
-    toast('success','Payout','Seuil modifié → ' + val.toFixed(4) + ' XMR');
+    toast('success', 'Payout', 'Seuil modifié → ' + val.toFixed(4) + ' XMR');
     setText('payout-threshold-val', val.toFixed(4) + ' XMR');
-    setText('payout-threshold-usd', '≈ $' + (val * (xmrP||327)).toFixed(2));
-  } catch(e) {
+    setText('payout-threshold-usd', '≈ $' + (val * (xmrP || 327)).toFixed(2));
+  } catch (e) {
     console.warn('[SetPayout]', e.message);
-    toast('error','Payout','Erreur: ' + e.message);
+    toast('error', 'Payout', 'Erreur: ' + e.message);
   }
 }
 
@@ -1717,8 +1739,8 @@ async function fetchPaymentHistory() {
     } else {
       url = getApiBase('xmrpool') + '/miner/' + addr + '/payments';
     }
-    const res = await fetch(url, {signal: AbortSignal.timeout(8000)});
-    if (!res.ok) throw new Error('HTTP '+res.status);
+    const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     const payments = await res.json();
     if (!Array.isArray(payments)) return;
     const cont = el('pool-payments-list');
@@ -1727,18 +1749,18 @@ async function fetchPaymentHistory() {
       cont.innerHTML = '<div style="color:var(--muted);font-size:11px;text-align:center;padding:12px">Aucun paiement reçu</div>';
       return;
     }
-    cont.innerHTML = payments.slice(0, 10).map(function(p) {
-      const amt = ((p.amount||0) / 1e12).toFixed(6);
-      const date = p.ts ? new Date(p.ts*1000).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'}) : '—';
+    cont.innerHTML = payments.slice(0, 10).map(function (p) {
+      const amt = ((p.amount || 0) / 1e12).toFixed(6);
+      const date = p.ts ? new Date(p.ts * 1000).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
       const txid = p.txnHash || p.hash || '';
-      const short = txid ? txid.slice(0,8)+'…'+txid.slice(-6) : '—';
+      const short = txid ? txid.slice(0, 8) + '…' + txid.slice(-6) : '—';
       return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05)">'
-        +'<div><div style="font-size:12px;font-weight:600;color:var(--green)">+'+amt+' XMR</div>'
-        +'<div style="font-size:10px;color:var(--muted)">'+date+'</div></div>'
-        +'<div style="font-size:9px;color:var(--muted);font-family:var(--mono)">'+short+'</div>'
-        +'</div>';
+        + '<div><div style="font-size:12px;font-weight:600;color:var(--green)">+' + amt + ' XMR</div>'
+        + '<div style="font-size:10px;color:var(--muted)">' + date + '</div></div>'
+        + '<div style="font-size:9px;color:var(--muted);font-family:var(--mono)">' + short + '</div>'
+        + '</div>';
     }).join('');
-  } catch(e) {
+  } catch (e) {
     console.warn('[PaymentHistory]', e.message);
   }
 }
@@ -1756,22 +1778,22 @@ function loadXmrigRigs() {
   try {
     const raw = localStorage.getItem('bitosdash_xmrig_rigs');
     if (raw) XMRIG_RIGS = JSON.parse(raw);
-  } catch(e) {}
+  } catch (e) { }
 }
 function saveXmrigRigs() {
-  try { localStorage.setItem('bitosdash_xmrig_rigs', JSON.stringify(XMRIG_RIGS)); } catch(e) {}
+  try { localStorage.setItem('bitosdash_xmrig_rigs', JSON.stringify(XMRIG_RIGS)); } catch (e) { }
 }
 
 function addXmrigRig(name, ip, port) {
-  if (!ip) { toast('error','XMRig','IP requise'); return; }
+  if (!ip) { toast('error', 'XMRig', 'IP requise'); return; }
   port = parseInt(port) || 8080;
   name = name || ('Rig-' + (XMRIG_RIGS.length + 1));
   if (XMRIG_RIGS.find(r => r.ip === ip && r.port === port)) {
-    toast('warn','XMRig','Rig déjà ajouté: '+ip+':'+port); return;
+    toast('warn', 'XMRig', 'Rig déjà ajouté: ' + ip + ':' + port); return;
   }
-  XMRIG_RIGS.push({ name:name, ip:ip, port:port, status:'unknown', hr:0, temp:0, uptime:0, version:'', algo:'' });
+  XMRIG_RIGS.push({ name: name, ip: ip, port: port, status: 'unknown', hr: 0, temp: 0, uptime: 0, version: '', algo: '' });
   saveXmrigRigs();
-  toast('success','XMRig','Rig ajouté: '+name+' ('+ip+':'+port+')');
+  toast('success', 'XMRig', 'Rig ajouté: ' + name + ' (' + ip + ':' + port + ')');
   renderXmrigRigs();
 }
 
@@ -1780,7 +1802,7 @@ function removeXmrigRig(idx) {
     const name = XMRIG_RIGS[idx].name;
     XMRIG_RIGS.splice(idx, 1);
     saveXmrigRigs();
-    toast('info','XMRig','Rig supprimé: '+name);
+    toast('info', 'XMRig', 'Rig supprimé: ' + name);
     renderXmrigRigs();
   }
 }
@@ -1788,8 +1810,8 @@ function removeXmrigRig(idx) {
 async function fetchXmrigRig(rig) {
   try {
     const base = 'http://' + rig.ip + ':' + rig.port;
-    const res = await fetch(base + '/1/summary', {signal: AbortSignal.timeout(3000)});
-    if (!res.ok) throw new Error('HTTP '+res.status);
+    const res = await fetch(base + '/1/summary', { signal: AbortSignal.timeout(3000) });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
     rig.status = 'online';
     rig.hr = data.hashrate?.total?.[0] || 0;
@@ -1798,13 +1820,13 @@ async function fetchXmrigRig(rig) {
     rig.algo = data.algo || '';
     rig.cpu = data.cpu?.brand || '';
     try {
-      const res2 = await fetch(base + '/2/backends', {signal: AbortSignal.timeout(3000)});
+      const res2 = await fetch(base + '/2/backends', { signal: AbortSignal.timeout(3000) });
       if (res2.ok) {
         const backends = await res2.json();
         var maxTemp = 0;
-        backends.forEach(function(b) {
+        backends.forEach(function (b) {
           if (b.threads) {
-            b.threads.forEach(function(t) {
+            b.threads.forEach(function (t) {
               if (t.health) {
                 var temp = t.health.temperature || 0;
                 if (temp > maxTemp) maxTemp = temp;
@@ -1814,9 +1836,9 @@ async function fetchXmrigRig(rig) {
         });
         if (maxTemp > 0) rig.temp = maxTemp;
       }
-    } catch(_e) {}
+    } catch (_e) { }
     return true;
-  } catch(e) {
+  } catch (e) {
     rig.status = 'offline';
     rig.hr = 0;
     return false;
@@ -1829,57 +1851,57 @@ async function fetchAllXmrigRigs() {
   await Promise.allSettled(promises);
   saveXmrigRigs();
   renderXmrigRigs();
-  var totalHR = XMRIG_RIGS.filter(r=>r.status==='online').reduce((s,r)=>s+(r.hr||0),0);
+  var totalHR = XMRIG_RIGS.filter(r => r.status === 'online').reduce((s, r) => s + (r.hr || 0), 0);
   if (totalHR > 0 && !HIVE_ENABLED) {
-    setText('s-hash', (totalHR/1000).toFixed(2)+' KH/s');
+    setText('s-hash', (totalHR / 1000).toFixed(2) + ' KH/s');
   }
-  var onlineCount = XMRIG_RIGS.filter(r=>r.status==='online').length;
+  var onlineCount = XMRIG_RIGS.filter(r => r.status === 'online').length;
   var totalCount = XMRIG_RIGS.length;
-  setText('xmrig-status', onlineCount+'/'+totalCount+' rigs en ligne');
+  setText('xmrig-status', onlineCount + '/' + totalCount + ' rigs en ligne');
 }
 
 function renderXmrigRigs() {
   var containers = [el('xmrig-rigs-list'), el('rigs-xmrig-list')];
-  containers.forEach(function(cont) {
+  containers.forEach(function (cont) {
     if (!cont) return;
     if (XMRIG_RIGS.length === 0) {
       cont.innerHTML = '<div style="color:var(--muted);font-size:11px;text-align:center;padding:12px">Aucun rig configuré — ajoutez un rig ci-dessous</div>';
       return;
     }
-    cont.innerHTML = XMRIG_RIGS.map(function(r, i) {
-      var statusCol = r.status==='online' ? 'var(--green)' : 'var(--red)';
-      var dotCls = r.status==='online' ? 'dot-online' : 'dot-offline';
-      var hrStr = r.hr > 0 ? (r.hr >= 1000 ? (r.hr/1000).toFixed(2)+' KH/s' : r.hr.toFixed(1)+' H/s') : '—';
-      var tempStr = r.temp > 0 ? r.temp+'°C' : '—';
+    cont.innerHTML = XMRIG_RIGS.map(function (r, i) {
+      var statusCol = r.status === 'online' ? 'var(--green)' : 'var(--red)';
+      var dotCls = r.status === 'online' ? 'dot-online' : 'dot-offline';
+      var hrStr = r.hr > 0 ? (r.hr >= 1000 ? (r.hr / 1000).toFixed(2) + ' KH/s' : r.hr.toFixed(1) + ' H/s') : '—';
+      var tempStr = r.temp > 0 ? r.temp + '°C' : '—';
       var tempCol = r.temp >= 80 ? 'var(--red)' : r.temp >= 70 ? 'var(--yellow)' : 'var(--green)';
       var uptimeStr = r.uptime > 0 ? formatUptime(r.uptime) : '—';
       var gpuStr = r.gpu ? r.gpu : '';
       var wattStr = r.watt > 0 ? r.watt + 'W' : '';
-      var metaLine = r.ip+':'+r.port;
+      var metaLine = r.ip + ':' + r.port;
       if (gpuStr) metaLine = gpuStr + ' · ' + metaLine;
-      if (r.algo) metaLine += ' · '+r.algo;
-      if (r.version) metaLine += ' · v'+r.version;
+      if (r.algo) metaLine += ' · ' + r.algo;
+      if (r.version) metaLine += ' · v' + r.version;
       return '<div class="rig-mini">'
-        +'<div class="rig-mini-dot '+dotCls+'"></div>'
-        +'<div class="rig-mini-name">'
-        +r.name
-        +'<div style="font-size:9px;color:var(--muted);font-family:var(--mono)">'+metaLine+'</div>'
-        +'</div>'
-        +'<div class="rig-mini-info">'
-        +'<span style="color:'+statusCol+';font-weight:600">'+hrStr+'</span>'
-        +'<span>'
-        +(r.temp>0?'<span style="color:'+tempCol+'">'+tempStr+'</span>':'')
-        +(r.temp>0&&(wattStr||uptimeStr)?' · ':'')
-        +(wattStr?wattStr:'')
-        +(wattStr&&uptimeStr?' · ':'')
-        +uptimeStr
-        +'</span>'
-        +'</div>'
-        +'<div style="display:flex;gap:4px">'
-        +'<button onclick="toggleXmrigRig('+i+')" style="background:none;border:none;color:'+(r.status==='online'?'var(--yellow)':'var(--green)')+';cursor:pointer;font-size:12px;padding:4px" title="'+(r.status==='online'?'Pause':'Start')+'">'
-        +(r.status==='online'?'⏸':'▶')+'</button>'
-        +'<button onclick="removeXmrigRig('+i+')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:14px;padding:4px" title="Supprimer">×</button>'
-        +'</div></div>';
+        + '<div class="rig-mini-dot ' + dotCls + '"></div>'
+        + '<div class="rig-mini-name">'
+        + r.name
+        + '<div style="font-size:9px;color:var(--muted);font-family:var(--mono)">' + metaLine + '</div>'
+        + '</div>'
+        + '<div class="rig-mini-info">'
+        + '<span style="color:' + statusCol + ';font-weight:600">' + hrStr + '</span>'
+        + '<span>'
+        + (r.temp > 0 ? '<span style="color:' + tempCol + '">' + tempStr + '</span>' : '')
+        + (r.temp > 0 && (wattStr || uptimeStr) ? ' · ' : '')
+        + (wattStr ? wattStr : '')
+        + (wattStr && uptimeStr ? ' · ' : '')
+        + uptimeStr
+        + '</span>'
+        + '</div>'
+        + '<div style="display:flex;gap:4px">'
+        + '<button onclick="toggleXmrigRig(' + i + ')" style="background:none;border:none;color:' + (r.status === 'online' ? 'var(--yellow)' : 'var(--green)') + ';cursor:pointer;font-size:12px;padding:4px" title="' + (r.status === 'online' ? 'Pause' : 'Start') + '">'
+        + (r.status === 'online' ? '⏸' : '▶') + '</button>'
+        + '<button onclick="removeXmrigRig(' + i + ')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:14px;padding:4px" title="Supprimer">×</button>'
+        + '</div></div>';
     }).join('');
   });
   updateRigsKPI();
@@ -1893,11 +1915,11 @@ function addXmrigRigFromPage() {
   var gpu = (el('rig-add-gpu') || {}).value || '';
   var hr = parseFloat((el('rig-add-hr') || {}).value) || 0;
   var watt = parseInt((el('rig-add-watt') || {}).value) || 0;
-  if (!ip && !gpu) { toast('error','XMRig','IP ou GPU requis'); return; }
+  if (!ip && !gpu) { toast('error', 'XMRig', 'IP ou GPU requis'); return; }
   port = parseInt(port) || 8080;
   name = name || ('Rig-' + (XMRIG_RIGS.length + 1));
   if (ip && XMRIG_RIGS.find(r => r.ip === ip && r.port === port)) {
-    toast('warn','XMRig','Rig déjà ajouté: '+ip+':'+port); return;
+    toast('warn', 'XMRig', 'Rig déjà ajouté: ' + ip + ':' + port); return;
   }
   XMRIG_RIGS.push({
     name: name, ip: ip || '—', port: port,
@@ -1907,7 +1929,7 @@ function addXmrigRigFromPage() {
     pool: 'gulf.moneroocean.stream:10128'
   });
   saveXmrigRigs();
-  toast('success','XMRig','Rig ajouté: '+name+(gpu?' ('+gpu+')':''));
+  toast('success', 'XMRig', 'Rig ajouté: ' + name + (gpu ? ' (' + gpu + ')' : ''));
   renderXmrigRigs();
   if (el('rig-add-name')) el('rig-add-name').value = '';
   if (el('rig-add-ip')) el('rig-add-ip').value = '';
@@ -1926,35 +1948,35 @@ function toggleXmrigRig(idx) {
 }
 
 function updateXmrigSummary() {
-  var online = XMRIG_RIGS.filter(function(r){return r.status==='online';});
-  var totalHR = online.reduce(function(s,r){return s+(r.hr||0);},0);
-  var totalW = online.reduce(function(s,r){return s+(r.watt||0);},0);
+  var online = XMRIG_RIGS.filter(function (r) { return r.status === 'online'; });
+  var totalHR = online.reduce(function (s, r) { return s + (r.hr || 0); }, 0);
+  var totalW = online.reduce(function (s, r) { return s + (r.watt || 0); }, 0);
   var maxTemp = 0;
-  XMRIG_RIGS.forEach(function(r){if(r.temp>maxTemp)maxTemp=r.temp;});
-  setText('xmrig-status', online.length+'/'+XMRIG_RIGS.length+' rigs en ligne');
-  setText('xmrig-total-hr', totalHR > 0 ? (totalHR/1000).toFixed(2)+' KH/s' : '—');
-  setText('xmrig-total-power', totalW > 0 ? totalW+'W' : '—');
-  setText('xmrig-max-temp', maxTemp > 0 ? maxTemp+'°C' : '—');
-  if (totalHR > 0 && !HIVE_ENABLED) setText('s-hash', (totalHR/1000).toFixed(2)+' KH/s');
+  XMRIG_RIGS.forEach(function (r) { if (r.temp > maxTemp) maxTemp = r.temp; });
+  setText('xmrig-status', online.length + '/' + XMRIG_RIGS.length + ' rigs en ligne');
+  setText('xmrig-total-hr', totalHR > 0 ? (totalHR / 1000).toFixed(2) + ' KH/s' : '—');
+  setText('xmrig-total-power', totalW > 0 ? totalW + 'W' : '—');
+  setText('xmrig-max-temp', maxTemp > 0 ? maxTemp + '°C' : '—');
+  if (totalHR > 0 && !HIVE_ENABLED) setText('s-hash', (totalHR / 1000).toFixed(2) + ' KH/s');
 }
 
 function updateRigsKPI() {
   var rvnCount = typeof RVN_GPU_RIGS !== 'undefined' ? RVN_GPU_RIGS.length : 0;
-  var rvnOnline = typeof RVN_GPU_RIGS !== 'undefined' ? RVN_GPU_RIGS.filter(function(r){return r.status==='online';}).length : 0;
+  var rvnOnline = typeof RVN_GPU_RIGS !== 'undefined' ? RVN_GPU_RIGS.filter(function (r) { return r.status === 'online'; }).length : 0;
   var total = XMRIG_RIGS.length + RIGS.length + rvnCount;
-  var online = XMRIG_RIGS.filter(function(r){return r.status==='online';}).length + RIGS.filter(function(r){return r.status!=='offline';}).length + rvnOnline;
-  var totalHR = XMRIG_RIGS.filter(function(r){return r.status==='online';}).reduce(function(s,r){return s+(r.hr||0);},0);
+  var online = XMRIG_RIGS.filter(function (r) { return r.status === 'online'; }).length + RIGS.filter(function (r) { return r.status !== 'offline'; }).length + rvnOnline;
+  var totalHR = XMRIG_RIGS.filter(function (r) { return r.status === 'online'; }).reduce(function (s, r) { return s + (r.hr || 0); }, 0);
   var maxTemp = 0;
-  XMRIG_RIGS.forEach(function(r){if(r.temp>maxTemp)maxTemp=r.temp;});
-  RIGS.forEach(function(r){if((r.maxTemp||r.temp||0)>maxTemp)maxTemp=(r.maxTemp||r.temp||0);});
-  if (typeof RVN_GPU_RIGS !== 'undefined') RVN_GPU_RIGS.forEach(function(r){if(r.temp>maxTemp)maxTemp=r.temp;});
+  XMRIG_RIGS.forEach(function (r) { if (r.temp > maxTemp) maxTemp = r.temp; });
+  RIGS.forEach(function (r) { if ((r.maxTemp || r.temp || 0) > maxTemp) maxTemp = (r.maxTemp || r.temp || 0); });
+  if (typeof RVN_GPU_RIGS !== 'undefined') RVN_GPU_RIGS.forEach(function (r) { if (r.temp > maxTemp) maxTemp = r.temp; });
   setText('rigs-total-count', total);
   setText('rigs-online-count', online);
-  setText('rigs-total-hr', totalHR > 0 ? (totalHR/1000).toFixed(2)+' KH/s' : '—');
-  setText('rigs-max-temp', maxTemp > 0 ? maxTemp+'°C' : '—');
+  setText('rigs-total-hr', totalHR > 0 ? (totalHR / 1000).toFixed(2) + ' KH/s' : '—');
+  setText('rigs-max-temp', maxTemp > 0 ? maxTemp + '°C' : '—');
   var hiveStatus = el('rigs-hive-status');
   if (hiveStatus) {
-    hiveStatus.textContent = HIVE_ENABLED ? 'Actif ('+RIGS.length+' workers)' : 'Désactivé';
+    hiveStatus.textContent = HIVE_ENABLED ? 'Actif (' + RIGS.length + ' workers)' : 'Désactivé';
     hiveStatus.style.color = HIVE_ENABLED ? 'var(--green)' : 'var(--muted)';
   }
 }
@@ -1966,10 +1988,10 @@ function updateRigsKPI() {
 // ══════════════════════════════════════════════════════════════════
 
 const RVN_POOLS = {
-  '2miners':    { name:'2Miners', stratum:'stratum+tcp://rvn.2miners.com:6060', fee:1.0 },
-  'k1pool':     { name:'K1Pool', stratum:'stratum+tcp://rvn.k1pool.com:3333', fee:1.0 },
-  'ravenminer': { name:'RavenMiner', stratum:'stratum+tcp://stratum.ravenminer.com:3808', fee:0.5 },
-  'kryptex':    { name:'Kryptex', stratum:'stratum+tcp://rvn.kryptex.network:7031', fee:1.5 },
+  '2miners': { name: '2Miners', stratum: 'stratum+tcp://rvn.2miners.com:6060', fee: 1.0 },
+  'k1pool': { name: 'K1Pool', stratum: 'stratum+tcp://rvn.k1pool.com:3333', fee: 1.0 },
+  'ravenminer': { name: 'RavenMiner', stratum: 'stratum+tcp://stratum.ravenminer.com:3808', fee: 0.5 },
+  'kryptex': { name: 'Kryptex', stratum: 'stratum+tcp://rvn.kryptex.network:7031', fee: 1.5 },
 };
 
 let ACTIVE_RVN_POOL = localStorage.getItem('bitos_rvn_pool') || '2miners';
@@ -1979,14 +2001,14 @@ function switchRVNPool(poolKey) {
   ACTIVE_RVN_POOL = poolKey;
   localStorage.setItem('bitos_rvn_pool', poolKey);
   var pool = RVN_POOLS[poolKey];
-  Object.keys(RVN_POOLS).forEach(function(k) {
+  Object.keys(RVN_POOLS).forEach(function (k) {
     var btn = el('rvn-pool-btn-' + k);
     if (btn) {
       btn.className = k === poolKey ? 'btn btn-primary' : 'btn';
     }
   });
   setText('rvn-pool-info', pool.name + ' — KawPow GPU, ' + pool.fee + '% frais');
-  setText('rvn-pool-stratum', pool.stratum.replace('stratum+tcp://',''));
+  setText('rvn-pool-stratum', pool.stratum.replace('stratum+tcp://', ''));
   var qc = el('rvn-quick-config');
   if (qc) {
     qc.innerHTML = '<pre style="background:var(--bg);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:10px;font-size:10px;overflow-x:auto;color:var(--text);white-space:pre-wrap">'
@@ -2018,8 +2040,8 @@ async function fetchRVNPool() {
     setText('rvn-total', pending.toFixed(2) + ' RVN');
     WALLET.RVN = WALLET.RVN || { balance: 0 };
     WALLET.RVN.balance = pending;
-    console.log('[RVN-Pool] HR:', (hr/1e6).toFixed(2), 'MH/s | Workers:', workers, '| Pending:', pending.toFixed(2));
-  } catch(e) {
+    console.log('[RVN-Pool] HR:', (hr / 1e6).toFixed(2), 'MH/s | Workers:', workers, '| Pending:', pending.toFixed(2));
+  } catch (e) {
     console.warn('[RVN-Pool]', e.message);
   }
 }
@@ -2036,9 +2058,9 @@ async function fetchRVNAll() {
 function renderRVNPage() {
   var rR = calcMiningRevenue('RVN');
   var ns = NET_STATS.RVN;
-  var onlineRigs = RVN_GPU_RIGS.filter(function(r) { return r.status === 'online'; });
-  var totalHR = onlineRigs.reduce(function(s, r) { return s + (r.hr || 0); }, 0);
-  var totalW = onlineRigs.reduce(function(s, r) { return s + (r.watt || 0); }, 0);
+  var onlineRigs = RVN_GPU_RIGS.filter(function (r) { return r.status === 'online'; });
+  var totalHR = onlineRigs.reduce(function (s, r) { return s + (r.hr || 0); }, 0);
+  var totalW = onlineRigs.reduce(function (s, r) { return s + (r.watt || 0); }, 0);
   var elecRate = parseFloat(el('m-elec')?.value || '0.20') || 0.20;
 
   setText('rvn-hero-hr', totalHR > 0 ? totalHR.toFixed(1) + ' MH/s' : '— MH/s');
@@ -2080,7 +2102,7 @@ function renderRVNGPURigs() {
     cont.innerHTML = '<div style="color:var(--muted);font-size:11px;text-align:center;padding:12px">Aucun rig RVN GPU configuré</div>';
     return;
   }
-  cont.innerHTML = RVN_GPU_RIGS.map(function(r, i) {
+  cont.innerHTML = RVN_GPU_RIGS.map(function (r, i) {
     var statusCol = r.status === 'online' ? 'var(--green)' : 'var(--red)';
     var dotCls = r.status === 'online' ? 'dot-online' : 'dot-offline';
     var tempCol = r.temp >= 80 ? 'var(--red)' : r.temp >= 70 ? 'var(--yellow)' : 'var(--green)';
@@ -2152,9 +2174,9 @@ function addRVNGPURig() {
 // ══════════════════════════════════════════════════════════════════
 
 const KAS_POOLS = {
-  'k1pool':     { name:'K1Pool', stratum:'stratum+tcp://kaspa.k1pool.com:3333', ssl:'stratum+ssl://kaspa.k1pool.com:5555', fee:1.0, api:'https://api-kas.k1pool.com/api' },
-  'acc-pool':   { name:'ACC Pool', stratum:'stratum+tcp://kas.acc-pool.pw:16061', ssl:null, fee:1.0, api:null },
-  'woolypooly': { name:'WoolyPooly', stratum:'stratum+tcp://pool.woolypooly.com:3112', ssl:'stratum+ssl://pool.woolypooly.com:3113', fee:0.9, api:null },
+  'k1pool': { name: 'K1Pool', stratum: 'stratum+tcp://kaspa.k1pool.com:3333', ssl: 'stratum+ssl://kaspa.k1pool.com:5555', fee: 1.0, api: 'https://api-kas.k1pool.com/api' },
+  'acc-pool': { name: 'ACC Pool', stratum: 'stratum+tcp://kas.acc-pool.pw:16061', ssl: null, fee: 1.0, api: null },
+  'woolypooly': { name: 'WoolyPooly', stratum: 'stratum+tcp://pool.woolypooly.com:3112', ssl: 'stratum+ssl://pool.woolypooly.com:3113', fee: 0.9, api: null },
 };
 
 let ACTIVE_KAS_POOL = localStorage.getItem('bitos_kas_pool') || 'k1pool';
@@ -2169,17 +2191,17 @@ function switchKASPool(poolKey) {
   POOL_CONFIG.KAS.stratumTCP = pool.stratum;
   if (pool.ssl) POOL_CONFIG.KAS.stratumSSL = pool.ssl;
   POOL_CONFIG.KAS.fee = pool.fee / 100;
-  Object.keys(KAS_POOLS).forEach(function(k) {
+  Object.keys(KAS_POOLS).forEach(function (k) {
     var btn = el('kas-pool-btn-' + k);
     if (btn) btn.className = k === poolKey ? 'btn btn-primary' : 'btn';
   });
   setText('kas-pool-info', pool.name + ' — kHeavyHash GPU, ' + pool.fee + '% frais');
-  setText('kas-pool-stratum', pool.stratum.replace('stratum+tcp://',''));
+  setText('kas-pool-stratum', pool.stratum.replace('stratum+tcp://', ''));
   var qc = el('kas-quick-config');
   if (qc) {
-    var host = pool.stratum.replace('stratum+tcp://','').split(':');
+    var host = pool.stratum.replace('stratum+tcp://', '').split(':');
     qc.innerHTML = '<pre style="background:var(--bg);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:10px;font-size:10px;overflow-x:auto;color:var(--text);white-space:pre-wrap">'
-      + 'miner --algo kheavyhash --server ' + (host[0]||'kaspa.k1pool.com') + ' --port ' + (host[1]||'3333') + ' --user YOUR_KAS_WALLET.rig1 --pass x</pre>';
+      + 'miner --algo kheavyhash --server ' + (host[0] || 'kaspa.k1pool.com') + ' --port ' + (host[1] || '3333') + ' --user YOUR_KAS_WALLET.rig1 --pass x</pre>';
   }
 }
 
@@ -2195,7 +2217,7 @@ function renderKASGPURigs() {
     cont.innerHTML = '<div style="color:var(--muted);font-size:11px;text-align:center;padding:12px">Aucun rig KAS GPU configuré</div>';
     return;
   }
-  cont.innerHTML = KAS_GPU_RIGS.map(function(r, i) {
+  cont.innerHTML = KAS_GPU_RIGS.map(function (r, i) {
     var statusCol = r.status === 'online' ? 'var(--green)' : 'var(--red)';
     var dotCls = r.status === 'online' ? 'dot-online' : 'dot-offline';
     var tempCol = r.temp >= 80 ? 'var(--red)' : r.temp >= 70 ? 'var(--yellow)' : 'var(--green)';
@@ -2208,7 +2230,7 @@ function renderKASGPURigs() {
       + '</div></div>'
       + '<div class="rig-mini-info">'
       + '<span style="color:' + statusCol + ';font-weight:600">' + r.hr + ' ' + r.unit + '</span>'
-      + '<span style="color:' + tempCol + '">' + (r.temp||0) + '°C</span>'
+      + '<span style="color:' + tempCol + '">' + (r.temp || 0) + '°C</span>'
       + ' · ' + r.power + 'W'
       + '</div>'
       + '<div style="display:flex;gap:4px">'
@@ -2268,19 +2290,19 @@ function addKASGPURig() {
 
 const REMOTE_NODES = {
   XMR: [
-    { name:'MoneroWorld',     host:'opennode.xmr-tw.org',    port:18089, ssl:false, status:'unknown', checkPath:'/get_info' },
-    { name:'Seth (US)',       host:'node.sethforprivacy.com',port:18089, ssl:true,  status:'unknown', checkPath:'/get_info' },
-    { name:'Rino (EU)',       host:'node.community.rino.io', port:18081, ssl:false, status:'unknown', checkPath:'/get_info' },
-    { name:'MoneroOcean',     host:'api.moneroocean.stream',  port:443,  ssl:true,  status:'unknown', checkPath:'/pool/stats' },
-    { name:'XMRchain',        host:'xmrchain.net',            port:443,  ssl:true,  status:'unknown', checkPath:'/api/networkinfo' },
+    { name: 'MoneroWorld', host: 'opennode.xmr-tw.org', port: 18089, ssl: false, status: 'unknown', checkPath: '/get_info' },
+    { name: 'Seth (US)', host: 'node.sethforprivacy.com', port: 18089, ssl: true, status: 'unknown', checkPath: '/get_info' },
+    { name: 'Rino (EU)', host: 'node.community.rino.io', port: 18081, ssl: false, status: 'unknown', checkPath: '/get_info' },
+    { name: 'MoneroOcean', host: 'api.moneroocean.stream', port: 443, ssl: true, status: 'unknown', checkPath: '/pool/stats' },
+    { name: 'XMRchain', host: 'xmrchain.net', port: 443, ssl: true, status: 'unknown', checkPath: '/api/networkinfo' },
   ],
   KAS: [
-    { name:'Kaspa API',       host:'api.kaspa.org',          port:443,   ssl:true,  status:'unknown', checkPath:'/info/virtual-chain-blue-score' },
-    { name:'Kas.fyi',         host:'kas.fyi',                port:443,   ssl:true,  status:'unknown', checkPath:'/' },
+    { name: 'Kaspa API', host: 'api.kaspa.org', port: 443, ssl: true, status: 'unknown', checkPath: '/info/virtual-chain-blue-score' },
+    { name: 'Kas.fyi', host: 'kas.fyi', port: 443, ssl: true, status: 'unknown', checkPath: '/' },
   ],
   RVN: [
-    { name:'2Miners RVN',     host:'rvn.2miners.com',        port:443,   ssl:true,  status:'unknown', checkPath:'/api/stats' },
-    { name:'K1Pool RVN',      host:'rvn.k1pool.com',         port:443,   ssl:true,  status:'unknown', checkPath:'/' },
+    { name: '2Miners RVN', host: 'rvn.2miners.com', port: 443, ssl: true, status: 'unknown', checkPath: '/api/stats' },
+    { name: 'K1Pool RVN', host: 'rvn.k1pool.com', port: 443, ssl: true, status: 'unknown', checkPath: '/' },
   ]
 };
 
@@ -2417,7 +2439,7 @@ function generateFlightSheet(sheetKey) {
   var rvnPool = RVN_POOLS[ACTIVE_RVN_POOL] || RVN_POOLS['2miners'];
   var kasPool = KAS_POOLS[ACTIVE_KAS_POOL] || KAS_POOLS['k1pool'];
 
-  switch(sheetKey) {
+  switch (sheetKey) {
     case 'xmr_cpu_termux':
       return {
         type: 'json', filename: 'config-termux.json',
@@ -2430,14 +2452,14 @@ function generateFlightSheet(sheetKey) {
             priority: 1,
             'max-threads-hint': 50,
             'yield': true,
-            argon2: [0,1]
+            argon2: [0, 1]
           },
           opencl: false, cuda: false,
           pools: [{
             url: 'gulf.moneroocean.stream:10128',
             user: xmrAddr, pass: 'x', 'rig-id': 'BitOS-Phone',
             algo: null, tls: false, keepalive: true, nicehash: false
-          },{
+          }, {
             url: 'gulf.moneroocean.stream:20128',
             user: xmrAddr, pass: 'x', 'rig-id': 'BitOS-Phone',
             algo: null, tls: true, keepalive: true, nicehash: false
@@ -2467,7 +2489,7 @@ function generateFlightSheet(sheetKey) {
             url: 'gulf.moneroocean.stream:10128',
             user: xmrAddr, pass: 'x', 'rig-id': 'BitOS-CPU',
             algo: null, tls: false, keepalive: true, nicehash: false
-          },{
+          }, {
             url: 'gulf.moneroocean.stream:20128',
             user: xmrAddr, pass: 'x', 'rig-id': 'BitOS-CPU',
             algo: null, tls: true, keepalive: true, nicehash: false
@@ -2497,7 +2519,7 @@ function generateFlightSheet(sheetKey) {
             url: 'gulf.moneroocean.stream:10128',
             user: xmrAddr, pass: 'x', 'rig-id': 'ASUS-i5',
             algo: null, tls: false, keepalive: true, nicehash: false
-          },{
+          }, {
             url: 'gulf.moneroocean.stream:20128',
             user: xmrAddr, pass: 'x', 'rig-id': 'ASUS-i5',
             algo: null, tls: true, keepalive: true, nicehash: false
@@ -2526,7 +2548,7 @@ function generateFlightSheet(sheetKey) {
             url: 'gulf.moneroocean.stream:10128',
             user: xmrAddr, pass: 'x', 'rig-id': 'Oracle-ARM',
             algo: null, tls: false, keepalive: true, nicehash: false
-          },{
+          }, {
             url: 'gulf.moneroocean.stream:20128',
             user: xmrAddr, pass: 'x', 'rig-id': 'Oracle-ARM',
             algo: null, tls: true, keepalive: true, nicehash: false
@@ -2554,7 +2576,7 @@ function generateFlightSheet(sheetKey) {
             url: 'gulf.moneroocean.stream:10128',
             user: xmrAddr, pass: 'x', 'rig-id': 'BitOS-RTX90',
             algo: null, tls: false, keepalive: true, nicehash: false
-          },{
+          }, {
             url: 'gulf.moneroocean.stream:20128',
             user: xmrAddr, pass: 'x', 'rig-id': 'BitOS-RTX90',
             algo: null, tls: true, keepalive: true, nicehash: false
@@ -2582,7 +2604,7 @@ function generateFlightSheet(sheetKey) {
             url: 'gulf.moneroocean.stream:10128',
             user: xmrAddr, pass: 'x', 'rig-id': 'BitOS-A100',
             algo: null, tls: false, keepalive: true, nicehash: false
-          },{
+          }, {
             url: 'gulf.moneroocean.stream:20128',
             user: xmrAddr, pass: 'x', 'rig-id': 'BitOS-A100',
             algo: null, tls: true, keepalive: true, nicehash: false
@@ -2670,32 +2692,32 @@ function generateFlightSheet(sheetKey) {
         setup: '# Installation A100:\nwget https://github.com/trexminer/T-Rex/releases/latest/download/t-rex-linux.tar.gz\ntar xzf t-rex-linux.tar.gz\nchmod +x t-rex\n\n# Datacenter setup:\nnvidia-smi -pm 1\nnvidia-smi -mig 0\nnvidia-smi -pl 275  # A100 80GB\nnvidia-smi --compute-mode=0\n\n# Lancement:\nbash start-rvn-a100.sh'
       };
     case 'rvn_gpu_gminer':
-      var rvnHost = (rvnPool.stratum||'').replace('stratum+tcp://','').split(':');
+      var rvnHost = (rvnPool.stratum || '').replace('stratum+tcp://', '').split(':');
       return {
         type: 'cmd', filename: 'start-rvn-gminer.sh',
         config: '#!/bin/bash\n# RVN KawPow — GMiner (AMD+NVIDIA)\n'
           + 'miner --algo kawpow'
-          + ' --server ' + (rvnHost[0]||'rvn.2miners.com')
-          + ' --port ' + (rvnHost[1]||'6060')
+          + ' --server ' + (rvnHost[0] || 'rvn.2miners.com')
+          + ' --port ' + (rvnHost[1] || '6060')
           + ' --user ' + (rvnAddr || 'YOUR_RVN_WALLET') + '.rig1'
           + ' --pass x'
           + ' --api 4068'
       };
     case 'kas_gpu_gminer':
-      var kasHost1 = (kasPool.stratum||'').replace('stratum+tcp://','').split(':');
+      var kasHost1 = (kasPool.stratum || '').replace('stratum+tcp://', '').split(':');
       return {
         type: 'cmd', filename: 'start-kas-gminer.sh',
         config: '#!/bin/bash\n# KAS kHeavyHash — GMiner (NVIDIA RTX)\n'
           + 'miner --algo kheavyhash'
-          + ' --server ' + (kasHost1[0]||'kaspa.k1pool.com')
-          + ' --port ' + (kasHost1[1]||'3333')
+          + ' --server ' + (kasHost1[0] || 'kaspa.k1pool.com')
+          + ' --port ' + (kasHost1[1] || '3333')
           + ' --user ' + (kasAddr || 'YOUR_KAS_WALLET') + '.rig1'
           + ' --pass x'
           + ' --api 4068',
         setup: '# Installation GMiner:\nwget https://github.com/develsoftware/GMinerRelease/releases/latest/download/gminer_linux64.tar.xz\ntar xf gminer_linux64.tar.xz\nchmod +x miner\n\n# Lancement:\nbash start-kas-gminer.sh'
       };
     case 'kas_gpu_rtx90':
-      var kasHost2 = (kasPool.stratum||'').replace('stratum+tcp://','').split(':');
+      var kasHost2 = (kasPool.stratum || '').replace('stratum+tcp://', '').split(':');
       return {
         type: 'cmd', filename: 'start-kas-rtx90.sh',
         config: '#!/bin/bash\n# KAS kHeavyHash — RTX 3090/4090 (xx90-class)\n'
@@ -2706,8 +2728,8 @@ function generateFlightSheet(sheetKey) {
           + '# nvidia-settings -a GPUMemoryTransferRateOffset[3]=1500\n'
           + '# nvidia-settings -a GPUGraphicsClockOffset[4]=-200\n\n'
           + 'miner --algo kheavyhash'
-          + ' --server ' + (kasHost2[0]||'kaspa.k1pool.com')
-          + ' --port ' + (kasHost2[1]||'3333')
+          + ' --server ' + (kasHost2[0] || 'kaspa.k1pool.com')
+          + ' --port ' + (kasHost2[1] || '3333')
           + ' --user ' + (kasAddr || 'YOUR_KAS_WALLET') + '.RTX90'
           + ' --pass x'
           + ' --oc 1'
@@ -2719,7 +2741,7 @@ function generateFlightSheet(sheetKey) {
         setup: '# Installation RTX xx90:\nwget https://github.com/develsoftware/GMinerRelease/releases/latest/download/gminer_linux64.tar.xz\ntar xf gminer_linux64.tar.xz\nchmod +x miner\n\n# Power tuning:\nnvidia-smi -pm 1\nnvidia-smi -pl 320  # RTX 4090 (ajustez pour 3090: 280W)\n\n# Lancement:\nbash start-kas-rtx90.sh'
       };
     case 'kas_gpu_a100':
-      var kasHost3 = (kasPool.stratum||'').replace('stratum+tcp://','').split(':');
+      var kasHost3 = (kasPool.stratum || '').replace('stratum+tcp://', '').split(':');
       return {
         type: 'cmd', filename: 'start-kas-a100.sh',
         config: '#!/bin/bash\n# KAS kHeavyHash — A100 Datacenter (40GB/80GB)\n'
@@ -2729,8 +2751,8 @@ function generateFlightSheet(sheetKey) {
           + '# nvidia-smi -pm 1\n'
           + '# nvidia-smi -pl 275                  # A100 80GB optimal\n\n'
           + 'miner --algo kheavyhash'
-          + ' --server ' + (kasHost3[0]||'kaspa.k1pool.com')
-          + ' --port ' + (kasHost3[1]||'3333')
+          + ' --server ' + (kasHost3[0] || 'kaspa.k1pool.com')
+          + ' --port ' + (kasHost3[1] || '3333')
           + ' --user ' + (kasAddr || 'YOUR_KAS_WALLET') + '.A100'
           + ' --pass x'
           + ' --oc 1'
@@ -2742,12 +2764,12 @@ function generateFlightSheet(sheetKey) {
         setup: '# Installation A100:\nwget https://github.com/develsoftware/GMinerRelease/releases/latest/download/gminer_linux64.tar.xz\ntar xf gminer_linux64.tar.xz\nchmod +x miner\n\n# Datacenter setup:\nnvidia-smi -pm 1\nnvidia-smi -mig 0\nnvidia-smi -pl 275  # A100 80GB\n\n# Lancement:\nbash start-kas-a100.sh'
       };
     case 'kas_gpu_bzminer':
-      var kasHost4 = (kasPool.stratum||'').replace('stratum+tcp://','').split(':');
+      var kasHost4 = (kasPool.stratum || '').replace('stratum+tcp://', '').split(':');
       return {
         type: 'cmd', filename: 'start-kas-bzminer.sh',
         config: '#!/bin/bash\n# KAS kHeavyHash — BzMiner (AMD+NVIDIA)\n'
           + 'bzminer -a kaspa'
-          + ' -p stratum+tcp://' + (kasHost4[0]||'kaspa.k1pool.com') + ':' + (kasHost4[1]||'3333')
+          + ' -p stratum+tcp://' + (kasHost4[0] || 'kaspa.k1pool.com') + ':' + (kasHost4[1] || '3333')
           + ' -w ' + (kasAddr || 'YOUR_KAS_WALLET') + '.rig1'
           + ' --http_enabled --http_port 4068',
         setup: '# Installation BzMiner:\nwget https://github.com/bzminer/bzminer/releases/latest/download/bzminer_v21.6.0_linux.tar.gz\ntar xzf bzminer_v21.6.0_linux.tar.gz\nchmod +x bzminer\n\n# Lancement:\nbash start-kas-bzminer.sh'
@@ -2771,16 +2793,16 @@ async function pingNode(node) {
   var url = proto + node.host + portStr + path;
   try {
     var start = Date.now();
-    var res = await fetch(url, { signal: AbortSignal.timeout(6000), mode:'cors' });
+    var res = await fetch(url, { signal: AbortSignal.timeout(6000), mode: 'cors' });
     node.latency = Date.now() - start;
     node.status = res.ok || res.status === 405 || res.status === 403 ? 'online' : 'online';
-  } catch(e) {
+  } catch (e) {
     try {
       var start2 = Date.now();
-      await fetch(url, { method:'HEAD', signal: AbortSignal.timeout(5000), mode:'no-cors' });
+      await fetch(url, { method: 'HEAD', signal: AbortSignal.timeout(5000), mode: 'no-cors' });
       node.latency = Date.now() - start2;
       node.status = 'online';
-    } catch(_e2) {
+    } catch (_e2) {
       node.status = 'offline';
       node.latency = 0;
     }
@@ -2791,9 +2813,9 @@ async function pingNode(node) {
 async function syncAllNodes() {
   setText('node-sync-status', 'Synchronisation...');
   var allNodes = [].concat(REMOTE_NODES.XMR, REMOTE_NODES.KAS, REMOTE_NODES.RVN);
-  await Promise.allSettled(allNodes.map(function(n) { return pingNode(n); }));
+  await Promise.allSettled(allNodes.map(function (n) { return pingNode(n); }));
   renderNodes();
-  var onlineCount = allNodes.filter(function(n){return n.status==='online';}).length;
+  var onlineCount = allNodes.filter(function (n) { return n.status === 'online'; }).length;
   setText('node-sync-status', onlineCount + '/' + allNodes.length + ' nodes connectés');
   toast('info', 'Nodes', onlineCount + '/' + allNodes.length + ' nodes synchronisés');
 }
@@ -2802,20 +2824,20 @@ function renderNodes() {
   var cont = el('nodes-list');
   if (!cont) return;
   var html = '';
-  ['XMR','KAS','RVN'].forEach(function(coin) {
-    var coinCol = coin==='XMR' ? 'var(--accent)' : coin==='KAS' ? '#70eea6' : 'var(--orange)';
-    html += '<div style="font-size:11px;font-weight:700;color:'+coinCol+';margin:10px 0 6px">'+coin+' Nodes</div>';
-    REMOTE_NODES[coin].forEach(function(n) {
-      var dotCls = n.status==='online' ? 'dot-online' : n.status==='offline' ? 'dot-offline' : 'dot-warning';
+  ['XMR', 'KAS', 'RVN'].forEach(function (coin) {
+    var coinCol = coin === 'XMR' ? 'var(--accent)' : coin === 'KAS' ? '#70eea6' : 'var(--orange)';
+    html += '<div style="font-size:11px;font-weight:700;color:' + coinCol + ';margin:10px 0 6px">' + coin + ' Nodes</div>';
+    REMOTE_NODES[coin].forEach(function (n) {
+      var dotCls = n.status === 'online' ? 'dot-online' : n.status === 'offline' ? 'dot-offline' : 'dot-warning';
       var latStr = n.latency > 0 ? n.latency + 'ms' : '—';
       html += '<div class="rig-mini" style="padding:6px 0">'
-        +'<div class="rig-mini-dot '+dotCls+'"></div>'
-        +'<div class="rig-mini-name" style="font-size:11px">'
-        +n.name
-        +'<div style="font-size:9px;color:var(--muted);font-family:var(--mono)">'+n.host+':'+n.port+(n.ssl?' (SSL)':'')+'</div>'
-        +'</div>'
-        +'<div style="font-size:10px;color:var(--muted);font-family:var(--mono)">'+latStr+'</div>'
-        +'</div>';
+        + '<div class="rig-mini-dot ' + dotCls + '"></div>'
+        + '<div class="rig-mini-name" style="font-size:11px">'
+        + n.name
+        + '<div style="font-size:9px;color:var(--muted);font-family:var(--mono)">' + n.host + ':' + n.port + (n.ssl ? ' (SSL)' : '') + '</div>'
+        + '</div>'
+        + '<div style="font-size:10px;color:var(--muted);font-family:var(--mono)">' + latStr + '</div>'
+        + '</div>';
     });
   });
   cont.innerHTML = html;
@@ -2825,24 +2847,24 @@ function renderFlightSheets() {
   var cont = el('flightsheets-list');
   if (!cont) return;
   var html = '';
-  Object.keys(FLIGHT_SHEETS).forEach(function(key) {
+  Object.keys(FLIGHT_SHEETS).forEach(function (key) {
     var fs = FLIGHT_SHEETS[key];
-    var coinCol = fs.coin==='XMR' ? 'var(--accent)' : fs.coin==='RVN' ? 'var(--orange)' : '#70eea6';
-    var typeIcon = fs.type==='cpu' ? '🖥' : '🎮';
+    var coinCol = fs.coin === 'XMR' ? 'var(--accent)' : fs.coin === 'RVN' ? 'var(--orange)' : '#70eea6';
+    var typeIcon = fs.type === 'cpu' ? '🖥' : '🎮';
     var recBadge = fs.recommended ? '<span style="background:var(--green);color:var(--bg);padding:1px 6px;border-radius:4px;font-size:8px;font-weight:700;margin-left:6px">OPTIMAL</span>' : '';
-    var hwBadge = fs.hw ? '<div style="font-size:9px;color:var(--muted);font-family:var(--mono);margin-bottom:6px">HW: '+fs.hw+'</div>' : '';
-    html += '<div style="background:var(--panel2);border:1px solid '+(fs.recommended?'var(--green)':'var(--border)')+';border-radius:10px;padding:12px;margin-bottom:8px">'
-      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'
-      +'<div style="font-size:12px;font-weight:700;color:'+coinCol+'">'+typeIcon+' '+fs.name+recBadge+'</div>'
-      +'<span style="font-size:9px;color:var(--green);font-family:var(--mono);font-weight:600">'+fs.profitBoost+'</span>'
-      +'</div>'
-      +hwBadge
-      +'<div style="font-size:10px;color:var(--muted);margin-bottom:8px">'+fs.desc+'</div>'
-      +'<div style="display:flex;gap:6px">'
-      +'<button class="btn btn-sm" onclick="showFlightSheet(\''+key+'\')" style="font-size:10px">Voir config</button>'
-      +'<button class="btn btn-sm btn-primary" onclick="copyFlightSheet(\''+key+'\')" style="font-size:10px">Copier</button>'
-      +'</div>'
-      +'</div>';
+    var hwBadge = fs.hw ? '<div style="font-size:9px;color:var(--muted);font-family:var(--mono);margin-bottom:6px">HW: ' + fs.hw + '</div>' : '';
+    html += '<div style="background:var(--panel2);border:1px solid ' + (fs.recommended ? 'var(--green)' : 'var(--border)') + ';border-radius:10px;padding:12px;margin-bottom:8px">'
+      + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'
+      + '<div style="font-size:12px;font-weight:700;color:' + coinCol + '">' + typeIcon + ' ' + fs.name + recBadge + '</div>'
+      + '<span style="font-size:9px;color:var(--green);font-family:var(--mono);font-weight:600">' + fs.profitBoost + '</span>'
+      + '</div>'
+      + hwBadge
+      + '<div style="font-size:10px;color:var(--muted);margin-bottom:8px">' + fs.desc + '</div>'
+      + '<div style="display:flex;gap:6px">'
+      + '<button class="btn btn-sm" onclick="showFlightSheet(\'' + key + '\')" style="font-size:10px">Voir config</button>'
+      + '<button class="btn btn-sm btn-primary" onclick="copyFlightSheet(\'' + key + '\')" style="font-size:10px">Copier</button>'
+      + '</div>'
+      + '</div>';
   });
   cont.innerHTML = html;
 }
@@ -2856,26 +2878,26 @@ function showFlightSheet(key) {
   var setupHtml = '';
   if (result.setup) {
     setupHtml = '<div style="margin-top:10px">'
-      +'<div style="font-size:11px;font-weight:600;color:var(--yellow);margin-bottom:4px">Setup & Installation</div>'
-      +'<pre style="background:var(--bg);border:1px solid rgba(255,184,0,0.2);border-radius:8px;padding:12px;font-size:10px;overflow-x:auto;color:var(--muted);white-space:pre-wrap;max-height:250px;overflow-y:auto">'+result.setup+'</pre>'
-      +'</div>';
+      + '<div style="font-size:11px;font-weight:600;color:var(--yellow);margin-bottom:4px">Setup & Installation</div>'
+      + '<pre style="background:var(--bg);border:1px solid rgba(255,184,0,0.2);border-radius:8px;padding:12px;font-size:10px;overflow-x:auto;color:var(--muted);white-space:pre-wrap;max-height:250px;overflow-y:auto">' + result.setup + '</pre>'
+      + '</div>';
   }
   cont.innerHTML = '<div style="margin-bottom:6px;display:flex;justify-content:space-between;align-items:center">'
-    +'<span style="font-size:11px;font-weight:600;color:var(--accent)">'+result.filename+'</span>'
-    +'<button class="btn btn-sm" onclick="copyFlightSheet(\''+key+'\')" style="font-size:9px">Copier config</button>'
-    +'</div>'
-    +'<pre style="background:var(--bg);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:12px;font-size:10px;overflow-x:auto;color:var(--text);white-space:pre-wrap;max-height:300px;overflow-y:auto">'+content+'</pre>'
-    +setupHtml;
-  cont.scrollIntoView({behavior:'smooth'});
+    + '<span style="font-size:11px;font-weight:600;color:var(--accent)">' + result.filename + '</span>'
+    + '<button class="btn btn-sm" onclick="copyFlightSheet(\'' + key + '\')" style="font-size:9px">Copier config</button>'
+    + '</div>'
+    + '<pre style="background:var(--bg);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:12px;font-size:10px;overflow-x:auto;color:var(--text);white-space:pre-wrap;max-height:300px;overflow-y:auto">' + content + '</pre>'
+    + setupHtml;
+  cont.scrollIntoView({ behavior: 'smooth' });
 }
 
 function copyFlightSheet(key) {
   var result = generateFlightSheet(key);
   if (!result) return;
   var content = result.type === 'json' ? JSON.stringify(result.config, null, 2) : result.config;
-  navigator.clipboard.writeText(content).then(function() {
+  navigator.clipboard.writeText(content).then(function () {
     toast('success', 'Copié', result.filename + ' copié dans le presse-papier');
-  }).catch(function() {
+  }).catch(function () {
     toast('error', 'Erreur', 'Impossible de copier — utilisez la sélection manuelle');
   });
 }
@@ -2913,10 +2935,10 @@ function parseKpub(kpubStr) {
 
   // Vérifier checksum SHA256d (4 derniers bytes)
   // On fait confiance à la longueur pour l'instant — vérif async non bloquante
-  const payload   = raw.slice(0, 78);
+  const payload = raw.slice(0, 78);
   // Structure: version(4) depth(1) fingerprint(4) index(4) chainCode(32) pubKey(33)
   const chainCode = payload.slice(13, 45);  // bytes 13-44
-  const pubKey    = payload.slice(45, 78);  // bytes 45-77
+  const pubKey = payload.slice(45, 78);  // bytes 45-77
   if (pubKey[0] !== 0x02 && pubKey[0] !== 0x03)
     throw new Error('Clé publique compressée attendue (0x02/0x03)');
   return { pubKey: new Uint8Array(pubKey), chainCode: new Uint8Array(chainCode) };
@@ -2943,8 +2965,8 @@ async function deriveChildPub(parentPubKey, parentChainCode, index) {
   data.set(parentPubKey, 0);
   data[33] = (index >>> 24) & 0xFF;
   data[34] = (index >>> 16) & 0xFF;
-  data[35] = (index >>>  8) & 0xFF;
-  data[36] =  index         & 0xFF;
+  data[35] = (index >>> 8) & 0xFF;
+  data[36] = index & 0xFF;
 
   const hmacKey = await crypto.subtle.importKey(
     'raw', parentChainCode, { name: 'HMAC', hash: 'SHA-512' }, false, ['sign']
@@ -2959,7 +2981,7 @@ async function deriveChildPub(parentPubKey, parentChainCode, index) {
 
   // Décompresser parentPubKey pour addition
   const px = SECP256K1.toAffine(SECP256K1.scalarMult(parentPubKey));
-  const N  = SECP256K1.N;
+  const N = SECP256K1.N;
 
   // Additionner les deux points affines
   function modp(x) {
@@ -2998,9 +3020,9 @@ async function refreshKaspaAddressFromXpub(index) {
   try {
     const idx = (index !== undefined) ? index : (WALLET.KAS.xpubIndex || 0);
     const addr = await deriveKaspaAddressFromXpub(WALLET.KAS.xpub, idx);
-    WALLET.KAS.addr             = addr;
-    WALLET.KAS.xpubIndex        = idx;
-    POOL_CONFIG.KAS.walletAddr  = addr;
+    WALLET.KAS.addr = addr;
+    WALLET.KAS.xpubIndex = idx;
+    POOL_CONFIG.KAS.walletAddr = addr;
     // Mettre à jour l'UI
     const inp = el('m-wkas');
     if (inp) inp.value = addr;
@@ -3013,12 +3035,12 @@ async function refreshKaspaAddressFromXpub(index) {
     }
     const badge = el('kas-xpub-badge');
     if (badge) {
-      badge.textContent = `#${idx}: ${addr.slice(0,18)}…${addr.slice(-6)}`;
+      badge.textContent = `#${idx}: ${addr.slice(0, 18)}…${addr.slice(-6)}`;
       badge.style.color = 'var(--green)';
     }
     scheduleSave();
     return addr;
-  } catch(e) {
+  } catch (e) {
     console.warn('[xpub KAS]', e.message);
     return null;
   }
@@ -3029,13 +3051,13 @@ async function refreshKaspaAddressFromXpub(index) {
 function xpubNextAddr() {
   const idx = (WALLET.KAS.xpubIndex || 0) + 1;
   refreshKaspaAddressFromXpub(idx).then(addr => {
-    if (addr) toast('info', `Adresse KAS #${idx}`, addr.slice(0,24)+'…');
+    if (addr) toast('info', `Adresse KAS #${idx}`, addr.slice(0, 24) + '…');
   });
 }
 function xpubPrevAddr() {
   const idx = Math.max(0, (WALLET.KAS.xpubIndex || 0) - 1);
   refreshKaspaAddressFromXpub(idx).then(addr => {
-    if (addr) toast('info', `Adresse KAS #${idx}`, addr.slice(0,24)+'…');
+    if (addr) toast('info', `Adresse KAS #${idx}`, addr.slice(0, 24) + '…');
   });
 }
 
@@ -3045,50 +3067,52 @@ function initXpubUI() {
   const input = el('m-wkpub');
   if (WALLET.KAS.xpub) {
     if (input && !input.value) input.value = WALLET.KAS.xpub;
-    if (badge) badge.textContent = `#${WALLET.KAS.xpubIndex || 0}: ${WALLET.KAS.addr ? WALLET.KAS.addr.slice(0,18)+'…'+WALLET.KAS.addr.slice(-6) : 'dérivation…'}`;
+    if (badge) badge.textContent = `#${WALLET.KAS.xpubIndex || 0}: ${WALLET.KAS.addr ? WALLET.KAS.addr.slice(0, 18) + '…' + WALLET.KAS.addr.slice(-6) : 'dérivation…'}`;
   } else {
     const status = el('kas-xpub-status');
-    if (status) { status.style.color='var(--yellow)'; status.style.borderLeftColor='var(--yellow)'; status.style.background='rgba(245,158,11,0.08)'; status.textContent='⏳ Aucun xpub configuré — saisir kpub ci-dessus'; }
+    if (status) { status.style.color = 'var(--yellow)'; status.style.borderLeftColor = 'var(--yellow)'; status.style.background = 'rgba(245,158,11,0.08)'; status.textContent = '⏳ Aucun xpub configuré — saisir kpub ci-dessus'; }
   }
 }
 
 
 // ── Alertes réelles (HiveOS / pool) ────────────────────────────────────
 function generateAlert(type, title, message, coin, rigName) {
-  var a = { id:'a'+Date.now()+Math.random().toString(36).slice(2,6),
-    type:type, title:title, message:message,
-    coin:coin||'', rig:rigName||'',
-    ts:Date.now(), date:new Date().toLocaleDateString('fr-FR'), read:false };
+  var a = {
+    id: 'a' + Date.now() + Math.random().toString(36).slice(2, 6),
+    type: type, title: title, message: message,
+    coin: coin || '', rig: rigName || '',
+    ts: Date.now(), date: new Date().toLocaleDateString('fr-FR'), read: false
+  };
   ALERTS.unshift(a);
   if (ALERTS.length > 100) ALERTS.length = 100;
   scheduleSave();
   if (typeof Notification !== 'undefined' && Notification.permission === 'granted')
-    try { new Notification(title, {body: message}); } catch(e) {}
+    try { new Notification(title, { body: message }); } catch (e) { }
   var badge = el('alerts-badge') || el('alert-count');
-  if (badge) { var u=ALERTS.filter(function(x){return !x.read;}).length; badge.textContent=u; badge.style.display=u>0?'':'none'; }
+  if (badge) { var u = ALERTS.filter(function (x) { return !x.read; }).length; badge.textContent = u; badge.style.display = u > 0 ? '' : 'none'; }
   return a;
 }
 
 function checkRigAlerts() {
-  RIGS.forEach(function(r) {
+  RIGS.forEach(function (r) {
     if (r.status === 'offline')
       generateAlert('err', 'Rig hors ligne', r.name + ' ne repond plus', r.coin, r.name);
     else if (r.maxTemp >= 85)
-      generateAlert('err', 'Temperature critique', r.name+': '+r.maxTemp+'C', r.coin, r.name);
+      generateAlert('err', 'Temperature critique', r.name + ': ' + r.maxTemp + 'C', r.coin, r.name);
     else if (r.maxTemp >= 80)
-      generateAlert('warn', 'Temperature elevee', r.name+': '+r.maxTemp+'C', r.coin, r.name);
+      generateAlert('warn', 'Temperature elevee', r.name + ': ' + r.maxTemp + 'C', r.coin, r.name);
     if (r.status !== 'offline' && r.hrn > 0 && r.coin === 'KAS' && r.hrn < 0.1)
-      generateAlert('warn', 'Hashrate faible', r.name+': '+r.hrn+' GH/s', r.coin, r.name);
+      generateAlert('warn', 'Hashrate faible', r.name + ': ' + r.hrn + ' GH/s', r.coin, r.name);
     if (r.status !== 'offline' && r.hrn > 0 && r.coin === 'XMR' && r.hrn < 1)
-      generateAlert('warn', 'Hashrate faible', r.name+': '+r.hrn+' KH/s', r.coin, r.name);
+      generateAlert('warn', 'Hashrate faible', r.name + ': ' + r.hrn + ' KH/s', r.coin, r.name);
   });
 }
 
 function syncPoolAddresses() {
   // XMR — longueur standard 95 chars
-  if (WALLET.XMR.addr && WALLET.XMR.addr.length >= 90)  POOL_CONFIG.XMR.walletAddr = WALLET.XMR.addr;
+  if (WALLET.XMR.addr && WALLET.XMR.addr.length >= 90) POOL_CONFIG.XMR.walletAddr = WALLET.XMR.addr;
   // KAS — longueur variable ~67 chars
-  if (WALLET.KAS.addr && WALLET.KAS.addr.length >= 60)   POOL_CONFIG.KAS.walletAddr = WALLET.KAS.addr;
+  if (WALLET.KAS.addr && WALLET.KAS.addr.length >= 60) POOL_CONFIG.KAS.walletAddr = WALLET.KAS.addr;
   if (typeof OWN_WALLET !== 'undefined' && OWN_WALLET) {
     if (OWN_WALLET.XMR?.addr && !POOL_CONFIG.XMR.walletAddr) POOL_CONFIG.XMR.walletAddr = OWN_WALLET.XMR.addr;
     if (OWN_WALLET.KAS?.addr && !POOL_CONFIG.KAS.walletAddr) POOL_CONFIG.KAS.walletAddr = OWN_WALLET.KAS.addr;
@@ -3096,26 +3120,26 @@ function syncPoolAddresses() {
 }
 
 function saveWallets() {
-  const xmr  = (el('m-wxmr')?.value  || '').trim();
-  const kas  = (el('m-wkas')?.value  || '').trim();
+  const xmr = (el('m-wxmr')?.value || '').trim();
+  const kas = (el('m-wkas')?.value || '').trim();
   const kpub = (el('m-wkpub')?.value || '').trim();
 
   // Traitement xpub KAS en priorité (écrase l'adresse directe si valide)
   if (kpub) {
     if (!kpub.startsWith('kpub') || kpub.length < 100) {
-      toast('error','xpub KAS invalide','Doit commencer par kpub et faire ~111 caractères'); return;
+      toast('error', 'xpub KAS invalide', 'Doit commencer par kpub et faire ~111 caractères'); return;
     }
-    WALLET.KAS.xpub      = kpub;
+    WALLET.KAS.xpub = kpub;
     WALLET.KAS.xpubIndex = 0;
     // Dériver l'adresse index 0 de façon asynchrone
     refreshKaspaAddressFromXpub(0).then(addr => {
       if (addr) {
-        toast('success','xpub KAS enregistré', `Adresse #0: ${addr.slice(0,20)}…`);
+        toast('success', 'xpub KAS enregistré', `Adresse #0: ${addr.slice(0, 20)}…`);
         syncPoolAddresses();
         scheduleSave();
         if (typeof renderDash === 'function') renderDash();
       } else {
-        toast('error','Dérivation xpub échouée','Vérifiez la clé kpub');
+        toast('error', 'Dérivation xpub échouée', 'Vérifiez la clé kpub');
       }
     });
     closeModal('modal-wallet-addr');
@@ -3124,15 +3148,15 @@ function saveWallets() {
   let changed = false;
   if (xmr) {
     if (xmr.length < 95 || (!xmr.startsWith('4') && !xmr.startsWith('8'))) {
-      toast('error','Adresse XMR invalide','95 caractères requis, commence par 4'); return;
+      toast('error', 'Adresse XMR invalide', '95 caractères requis, commence par 4'); return;
     }
     WALLET.XMR.addr = xmr; changed = true;
-    setText('s-wxmr', xmr.slice(0,12)+'…'+xmr.slice(-6));
-    setText('sg-xmr-pool', xmr.slice(0,20)+'…'+xmr.slice(-4));
+    setText('s-wxmr', xmr.slice(0, 12) + '…' + xmr.slice(-6));
+    setText('sg-xmr-pool', xmr.slice(0, 20) + '…' + xmr.slice(-4));
   }
   if (kas) {
     if (!kas.startsWith('kaspa:') || kas.length < 61) {
-      toast('error','Adresse KAS invalide','Commence par kaspa: + 61 caractères'); return;
+      toast('error', 'Adresse KAS invalide', 'Commence par kaspa: + 61 caractères'); return;
     }
     WALLET.KAS.addr = kas; POOL_CONFIG.KAS.walletAddr = kas; changed = true;
     // Masquer le bandeau d'avertissement KAS
@@ -3143,36 +3167,36 @@ function saveWallets() {
       kasStatus.style.borderLeftColor = 'var(--green)';
       kasStatus.textContent = '✅ Adresse KAS configurée — K1Pool et balances on-chain activés.';
     }
-    setText('s-wkas', kas.slice(0,14)+'…'+kas.slice(-4));
-    setText('sg-kas-pool', kas.slice(0,18)+'…'+kas.slice(-4));
+    setText('s-wkas', kas.slice(0, 14) + '…' + kas.slice(-4));
+    setText('sg-kas-pool', kas.slice(0, 18) + '…' + kas.slice(-4));
   }
   syncPoolAddresses();
   setTimeout(fetchAllAPIs, 800); // Données API au démarrage
   scheduleSave();
   closeModal('modal-wallet-addr');
-  if (changed) { toast('success','✅ Adresses sauvegardées','Pool mis à jour…'); setTimeout(fetchAllAPIs, 500); }
+  if (changed) { toast('success', '✅ Adresses sauvegardées', 'Pool mis à jour…'); setTimeout(fetchAllAPIs, 500); }
 }
 
 // Statut API
 const API_STATUS = { coingecko: 'loading', xmrpool: 'loading', kaspool: 'loading' };
 let lastPriceUpdate = null;
 
-function setAPIBadge(id, status){
-  const b = el('badge-'+id);
-  if(!b) return;
-  const labels = {live:'LIVE ✓', offline:'Hors ligne', loading:'Chargement…'};
-  b.className = 'api-badge api-'+status;
-  b.innerHTML = `<div class="api-dot${status==='live'?' blink':''}" style="display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;background:${status==='live'?'var(--green)':status==='offline'?'var(--red)':'var(--yellow)'}"></div>${labels[status]||status}`;
+function setAPIBadge(id, status) {
+  const b = el('badge-' + id);
+  if (!b) return;
+  const labels = { live: 'LIVE ✓', offline: 'Hors ligne', loading: 'Chargement…' };
+  b.className = 'api-badge api-' + status;
+  b.innerHTML = `<div class="api-dot${status === 'live' ? ' blink' : ''}" style="display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;background:${status === 'live' ? 'var(--green)' : status === 'offline' ? 'var(--red)' : 'var(--yellow)'}"></div>${labels[status] || status}`;
 }
 
 // ── CoinGecko Prix ──
 async function fetchCoinGeckoPrices() {
   try {
     const url = getApiBase('coingecko') + '/simple/price?ids=monero,kaspa,bitcoin,ethereum,ravencoin&vs_currencies=usd&include_24hr_change=true';
-    const res = await fetch(url, {signal: AbortSignal.timeout(8000)});
-    if(!res.ok) throw new Error('HTTP '+res.status);
+    const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
-    
+
     const xp = data.monero?.usd;
     const kp = data.kaspa?.usd;
     const bp = data.bitcoin?.usd;
@@ -3184,11 +3208,11 @@ async function fetchCoinGeckoPrices() {
 
     const rp = data.ravencoin?.usd;
     const rc = data.ravencoin?.usd_24h_change;
-    if(xp) xmrP = xp;
-    if(kp) kasP = kp;
-    if(bp) btcP = bp;
-    if(ep) ethP = ep;
-    if(rp) rvnP = rp;
+    if (xp) xmrP = xp;
+    if (kp) kasP = kp;
+    if (bp) btcP = bp;
+    if (ep) ethP = ep;
+    if (rp) rvnP = rp;
     // Recalculer profit/margin des rigs avec prix live
     if (RIGS.length) updateRigProfits();
 
@@ -3198,40 +3222,40 @@ async function fetchCoinGeckoPrices() {
     setText('t-btc', '$' + Math.round(btcP).toLocaleString('fr-FR'));
     setText('t-eth', '$' + Math.round(ethP).toLocaleString('fr-FR'));
 
-    if(xc !== undefined) {
+    if (xc !== undefined) {
       const xEl = el('t-xmrc');
-      if(xEl){xEl.textContent=(xc>=0?'+':'')+xc.toFixed(2)+'%';xEl.className=xc>=0?'up':'dn';}
+      if (xEl) { xEl.textContent = (xc >= 0 ? '+' : '') + xc.toFixed(2) + '%'; xEl.className = xc >= 0 ? 'up' : 'dn'; }
     }
-    if(kc !== undefined) {
+    if (kc !== undefined) {
       const kEl = el('t-kasc');
-      if(kEl){kEl.textContent=(kc>=0?'+':'')+kc.toFixed(2)+'%';kEl.className=kc>=0?'up':'dn';}
+      if (kEl) { kEl.textContent = (kc >= 0 ? '+' : '') + kc.toFixed(2) + '%'; kEl.className = kc >= 0 ? 'up' : 'dn'; }
     }
-    if(rc !== undefined) {
+    if (rc !== undefined) {
       const rEl = el('t-rvnc');
-      if(rEl){rEl.textContent=(rc>=0?'+':'')+rc.toFixed(2)+'%';rEl.className=rc>=0?'up':'dn';}
+      if (rEl) { rEl.textContent = (rc >= 0 ? '+' : '') + rc.toFixed(2) + '%'; rEl.className = rc >= 0 ? 'up' : 'dn'; }
     }
 
     // Update wallet si visible
-    if(el('page-wallet')?.classList.contains('active')) refreshWalletPage();
-    
+    if (el('page-wallet')?.classList.contains('active')) refreshWalletPage();
+
     // Update rev dashboard
     // s-rev mis à jour par calcRealProfitability()
-    
+
     // Update conversion rate display
     updateConversionRate();
-    
+
     lastPriceUpdate = new Date();
     if (typeof updateAllRigProfits === 'function') { updateAllRigProfits(); renderRigs(); }
-    const timeStr = lastPriceUpdate.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    const timeStr = lastPriceUpdate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     setText('api-last-update', '⟳ ' + timeStr);
     setAPIBadge('coingecko', 'live');
     return true;
-  } catch(e) {
+  } catch (e) {
     console.warn('[CoinGecko]', e.message);
-    setAPIBadge('coingecko','offline');
-    if(xmrP>0) setText('t-xmr','$'+xmrP.toFixed(2)+' ⚠');
-    if(kasP>0) setText('t-kas','$'+kasP.toFixed(4)+' ⚠');
-    if(el('page-wallet')?.classList.contains('active')) refreshWalletPage();
+    setAPIBadge('coingecko', 'offline');
+    if (xmrP > 0) setText('t-xmr', '$' + xmrP.toFixed(2) + ' ⚠');
+    if (kasP > 0) setText('t-kas', '$' + kasP.toFixed(4) + ' ⚠');
+    if (el('page-wallet')?.classList.contains('active')) refreshWalletPage();
     updateConversionRate();
     return false;
   }
@@ -3243,21 +3267,21 @@ async function fetchXMRPool() {
   const addr = POOL_CONFIG.XMR.walletAddr;
   const poolKey = POOL_CONFIG.XMR.pool || 'moneroocean';
   if (!addr || addr.length < 90) {
-    setAPIBadge('xmrpool','offline');
-    setText('xmr-pool-hr','⚠ Adresse non configurée');
-    const dot=el('xmr-pool-dot'); if(dot) dot.className='live-dot dead';
+    setAPIBadge('xmrpool', 'offline');
+    setText('xmr-pool-hr', '⚠ Adresse non configurée');
+    const dot = el('xmr-pool-dot'); if (dot) dot.className = 'live-dot dead';
     return false;
   }
   if (poolKey === 'p2pool') {
-    setText('xmr-pool-hr','P2Pool — monitoring local');
-    setAPIBadge('xmrpool','live');
+    setText('xmr-pool-hr', 'P2Pool — monitoring local');
+    setAPIBadge('xmrpool', 'live');
     return true;
   }
   try {
     const apiBase = poolKey === 'moneroocean' ? getApiBase('moneroocean') : getApiBase('xmrpool');
     const url = apiBase + `/miner/${addr}/stats`;
-    const res = await fetch(url, {signal: AbortSignal.timeout(8000)});
-    if(!res.ok) throw new Error('HTTP '+res.status);
+    const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
 
     var hr, pending, totalPaidVal, lastPayTs;
@@ -3272,17 +3296,17 @@ async function fetchXMRPool() {
       totalPaidVal = data.totalPaid || 0;
       lastPayTs = data.lastPayment || 0;
     }
-    const hrKH = (hr/1000).toFixed(2);
+    const hrKH = (hr / 1000).toFixed(2);
     const pendingXMR = (pending / 1e12).toFixed(6);
     const totalPaid = (totalPaidVal / 1e12).toFixed(4);
-    const lastPayment = lastPayTs ? new Date(lastPayTs*1000).toLocaleDateString('fr-FR') : '—';
-    
+    const lastPayment = lastPayTs ? new Date(lastPayTs * 1000).toLocaleDateString('fr-FR') : '—';
+
     setText('xmr-pool-hr', hrKH + ' KH/s');
     xmrPending = pendingXMR; setText('xmr-pending', pendingXMR + ' XMR');
-    setText('xmr-shares', (data.validShares||0) + ' shares');
+    setText('xmr-shares', (data.validShares || 0) + ' shares');
     setText('xmr-last-pay', lastPayment);
     setText('xmr-total', totalPaid + ' XMR');
-    
+
     // Distribuer le hashrate pool XMR sur les rigs XMR actifs
     if (hr > 0) {
       const xmrRigs = RIGS.filter(r => r.coin === 'XMR' && r.status !== 'offline');
@@ -3290,41 +3314,41 @@ async function fetchXMRPool() {
         const hrPerRig = hr / xmrRigs.length;          // H/s par rig
         xmrRigs.forEach(r => {
           r.hrn = parseFloat((hrPerRig / 1000).toFixed(3)); // H/s → KH/s
-          r.hr  = r.hrn.toFixed(2) + ' KH/s';
+          r.hr = r.hrn.toFixed(2) + ' KH/s';
         });
         updateRigProfits();
       }
       setText('d-xmr-hr', hrKH + ' KH/s');
     }
-    
+
     // Maj sidebar et dashboard avec hashrate réel
-    if(hr > 0) {
+    if (hr > 0) {
       setText('s-hash', hrKH + ' KH/s');
       setText('d-xmr-hr-side', hrKH + ' KH/s');
       setText('xmr-pool-hr', hrKH + ' KH/s');
     }
     // Dot indicator
     const dot = el('xmr-pool-dot');
-    if(dot) dot.className = hr>0?'live-dot':'live-dot dead';
-    
+    if (dot) dot.className = hr > 0 ? 'live-dot' : 'live-dot dead';
+
     setAPIBadge('xmrpool', 'live');
-    
+
     // Balance réelle = total payé + en attente (approximation conservative)
-    if(pending > 0 || data.totalPaid > 0) {
+    if (pending > 0 || data.totalPaid > 0) {
       const totalXMR = parseFloat(totalPaid) + parseFloat(pendingXMR);
       WALLET.XMR.balance = parseFloat(totalXMR.toFixed(6));
-      setText('w-xmr-a', WALLET.XMR.balance.toFixed(6)+' XMR');
-      if(typeof xmrP !== 'undefined' && xmrP > 0)
-        setText('w-xmr-u', '$'+(WALLET.XMR.balance*xmrP).toLocaleString('fr',{minimumFractionDigits:2,maximumFractionDigits:2}));
+      setText('w-xmr-a', WALLET.XMR.balance.toFixed(6) + ' XMR');
+      if (typeof xmrP !== 'undefined' && xmrP > 0)
+        setText('w-xmr-u', '$' + (WALLET.XMR.balance * xmrP).toLocaleString('fr', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
       scheduleSave();
     }
-    
+
     return true;
-  } catch(e) {
-    console.warn('[XMR Pool:'+poolKey+']', e.message);
-    setAPIBadge('xmrpool','offline');
-    setText('xmr-pool-hr','⚠ '+(XMR_POOLS[poolKey]?.name||'Pool')+' indisponible');
-    const dot=el('xmr-pool-dot'); if(dot) dot.className='live-dot warn';
+  } catch (e) {
+    console.warn('[XMR Pool:' + poolKey + ']', e.message);
+    setAPIBadge('xmrpool', 'offline');
+    setText('xmr-pool-hr', '⚠ ' + (XMR_POOLS[poolKey]?.name || 'Pool') + ' indisponible');
+    const dot = el('xmr-pool-dot'); if (dot) dot.className = 'live-dot warn';
     return false;
   }
 }
@@ -3337,22 +3361,22 @@ async function fetchXMRHashrateHistory() {
   if (!addr || addr.length < 90) return;
   try {
     const url = getApiBase('xmrpool') + `/miner/${addr}/chart/hashrate/1day`;
-    const res = await fetch(url, {signal: AbortSignal.timeout(8000)});
-    if (!res.ok) throw new Error('HTTP '+res.status);
+    const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     const pts = await res.json(); // [{date, hs, hs2} ...]
     if (!Array.isArray(pts) || pts.length === 0) return;
     // Mettre à jour le graphique de hashrate avec données réelles
-    const labels = pts.slice(-24).map(p => new Date(p.date*1000).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}));
-    const values = pts.slice(-24).map(p => parseFloat(((p.hs||0)/1000).toFixed(3)));
+    const labels = pts.slice(-24).map(p => new Date(p.date * 1000).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }));
+    const values = pts.slice(-24).map(p => parseFloat(((p.hs || 0) / 1000).toFixed(3)));
     if (typeof drawChart === 'function' && values.some(v => v > 0)) {
-      drawChart('ch-hash', 'line', [{label:'Hashrate XMR (KH/s)', data:values, borderColor:'var(--accent)'}], labels);
+      drawChart('ch-hash', 'line', [{ label: 'Hashrate XMR (KH/s)', data: values, borderColor: 'var(--accent)' }], labels);
       chartInited['dashboard'] = true;
     }
     // Hashrate moyen 24h
-    const avg = values.filter(v=>v>0).reduce((a,b)=>a+b,0) / (values.filter(v=>v>0).length || 1);
-    if (avg > 0) setText('s-hash', avg.toFixed(2)+' KH/s (moy. 24h)');
+    const avg = values.filter(v => v > 0).reduce((a, b) => a + b, 0) / (values.filter(v => v > 0).length || 1);
+    if (avg > 0) setText('s-hash', avg.toFixed(2) + ' KH/s (moy. 24h)');
     console.log('[SupportXMR] Historique 24h:', pts.length, 'points, moy:', avg.toFixed(2), 'KH/s');
-  } catch(e) {
+  } catch (e) {
     console.warn('[SupportXMR] Historique:', e.message);
   }
 }
@@ -3367,7 +3391,7 @@ async function fetchKASOnChainBalance() {
   try {
     // Balance totale confirmée on-chain
     const urlBal = getApiBase('kaspa') + `/addresses/${addr}/balance`;
-    const resBal = await fetch(urlBal, {signal: AbortSignal.timeout(8000)});
+    const resBal = await fetch(urlBal, { signal: AbortSignal.timeout(8000) });
     if (!resBal.ok) throw new Error('HTTP ' + resBal.status);
     const dataBal = await resBal.json();
     // dataBal = { address, balance }  — balance en somori (1 KAS = 1e8 somori)
@@ -3376,30 +3400,30 @@ async function fetchKASOnChainBalance() {
     WALLET.KAS.balance = parseFloat(balKAS.toFixed(4));
 
     // Mettre à jour l'affichage portefeuille
-    setText('w-kas-a', WALLET.KAS.balance.toLocaleString('fr', {maximumFractionDigits:2}) + ' KAS');
+    setText('w-kas-a', WALLET.KAS.balance.toLocaleString('fr', { maximumFractionDigits: 2 }) + ' KAS');
     if (typeof kasP !== 'undefined' && kasP > 0) {
       const usd = WALLET.KAS.balance * kasP;
-      setText('w-kas-u', '$' + usd.toLocaleString('fr', {minimumFractionDigits:2, maximumFractionDigits:2}));
+      setText('w-kas-u', '$' + usd.toLocaleString('fr', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
       // Total wallet
-      const totalUsd = WALLET.XMR.balance * (xmrP||0) + usd;
-      setText('w-total', '$' + totalUsd.toLocaleString('fr', {minimumFractionDigits:2, maximumFractionDigits:2}));
+      const totalUsd = WALLET.XMR.balance * (xmrP || 0) + usd;
+      setText('w-total', '$' + totalUsd.toLocaleString('fr', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
     }
 
     // UTXOs pour avoir le nombre de transactions
     try {
       const urlUtxo = getApiBase('kaspa') + `/addresses/${addr}/utxos`;
-      const resUtxo = await fetch(urlUtxo, {signal: AbortSignal.timeout(6000)});
+      const resUtxo = await fetch(urlUtxo, { signal: AbortSignal.timeout(6000) });
       if (resUtxo.ok) {
         const utxos = await resUtxo.json();
         const utxoCount = Array.isArray(utxos) ? utxos.length : 0;
-        setText('w-kas-addr', addr.slice(0,16) + '…' + addr.slice(-8));
+        setText('w-kas-addr', addr.slice(0, 16) + '…' + addr.slice(-8));
         console.log('[Kaspa] Balance on-chain:', balKAS.toFixed(4), 'KAS |', utxoCount, 'UTXOs');
       }
-    } catch(_e) {}
+    } catch (_e) { }
 
     scheduleSave();
     return true;
-  } catch(e) {
+  } catch (e) {
     console.warn('[Kaspa On-Chain]', e.message);
     return false;
   }
@@ -3411,16 +3435,16 @@ async function fetchXMROnChainBalance() {
   if (!addr || addr.length < 90) return false;
   try {
     const url = getApiBase('xmrpool') + `/miner/${addr}/stats`;
-    const res = await fetch(url, {signal: AbortSignal.timeout(8000)});
+    const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
 
-    const totalPaid  = (data.totalPaid  || 0) / 1e12;  // XMR historique payé
-    const pending    = (data.amtDue     || 0) / 1e12;  // XMR en attente
-    const hr         = data.hash        || 0;           // H/s actuel
-    const hrKH       = (hr / 1000).toFixed(2);
-    const shares     = data.validShares || 0;
-    const lastPay    = data.lastPayment
+    const totalPaid = (data.totalPaid || 0) / 1e12;  // XMR historique payé
+    const pending = (data.amtDue || 0) / 1e12;  // XMR en attente
+    const hr = data.hash || 0;           // H/s actuel
+    const hrKH = (hr / 1000).toFixed(2);
+    const shares = data.validShares || 0;
+    const lastPay = data.lastPayment
       ? new Date(data.lastPayment * 1000).toLocaleDateString('fr-FR')
       : '—';
 
@@ -3430,7 +3454,7 @@ async function fetchXMROnChainBalance() {
       WALLET.XMR.balance = balXMR;
       setText('w-xmr-a', balXMR.toFixed(6) + ' XMR');
       if (typeof xmrP !== 'undefined' && xmrP > 0)
-        setText('w-xmr-u', '$' + (balXMR * xmrP).toLocaleString('fr', {minimumFractionDigits:2, maximumFractionDigits:2}));
+        setText('w-xmr-u', '$' + (balXMR * xmrP).toLocaleString('fr', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
     }
 
     // Hashrate — mettre à jour rigs XMR et UI
@@ -3438,7 +3462,7 @@ async function fetchXMROnChainBalance() {
       const xmrRigsOC = RIGS.filter(r => r.coin === 'XMR' && r.status !== 'offline');
       if (xmrRigsOC.length > 0) {
         const hrPerRig = hr / xmrRigsOC.length;
-        xmrRigsOC.forEach(r => { r.hrn = parseFloat((hrPerRig/1000).toFixed(3)); r.hr = r.hrn.toFixed(2)+' KH/s'; });
+        xmrRigsOC.forEach(r => { r.hrn = parseFloat((hrPerRig / 1000).toFixed(3)); r.hr = r.hrn.toFixed(2) + ' KH/s'; });
         updateRigProfits();
       }
       setText('s-hash', hrKH + ' KH/s');
@@ -3452,12 +3476,14 @@ async function fetchXMROnChainBalance() {
     setText('xmr-last-pay', lastPay);
     // Alimenter PAYMENTS depuis données pool réelles
     if (data.lastPayment && data.totalPaid > 0) {
-      const payDate = new Date(data.lastPayment * 1000).toLocaleDateString('fr-FR', {day:'2-digit',month:'2-digit',year:'2-digit'});
-      const payAmt  = parseFloat(totalPaid.toFixed(4));
+      const payDate = new Date(data.lastPayment * 1000).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: '2-digit' });
+      const payAmt = parseFloat(totalPaid.toFixed(4));
       // Ajouter seulement si pas déjà dans PAYMENTS (par date)
       if (!PAYMENTS.some(p => p.date === payDate && p.coin === 'XMR')) {
-        PAYMENTS.unshift({ date: payDate, coin: 'XMR', amount: payAmt.toString(),
-          usd: '$'+(payAmt*(xmrP||0)).toFixed(2), pool: 'SupportXMR', type: 'recv' });
+        PAYMENTS.unshift({
+          date: payDate, coin: 'XMR', amount: payAmt.toString(),
+          usd: '$' + (payAmt * (xmrP || 0)).toFixed(2), pool: 'SupportXMR', type: 'recv'
+        });
         if (PAYMENTS.length > 200) PAYMENTS.length = 200;
         scheduleSave();
       }
@@ -3470,7 +3496,7 @@ async function fetchXMROnChainBalance() {
     console.log('[SupportXMR] HR:', hrKH, 'KH/s | Pending:', pending.toFixed(6), 'XMR | TotalPaid:', totalPaid.toFixed(4), 'XMR');
     scheduleSave();
     return true;
-  } catch(e) {
+  } catch (e) {
     console.warn('[XMR On-Chain]', e.message);
     setAPIBadge('xmrpool', 'offline');
     return false;
@@ -3480,43 +3506,43 @@ async function fetchXMROnChainBalance() {
 async function fetchKASPool() {
   const addr = POOL_CONFIG.KAS.walletAddr;
   if (!addr || addr.length < 60) {
-    setAPIBadge('kaspool','offline');
-    setText('kas-pool-hr','⚠ Adresse non configurée');
-    const dot=el('kas-pool-dot'); if(dot) dot.className='live-dot dead';
+    setAPIBadge('kaspool', 'offline');
+    setText('kas-pool-hr', '⚠ Adresse non configurée');
+    const dot = el('kas-pool-dot'); if (dot) dot.className = 'live-dot dead';
     return false;
   }
   try {
     const url = getApiBase('kaspool') + `/miner/${addr}`;
-    const res = await fetch(url, {signal: AbortSignal.timeout(8000)});
-    if(!res.ok) throw new Error('HTTP '+res.status);
+    const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
 
     // Hashrate (H/s → GH/s)
-    const hr    = data.currentHashrate || data.hashrate || 0;
-    const hrGH  = (hr / 1e9).toFixed(2);
+    const hr = data.currentHashrate || data.hashrate || 0;
+    const hrGH = (hr / 1e9).toFixed(2);
 
     // Solde en attente (somori → KAS)
-    const pending    = data.stats?.balance || data.balance || 0;
+    const pending = data.stats?.balance || data.balance || 0;
     const pendingKAS = (pending / 1e8).toFixed(4);
 
     // Workers
-    const workers  = data.workers || data.workerCount || 0;
-    const wOnline  = Array.isArray(data.workers)
+    const workers = data.workers || data.workerCount || 0;
+    const wOnline = Array.isArray(data.workers)
       ? data.workers.filter(w => w.online || w.status === 'online').length
       : workers;
-    const totalPaid=(data.totalPaid||data.total_paid||0)/1e8;
-    const lastPayment=data.lastPayment||data.last_payment||0;
-    const lastPayDate=lastPayment?new Date(lastPayment*1000).toLocaleDateString('fr-FR'):'—';
-    const hashrate24h=(data.hashrate24h||data.hashrate_24h||0)/1e9;
+    const totalPaid = (data.totalPaid || data.total_paid || 0) / 1e8;
+    const lastPayment = data.lastPayment || data.last_payment || 0;
+    const lastPayDate = lastPayment ? new Date(lastPayment * 1000).toLocaleDateString('fr-FR') : '—';
+    const hashrate24h = (data.hashrate24h || data.hashrate_24h || 0) / 1e9;
 
     // Mise à jour de l'UI
-    setText('kas-pool-hr',    hrGH > 0 ? hrGH+' GH/s' : '—');
-    setText('kas-pool-pending', pendingKAS+' KAS');
-    setText('kas-pool-workers', wOnline > 0 ? wOnline+' actif(s)' : (workers > 0 ? workers+' worker(s)' : '—'));
-    setText('kas-total-paid',totalPaid>0?totalPaid.toFixed(2)+' KAS':'—');
-    setText('kas-last-pay',lastPayDate);
-    setText('kas-24h-hr',hashrate24h>0?hashrate24h.toFixed(2)+' GH/s moy 24h':'');
-    if(wOnline>0){var _nb=el('nb-kas');if(_nb){_nb.style.display='';_nb.textContent='●';_nb.style.color='var(--green)';}}
+    setText('kas-pool-hr', hrGH > 0 ? hrGH + ' GH/s' : '—');
+    setText('kas-pool-pending', pendingKAS + ' KAS');
+    setText('kas-pool-workers', wOnline > 0 ? wOnline + ' actif(s)' : (workers > 0 ? workers + ' worker(s)' : '—'));
+    setText('kas-total-paid', totalPaid > 0 ? totalPaid.toFixed(2) + ' KAS' : '—');
+    setText('kas-last-pay', lastPayDate);
+    setText('kas-24h-hr', hashrate24h > 0 ? hashrate24h.toFixed(2) + ' GH/s moy 24h' : '');
+    if (wOnline > 0) { var _nb = el('nb-kas'); if (_nb) { _nb.style.display = ''; _nb.textContent = '●'; _nb.style.color = 'var(--green)'; } }
 
     // Distribuer le hashrate pool KAS sur les rigs KAS actifs
     const kasRigs = RIGS.filter(r => r.coin === 'KAS' && r.status !== 'offline');
@@ -3524,7 +3550,7 @@ async function fetchKASPool() {
       const hrPerRig = hr / kasRigs.length;             // H/s par rig
       kasRigs.forEach(r => {
         r.hrn = parseFloat((hrPerRig / 1e9).toFixed(3)); // H/s → GH/s
-        r.hr  = r.hrn.toFixed(2) + ' GH/s';
+        r.hr = r.hrn.toFixed(2) + ' GH/s';
       });
       updateRigProfits();
     }
@@ -3532,28 +3558,28 @@ async function fetchKASPool() {
     // Balance pool → WALLET
     if (pendingKAS > 0) WALLET.KAS.balance = parseFloat(pendingKAS);
     if (wOnline > 0 || workers > 0)
-      setText('set-badge-kas', '🟢 IVOS K1Pool · '+hrGH+' GH/s');
+      setText('set-badge-kas', '🟢 IVOS K1Pool · ' + hrGH + ' GH/s');
 
-    if(pendingKAS>0){
-      var _td=new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'2-digit'});
-      var _pi=PAYMENTS.findIndex(function(p){return p.date===_td&&p.coin==='KAS'&&p.type==='pending';});
-      if(_pi>=0)PAYMENTS.splice(_pi,1);
-      PAYMENTS.unshift({date:_td,coin:'KAS',ts:Date.now(),amount:parseFloat(pendingKAS).toLocaleString('fr'),usd:'$'+(parseFloat(pendingKAS)*(kasP||0)).toFixed(2),pool:'K1Pool',type:'pending'});
+    if (pendingKAS > 0) {
+      var _td = new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: '2-digit' });
+      var _pi = PAYMENTS.findIndex(function (p) { return p.date === _td && p.coin === 'KAS' && p.type === 'pending'; });
+      if (_pi >= 0) PAYMENTS.splice(_pi, 1);
+      PAYMENTS.unshift({ date: _td, coin: 'KAS', ts: Date.now(), amount: parseFloat(pendingKAS).toLocaleString('fr'), usd: '$' + (parseFloat(pendingKAS) * (kasP || 0)).toFixed(2), pool: 'K1Pool', type: 'pending' });
     }
-    if(lastPayment>0&&totalPaid>0&&!PAYMENTS.some(function(p){return p.coin==='KAS'&&p.type==='recv'&&p.date===lastPayDate;})){
-      PAYMENTS.push({date:lastPayDate,coin:'KAS',ts:lastPayment*1000,amount:totalPaid.toFixed(2),usd:'$'+(totalPaid*(kasP||0)).toFixed(2),pool:'K1Pool',type:'recv'});
-      PAYMENTS.sort(function(a,b){return(b.ts||0)-(a.ts||0);});
+    if (lastPayment > 0 && totalPaid > 0 && !PAYMENTS.some(function (p) { return p.coin === 'KAS' && p.type === 'recv' && p.date === lastPayDate; })) {
+      PAYMENTS.push({ date: lastPayDate, coin: 'KAS', ts: lastPayment * 1000, amount: totalPaid.toFixed(2), usd: '$' + (totalPaid * (kasP || 0)).toFixed(2), pool: 'K1Pool', type: 'recv' });
+      PAYMENTS.sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });
     }
-    if(PAYMENTS.length>200)PAYMENTS.length=200;
+    if (PAYMENTS.length > 200) PAYMENTS.length = 200;
     scheduleSave();
-    setAPIBadge('kaspool','live');
-    const dot=el('kas-pool-dot'); if(dot) dot.className='live-dot blink';
+    setAPIBadge('kaspool', 'live');
+    const dot = el('kas-pool-dot'); if (dot) dot.className = 'live-dot blink';
     calcRealProfitability();
     return true;
-  } catch(e) {
-    setAPIBadge('kaspool','offline');
-    setText('kas-pool-hr','⚠ '+e.message.slice(0,30));
-    const dot=el('kas-pool-dot'); if(dot) dot.className='live-dot dead';
+  } catch (e) {
+    setAPIBadge('kaspool', 'offline');
+    setText('kas-pool-hr', '⚠ ' + e.message.slice(0, 30));
+    const dot = el('kas-pool-dot'); if (dot) dot.className = 'live-dot dead';
     return false;
   }
 }
@@ -3561,23 +3587,23 @@ async function fetchKASPool() {
 async function fetchAllAPIs() {
   syncPoolAddresses();
   toast('info', '🔄 Sync live', 'Récupération données réelles…');
-  ['coingecko','xmrpool','kaspool','xmrnet','kasnet'].forEach(id => setAPIBadge(id,'loading'));
+  ['coingecko', 'xmrpool', 'kaspool', 'xmrnet', 'kasnet'].forEach(id => setAPIBadge(id, 'loading'));
 
   // Phase 1 — Prix + stats réseau (base de tous les calculs)
   // Vérifier le proxy si local HTTP
   if (ENV.isLocalhost || ENV.isLAN) {
     var _proxyOk = el('http-proxy-status');
-    if (_proxyOk) { _proxyOk.textContent = '⏳ Proxy…'; _proxyOk.style.color='var(--yellow)'; }
-    fetch((ENV.isHTTPS?'https':'http')+'://'+location.host+'/status', {signal:AbortSignal.timeout(2000)})
-      .then(function(r){ return r.json(); })
-      .then(function(d){
-        if (_proxyOk && d.status==='ok') {
-          _proxyOk.textContent = '✅ Proxy actif ('+d.version+') · LAN: '+d.lan_ip;
+    if (_proxyOk) { _proxyOk.textContent = '⏳ Proxy…'; _proxyOk.style.color = 'var(--yellow)'; }
+    fetch((ENV.isHTTPS ? 'https' : 'http') + '://' + location.host + '/status', { signal: AbortSignal.timeout(2000) })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (_proxyOk && d.status === 'ok') {
+          _proxyOk.textContent = '✅ Proxy actif (' + d.version + ') · LAN: ' + d.lan_ip;
           _proxyOk.style.color = 'var(--green)';
         }
       })
-      .catch(function(){
-        if (_proxyOk) { _proxyOk.textContent = '⚠ Proxy non détecté'; _proxyOk.style.color='var(--yellow)'; }
+      .catch(function () {
+        if (_proxyOk) { _proxyOk.textContent = '⚠ Proxy non détecté'; _proxyOk.style.color = 'var(--yellow)'; }
       });
   }
   await Promise.allSettled([fetchCoinGeckoPrices(), fetchNetworkStats()]);
@@ -3593,7 +3619,7 @@ async function fetchAllAPIs() {
 
   // Phase 3 — HiveOS multi-farm (GPU, températures, flight sheets)
   if (HIVE_TOKEN) {
-    await fetchAllFarms().catch(function(e){ console.warn('[HiveOS]', e.message); });
+    await fetchAllFarms().catch(function (e) { console.warn('[HiveOS]', e.message); });
   }
 
   // Phase 4 — Calculs finaux + render
@@ -3604,19 +3630,19 @@ async function fetchAllAPIs() {
   // Refresh pages actives
   if (typeof renderKASPage === 'function' && el('page-kas')?.classList.contains('active')) renderKASPage();
   if (typeof renderXMRPage === 'function' && el('page-xmr')?.classList.contains('active')) renderXMRPage();
-  if (el('page-rigs')?.classList.contains('active'))        renderRigs();
-  if (el('page-wallet')?.classList.contains('active'))      refreshWalletPage();
-  if (el('page-alertes')?.classList.contains('active'))     renderAlertes?.();
-  if (el('page-historique')?.classList.contains('active'))  renderHistorique?.();
+  if (el('page-rigs')?.classList.contains('active')) renderRigs();
+  if (el('page-wallet')?.classList.contains('active')) refreshWalletPage();
+  if (el('page-alertes')?.classList.contains('active')) renderAlertes?.();
+  if (el('page-historique')?.classList.contains('active')) renderHistorique?.();
 
-  console.log('[fetchAllAPIs] ✅ XMR:', (xmrP||0).toFixed(2)+'$',
-    '| KAS:', (kasP||0).toFixed(5)+'$',
-    '| Rigs actifs:', RIGS.filter(r=>r.status!=='offline').length+'/'+RIGS.length,
+  console.log('[fetchAllAPIs] ✅ XMR:', (xmrP || 0).toFixed(2) + '$',
+    '| KAS:', (kasP || 0).toFixed(5) + '$',
+    '| Rigs actifs:', RIGS.filter(r => r.status !== 'offline').length + '/' + RIGS.length,
     '| Alertes:', ALERTS.length);
 }
 async function pasteExtAddr() {
-  try { const t=await navigator.clipboard.readText(); el('ewiz-addr').value=t; validateExtAddr(); }
-  catch { toast('warn','Presse-papier','Collez manuellement dans le champ.'); }
+  try { const t = await navigator.clipboard.readText(); el('ewiz-addr').value = t; validateExtAddr(); }
+  catch { toast('warn', 'Presse-papier', 'Collez manuellement dans le champ.'); }
 }
 
 function checkDefaultToggle() {
@@ -3634,9 +3660,9 @@ function saveExtWallet() {
   const id = 'ew_' + Date.now();
 
   // Si défaut: enlever ancien défaut du même type de coin
-  if(isDefault) {
+  if (isDefault) {
     EXT_WALLETS.forEach(w => {
-      if(NET_CONFIG[w.net]?.coins.some(c => NET_CONFIG[ewizNet].coins.includes(c))) {
+      if (NET_CONFIG[w.net]?.coins.some(c => NET_CONFIG[ewizNet].coins.includes(c))) {
         w.isDefault = false;
       }
     });
@@ -3652,8 +3678,8 @@ function saveExtWallet() {
 
 function renderExtWallets() {
   const container = el('ext-wallets-list');
-  if(!container) return;
-  if(!EXT_WALLETS.length) {
+  if (!container) return;
+  if (!EXT_WALLETS.length) {
     container.innerHTML = `<div class="ewc-empty"><div class="ewc-empty-icon">🔗</div><div style="font-weight:700;margin-bottom:6px">Aucun wallet associé</div><div style="font-size:11px;color:var(--muted);margin-bottom:14px">Associez vos wallets d'exchange ou de stockage froid pour faciliter vos retraits XMR et KAS.</div><button class="btn btn-primary" onclick="openAddExtWallet()">+ Associer un wallet</button></div>`;
     return;
   }
@@ -3663,17 +3689,17 @@ function renderExtWallets() {
 
 function extWalletCardHTML(w) {
   const cfg = NET_CONFIG[w.net] || {};
-  const shortAddr = w.addr.length > 28 ? w.addr.slice(0,14)+'…'+w.addr.slice(-10) : w.addr;
-  const coins = (cfg.coins||[w.net]).map(c=>`<span class="ewc-coin-tag" style="background:rgba(0,229,255,.1);color:var(--accent)">${c}</span>`).join('');
+  const shortAddr = w.addr.length > 28 ? w.addr.slice(0, 14) + '…' + w.addr.slice(-10) : w.addr;
+  const coins = (cfg.coins || [w.net]).map(c => `<span class="ewc-coin-tag" style="background:rgba(0,229,255,.1);color:var(--accent)">${c}</span>`).join('');
   const defBadge = w.isDefault ? '<div class="ewc-default-badge">★ Défaut</div>' : '';
   const platform = w.platform ? `<div style="font-size:9.5px;color:var(--muted);font-family:var(--mono);margin-bottom:6px">${w.platform}</div>` : '';
-  return `<div class="ext-wallet-card ${w.isDefault?'default-w':''}" id="ewc-${w.id}">
+  return `<div class="ext-wallet-card ${w.isDefault ? 'default-w' : ''}" id="ewc-${w.id}">
     ${defBadge}
     <div class="ewc-header">
-      <div class="ewc-icon ${cfg.tagClass||''}" style="background:${cfg.color?cfg.color.replace('var(--','rgba(').replace(')',', .15)'):'rgba(0,229,255,.15)'}">${cfg.icon||'💳'}</div>
+      <div class="ewc-icon ${cfg.tagClass || ''}" style="background:${cfg.color ? cfg.color.replace('var(--', 'rgba(').replace(')', ', .15)') : 'rgba(0,229,255,.15)'}">${cfg.icon || '💳'}</div>
       <div style="flex:1">
         <div class="ewc-name">${w.label}</div>
-        <div class="ewc-type">${cfg.name||w.net}</div>
+        <div class="ewc-type">${cfg.name || w.net}</div>
       </div>
     </div>
     ${platform}
@@ -3689,10 +3715,10 @@ function extWalletCardHTML(w) {
 
 function openExtWalletDetail(id) {
   const w = EXT_WALLETS.find(x => x.id === id);
-  if(!w) return;
+  if (!w) return;
   currentExtWalletId = id;
   const cfg = NET_CONFIG[w.net] || {};
-  setText('ewd-title', cfg.icon+' '+w.label);
+  setText('ewd-title', cfg.icon + ' ' + w.label);
   const added = w.addedAt ? new Date(w.addedAt).toLocaleDateString('fr-FR') : '—';
   el('ewd-body').innerHTML = `
     <div style="display:grid;gap:10px">
@@ -3700,8 +3726,8 @@ function openExtWalletDetail(id) {
         <div style="font-size:9.5px;color:var(--muted);font-family:var(--mono);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Réseau</div>
         <div style="display:flex;align-items:center;gap:8px">
           <div style="font-size:22px">${cfg.icon}</div>
-          <div><div style="font-size:13px;font-weight:700">${cfg.name||w.net}</div>${w.platform?`<div style="font-size:10px;color:var(--muted)">${w.platform}</div>`:''}</div>
-          ${w.isDefault?'<div class="ewc-default-badge" style="position:static;margin-left:auto">★ Défaut</div>':''}
+          <div><div style="font-size:13px;font-weight:700">${cfg.name || w.net}</div>${w.platform ? `<div style="font-size:10px;color:var(--muted)">${w.platform}</div>` : ''}</div>
+          ${w.isDefault ? '<div class="ewc-default-badge" style="position:static;margin-left:auto">★ Défaut</div>' : ''}
         </div>
       </div>
       <div style="background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:12px">
@@ -3712,7 +3738,7 @@ function openExtWalletDetail(id) {
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
         <div style="background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:10px">
           <div style="font-size:9px;color:var(--muted);font-family:var(--mono);margin-bottom:4px">COINS SUPPORTÉS</div>
-          <div style="display:flex;gap:4px;flex-wrap:wrap">${(cfg.coins||[w.net]).map(c=>`<span class="ewc-coin-tag" style="background:rgba(0,229,255,.1);color:var(--accent)">${c}</span>`).join('')}</div>
+          <div style="display:flex;gap:4px;flex-wrap:wrap">${(cfg.coins || [w.net]).map(c => `<span class="ewc-coin-tag" style="background:rgba(0,229,255,.1);color:var(--accent)">${c}</span>`).join('')}</div>
         </div>
         <div style="background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:10px">
           <div style="font-size:9px;color:var(--muted);font-family:var(--mono);margin-bottom:4px">AJOUTÉ LE</div>
@@ -3729,49 +3755,49 @@ function openExtWalletDetail(id) {
 
 function copyExtAddr(id) {
   const w = EXT_WALLETS.find(x => x.id === id);
-  if(!w) return;
-  if(navigator.clipboard) navigator.clipboard.writeText(w.addr).then(()=>toast('success','Copié',w.addr.slice(0,20)+'… copié'));
+  if (!w) return;
+  if (navigator.clipboard) navigator.clipboard.writeText(w.addr).then(() => toast('success', 'Copié', w.addr.slice(0, 20) + '… copié'));
 }
 
 function setDefaultExtWallet(id) {
   const w = EXT_WALLETS.find(x => x.id === id);
-  if(!w) return;
+  if (!w) return;
   const cfg = NET_CONFIG[w.net] || {};
   EXT_WALLETS.forEach(ew => {
-    if(NET_CONFIG[ew.net]?.coins.some(c => cfg.coins?.includes(c))) ew.isDefault = false;
+    if (NET_CONFIG[ew.net]?.coins.some(c => cfg.coins?.includes(c))) ew.isDefault = false;
   });
   w.isDefault = true;
   scheduleSave();
   renderExtWallets();
-  toast('success','Wallet par défaut', w.label+' défini comme wallet de retrait principal');
+  toast('success', 'Wallet par défaut', w.label + ' défini comme wallet de retrait principal');
 }
 
 function deleteExtWallet() {
-  if(!currentExtWalletId) return;
+  if (!currentExtWalletId) return;
   const w = EXT_WALLETS.find(x => x.id === currentExtWalletId);
-  if(!w) return;
-  if(!confirm('Supprimer le wallet "'+w.label+'" ?')) return;
+  if (!w) return;
+  if (!confirm('Supprimer le wallet "' + w.label + '" ?')) return;
   const idx = EXT_WALLETS.findIndex(x => x.id === currentExtWalletId);
-  if(idx >= 0) EXT_WALLETS.splice(idx, 1);
+  if (idx >= 0) EXT_WALLETS.splice(idx, 1);
   closeModal('modal-ext-detail');
   scheduleSave();
   renderExtWallets();
   renderActions();
-  toast('warn','Wallet supprimé', w.label+' a été retiré de vos wallets associés');
+  toast('warn', 'Wallet supprimé', w.label + ' a été retiré de vos wallets associés');
 }
 
 function sendToExtWallet() { sendToExtWalletById(currentExtWalletId); }
 function sendToExtWalletById(id) {
   const w = EXT_WALLETS.find(x => x.id === id);
-  if(!w) return;
+  if (!w) return;
   const cfg = NET_CONFIG[w.net] || {};
-  const coin = cfg.coins?.find(c => c==='XMR'||c==='KAS') || 'XMR';
+  const coin = cfg.coins?.find(c => c === 'XMR' || c === 'KAS') || 'XMR';
   closeModal('modal-ext-detail');
   openSend(coin);
-  setTimeout(()=>{
+  setTimeout(() => {
     el('send-addr').value = w.addr;
     onSendAddrChange();
-    toast('info','Adresse pré-remplie', w.label+' — vérifiez puis confirmez');
+    toast('info', 'Adresse pré-remplie', w.label + ' — vérifiez puis confirmez');
   }, 300);
 }
 
@@ -3794,7 +3820,7 @@ function getActionsDef() {
   const kasUSD = kasBal * kasP;
   const totalUSD = xmrUSD + kasUSD;
   const hasCustomPin = _pinMigrated || _pinHash != null ||
-    (() => { try { return !!localStorage.getItem('bitosdash_pin_hash'); } catch(e) { return false; } })();
+    (() => { try { return !!localStorage.getItem('bitosdash_pin_hash'); } catch (e) { return false; } })();
 
   return [
     // ─── SÉCURITÉ ───────────────────────────────────────
@@ -3809,7 +3835,7 @@ function getActionsDef() {
         : 'Votre PIN actuel est "1234" (défaut). Changez-le immédiatement pour protéger vos retraits.',
       tags: ['security', hasCustomPin ? 'done' : 'urgent'],
       progress: hasCustomPin ? 100 : 0,
-      ctas: hasCustomPin ? [] : [{label:'Changer le PIN', action:"openModal('modal-change-pin')"}],
+      ctas: hasCustomPin ? [] : [{ label: 'Changer le PIN', action: "openModal('modal-change-pin')" }],
       done: hasCustomPin,
     },
     {
@@ -3819,13 +3845,13 @@ function getActionsDef() {
       icon: '🔗',
       title: hasExtWallet ? 'Wallet de retrait associé ✓' : 'Associer un wallet de retrait',
       desc: hasExtWallet
-        ? `Vous avez ${EXT_WALLETS.length} wallet(s) associé(s). ${hasDefaultWallet?'Un wallet par défaut est défini.':'Pensez à définir un wallet par défaut.'}`
+        ? `Vous avez ${EXT_WALLETS.length} wallet(s) associé(s). ${hasDefaultWallet ? 'Un wallet par défaut est défini.' : 'Pensez à définir un wallet par défaut.'}`
         : "Associez un wallet externe (Binance, Ledger, Kraken\u2026) pour pouvoir retirer vos cryptos en 1 clic sans ressaisir l'adresse.",
       tags: ['security', hasExtWallet ? 'done' : 'urgent'],
       progress: hasExtWallet ? (hasDefaultWallet ? 100 : 60) : 0,
       ctas: hasExtWallet
-        ? [{label:'Gérer les wallets', action:"showPage('wallet')"}]
-        : [{label:'Associer un wallet', action:"showPage('wallet');setTimeout(()=>openAddExtWallet(),400)"}],
+        ? [{ label: 'Gérer les wallets', action: "showPage('wallet')" }]
+        : [{ label: 'Associer un wallet', action: "showPage('wallet');setTimeout(()=>openAddExtWallet(),400)" }],
       done: hasExtWallet && hasDefaultWallet,
     },
     {
@@ -3834,11 +3860,11 @@ function getActionsDef() {
       category: 'security',
       icon: '🧊',
       title: 'Cold wallet pour la réserve XMR',
-      desc: 'Avec '+xmrBal.toFixed(4)+' XMR (≈$'+xmrUSD.toFixed(0)+'), stockez 80%+ sur un hardware wallet (Ledger/Trezor) et gardez seulement un mois de gains en hot wallet.',
+      desc: 'Avec ' + xmrBal.toFixed(4) + ' XMR (≈$' + xmrUSD.toFixed(0) + '), stockez 80%+ sur un hardware wallet (Ledger/Trezor) et gardez seulement un mois de gains en hot wallet.',
       tags: ['security', 'soon'],
-      progress: EXT_WALLETS.some(w=>w.platform?.includes('Ledger')||w.platform?.includes('Trezor')) ? 80 : 5,
-      ctas: [{label:'Associer un Ledger', action:"openAddExtWallet('XMR')"}],
-      done: EXT_WALLETS.some(w=>(w.platform?.includes('Ledger')||w.platform?.includes('Trezor')) && (NET_CONFIG[w.net]?.coins?.includes('XMR'))),
+      progress: EXT_WALLETS.some(w => w.platform?.includes('Ledger') || w.platform?.includes('Trezor')) ? 80 : 5,
+      ctas: [{ label: 'Associer un Ledger', action: "openAddExtWallet('XMR')" }],
+      done: EXT_WALLETS.some(w => (w.platform?.includes('Ledger') || w.platform?.includes('Trezor')) && (NET_CONFIG[w.net]?.coins?.includes('XMR'))),
     },
     // ─── PROFIT / OPTIMISATION ──────────────────────────
     {
@@ -3847,12 +3873,12 @@ function getActionsDef() {
       category: 'profit',
       icon: '💸',
       title: 'Planifier un retrait régulier',
-      desc: 'Votre solde XMR ($'+xmrUSD.toFixed(0)+') et KAS ($'+kasUSD.toFixed(0)+') totalisent $'+totalUSD.toFixed(0)+'. Planifiez des retraits hebdomadaires ou mensuels vers votre exchange pour sécuriser vos gains.',
+      desc: 'Votre solde XMR ($' + xmrUSD.toFixed(0) + ') et KAS ($' + kasUSD.toFixed(0) + ') totalisent $' + totalUSD.toFixed(0) + '. Planifiez des retraits hebdomadaires ou mensuels vers votre exchange pour sécuriser vos gains.',
       tags: ['profit', xmrUSD > 500 ? 'urgent' : 'soon'],
       progress: hasExtWallet ? 40 : 10,
       ctas: [
-        {label:'Envoyer XMR', action:"showPage('wallet');setTimeout(()=>openSend('XMR'),400)", style:'btn-orange'},
-        {label:'Envoyer KAS', action:"showPage('wallet');setTimeout(()=>openSend('KAS'),400)", style:'btn-cyan'},
+        { label: 'Envoyer XMR', action: "showPage('wallet');setTimeout(()=>openSend('XMR'),400)", style: 'btn-orange' },
+        { label: 'Envoyer KAS', action: "showPage('wallet');setTimeout(()=>openSend('KAS'),400)", style: 'btn-cyan' },
       ],
       done: false,
     },
@@ -3865,7 +3891,7 @@ function getActionsDef() {
       desc: "Diversifiez le risque en convertissant 20-30% de vos gains en USDT. Protège contre les baisses de marché. Utilisez l'outil de conversion intégré pour estimer le montant.",
       tags: ['profit', 'opt'],
       progress: 0,
-      ctas: [{label:'Estimer conversion', action:"showPage('wallet');setTimeout(()=>openConvert('XMR'),400)"}],
+      ctas: [{ label: 'Estimer conversion', action: "showPage('wallet');setTimeout(()=>openConvert('XMR'),400)" }],
       done: false,
     },
     {
@@ -3877,7 +3903,7 @@ function getActionsDef() {
       desc: `Basé sur les prix actuels (XMR: $${xmrP.toFixed(0)} · KAS: $${kasP.toFixed(4)}), utilisez le simulateur de rentabilité pour calculer l'allocation optimale entre RandomX et KHeavyHash.`,
       tags: ['profit', 'opt'],
       progress: 30,
-      ctas: [{label:'Ouvrir le simulateur', action:"showPage('rentabilite')"}],
+      ctas: [{ label: 'Ouvrir le simulateur', action: "showPage('rentabilite')" }],
       done: false,
     },
     // ─── INFRASTRUCTURE ──────────────────────────────────
@@ -3886,13 +3912,13 @@ function getActionsDef() {
       priority: offlineRigs > 0 ? 'high' : 'done',
       category: 'infra',
       icon: offlineRigs > 0 ? '🔴' : '✅',
-      title: offlineRigs > 0 ? offlineRigs+' rig(s) hors ligne' : 'Tous les rigs actifs',
+      title: offlineRigs > 0 ? offlineRigs + ' rig(s) hors ligne' : 'Tous les rigs actifs',
       desc: offlineRigs > 0
         ? `${offlineRigs} rig(s) sont actuellement hors ligne. Chaque rig offline représente une perte de revenus. Vérifiez la connexion réseau, l'alimentation et les logs système.`
         : 'Tous vos rigs sont opérationnels. Continuez à surveiller les températures et le hashrate.',
-      tags: ['infra', offlineRigs>0?'urgent':'done'],
+      tags: ['infra', offlineRigs > 0 ? 'urgent' : 'done'],
       progress: offlineRigs > 0 ? 0 : 100,
-      ctas: offlineRigs > 0 ? [{label:'Voir les rigs', action:"showPage('rigs')"}] : [],
+      ctas: offlineRigs > 0 ? [{ label: 'Voir les rigs', action: "showPage('rigs')" }] : [],
       done: offlineRigs === 0,
     },
     {
@@ -3902,11 +3928,11 @@ function getActionsDef() {
       icon: hotRigs > 0 ? '🌡️' : '❄️',
       title: hotRigs > 0 ? `${hotRigs} GPU(s) en surchauffe !` : 'Températures nominales',
       desc: hotRigs > 0
-        ? hotRigs+' GPU(s) dépassent 80°C. Risque de throttling et de dommages matériels. Améliorez le refroidissement : nettoyage des filtres, pâte thermique, ajustement ventilateurs.'
+        ? hotRigs + ' GPU(s) dépassent 80°C. Risque de throttling et de dommages matériels. Améliorez le refroidissement : nettoyage des filtres, pâte thermique, ajustement ventilateurs.'
         : 'Toutes les températures sont dans les normes (<80°C). Bonne gestion thermique.',
-      tags: ['infra', hotRigs>0?'urgent':'done'],
+      tags: ['infra', hotRigs > 0 ? 'urgent' : 'done'],
       progress: hotRigs > 0 ? 20 : 100,
-      ctas: hotRigs > 0 ? [{label:'Monitoring', action:"showPage('monitoring')"}] : [],
+      ctas: hotRigs > 0 ? [{ label: 'Monitoring', action: "showPage('monitoring')" }] : [],
       done: hotRigs === 0,
     },
     {
@@ -3918,7 +3944,7 @@ function getActionsDef() {
       desc: 'Vérifiez que vos adresses SupportXMR et K1Pool correspondent à vos wallets de minage. Des adresses incorrectes entraînent des paiements perdus.',
       tags: ['infra', 'opt'],
       progress: 70,
-      ctas: [{label:'Paramètres pools', action:"showPage('settings')"}],
+      ctas: [{ label: 'Paramètres pools', action: "showPage('settings')" }],
       done: WALLET.XMR.addr !== LS_DEFAULTS.walletXMR || WALLET.KAS.addr !== LS_DEFAULTS.walletKAS,
     },
     {
@@ -3930,7 +3956,7 @@ function getActionsDef() {
       desc: 'Exportez régulièrement votre historique de transactions en CSV pour la comptabilité et les déclarations fiscales. Recommandé : une fois par mois.',
       tags: ['infra', 'soon'],
       progress: TX_HISTORY.length > 0 ? 50 : 10,
-      ctas: [{label:'Exporter CSV', action:'exportTxCSV()'}],
+      ctas: [{ label: 'Exporter CSV', action: 'exportTxCSV()' }],
       done: false,
     },
     // ─── PROCHAINES ÉTAPES AVANCÉES ─────────────────────
@@ -3943,7 +3969,7 @@ function getActionsDef() {
       desc: 'Entrez vos vraies adresses wallets dans Paramètres → API pour activer les données de hashrate et de paiements en temps réel depuis SupportXMR et K1Pool.',
       tags: ['infra', 'opt'],
       progress: WALLET.XMR.addr !== LS_DEFAULTS.walletXMR ? 80 : 20,
-      ctas: [{label:'Configurer', action:"showPage('settings')"}],
+      ctas: [{ label: 'Configurer', action: "showPage('settings')" }],
       done: WALLET.XMR.addr !== LS_DEFAULTS.walletXMR && WALLET.KAS.addr !== LS_DEFAULTS.walletKAS,
     },
     {
@@ -3955,7 +3981,7 @@ function getActionsDef() {
       desc: 'En France, les revenus de minage sont imposables. Documentez chaque paiement reçu avec la valeur en EUR au moment du paiement. Consultez un comptable spécialisé crypto.',
       tags: ['profit', 'soon'],
       progress: 5,
-      ctas: [{label:'Exporter historique', action:'exportCSV()'}],
+      ctas: [{ label: 'Exporter historique', action: 'exportCSV()' }],
       done: false,
     },
   ];
@@ -3964,7 +3990,7 @@ function getActionsDef() {
 function filterActions(filter, btn) {
   currentActionFilter = filter;
   document.querySelectorAll('.afl-btn').forEach(b => b.classList.remove('active'));
-  if(btn) btn.classList.add('active');
+  if (btn) btn.classList.add('active');
   renderActions();
 }
 
@@ -3976,7 +4002,7 @@ function toggleActionDone(id) {
 
 function renderActions() {
   const container = el('action-list-container');
-  if(!container) return;
+  if (!container) return;
 
   const actions = getActionsDef();
   const total = actions.length;
@@ -3984,47 +4010,47 @@ function renderActions() {
   const pct = Math.round(done / total * 100);
 
   // Update header
-  const urgent = actions.filter(a => a.priority==='high' && !a.done && !ACTION_DONE[a.id]).length;
-  setText('actions-summary', done+'/'+total+' terminées · '+urgent+' urgente(s)');
-  setText('actions-pct', pct+'%');
+  const urgent = actions.filter(a => a.priority === 'high' && !a.done && !ACTION_DONE[a.id]).length;
+  setText('actions-summary', done + '/' + total + ' terminées · ' + urgent + ' urgente(s)');
+  setText('actions-pct', pct + '%');
   const pfill = el('actions-prog-fill');
-  if(pfill) pfill.style.width = pct+'%';
+  if (pfill) pfill.style.width = pct + '%';
 
   // Filter
   let filtered = actions;
-  if(currentActionFilter === 'urgent') filtered = actions.filter(a => a.priority==='high');
-  else if(currentActionFilter === 'done') filtered = actions.filter(a => a.done || ACTION_DONE[a.id]);
-  else if(currentActionFilter === 'security') filtered = actions.filter(a => a.category==='security');
-  else if(currentActionFilter === 'profit') filtered = actions.filter(a => a.category==='profit');
-  else if(currentActionFilter === 'infra') filtered = actions.filter(a => a.category==='infra');
+  if (currentActionFilter === 'urgent') filtered = actions.filter(a => a.priority === 'high');
+  else if (currentActionFilter === 'done') filtered = actions.filter(a => a.done || ACTION_DONE[a.id]);
+  else if (currentActionFilter === 'security') filtered = actions.filter(a => a.category === 'security');
+  else if (currentActionFilter === 'profit') filtered = actions.filter(a => a.category === 'profit');
+  else if (currentActionFilter === 'infra') filtered = actions.filter(a => a.category === 'infra');
 
-  if(!filtered.length) {
+  if (!filtered.length) {
     container.innerHTML = '<div style="text-align:center;color:var(--muted);padding:32px;font-size:12px">Aucune action dans cette catégorie</div>';
     return;
   }
 
   // Sort: urgent first, then med, then low, then done
-  const pOrder = {high:0,med:1,low:2,done:3};
-  filtered.sort((a,b) => {
-    const ap = a.done||ACTION_DONE[a.id]?3:pOrder[a.priority]??2;
-    const bp = b.done||ACTION_DONE[b.id]?3:pOrder[b.priority]??2;
-    return ap-bp;
+  const pOrder = { high: 0, med: 1, low: 2, done: 3 };
+  filtered.sort((a, b) => {
+    const ap = a.done || ACTION_DONE[a.id] ? 3 : pOrder[a.priority] ?? 2;
+    const bp = b.done || ACTION_DONE[b.id] ? 3 : pOrder[b.priority] ?? 2;
+    return ap - bp;
   });
 
   container.innerHTML = filtered.map(a => {
     const isDone = a.done || ACTION_DONE[a.id];
-    const prioClass = isDone ? 'priority-done' : 'priority-'+a.priority;
-    const prioColors = {high:'var(--red)', med:'var(--yellow)', low:'var(--accent)', done:'var(--green)'};
+    const prioClass = isDone ? 'priority-done' : 'priority-' + a.priority;
+    const prioColors = { high: 'var(--red)', med: 'var(--yellow)', low: 'var(--accent)', done: 'var(--green)' };
     const progColor = isDone ? 'var(--green)' : prioColors[a.priority] || 'var(--accent)';
-    const prog = isDone ? 100 : (a.progress||0);
+    const prog = isDone ? 100 : (a.progress || 0);
     const tags = a.tags.map(t => {
-      const tMap = {urgent:'a-tag-urgent',soon:'a-tag-soon',opt:'a-tag-opt',done:'a-tag-done',security:'a-tag-security',profit:'a-tag-profit',infra:'a-tag-infra'};
-      const tLabel = {urgent:'🔴 Urgent',soon:'⏰ Bientôt',opt:'💡 Optimisation',done:'✅ Fait',security:'🔒 Sécurité',profit:'💰 Profit',infra:'⚙️ Infra'};
-      return `<span class="action-tag ${tMap[t]||'a-tag-opt'}">${tLabel[t]||t}</span>`;
+      const tMap = { urgent: 'a-tag-urgent', soon: 'a-tag-soon', opt: 'a-tag-opt', done: 'a-tag-done', security: 'a-tag-security', profit: 'a-tag-profit', infra: 'a-tag-infra' };
+      const tLabel = { urgent: '🔴 Urgent', soon: '⏰ Bientôt', opt: '💡 Optimisation', done: '✅ Fait', security: '🔒 Sécurité', profit: '💰 Profit', infra: '⚙️ Infra' };
+      return `<span class="action-tag ${tMap[t] || 'a-tag-opt'}">${tLabel[t] || t}</span>`;
     }).join('');
-    const ctas = (a.ctas||[]).map(c => `<button class="btn btn-ghost btn-sm ${c.style||''}" onclick="${c.action}">${c.label}</button>`).join('');
+    const ctas = (a.ctas || []).map(c => `<button class="btn btn-ghost btn-sm ${c.style || ''}" onclick="${c.action}">${c.label}</button>`).join('');
     return `<div class="action-card ${prioClass}" id="ac-${a.id}">
-      <div class="action-checkbox ${isDone?'checked':''}" onclick="toggleActionDone('${a.id}')">${isDone?'✓':''}</div>
+      <div class="action-checkbox ${isDone ? 'checked' : ''}" onclick="toggleActionDone('${a.id}')">${isDone ? '✓' : ''}</div>
       <div class="action-body">
         <div class="action-title">${a.icon} ${a.title}</div>
         <div class="action-desc">${a.desc}</div>
@@ -4045,16 +4071,16 @@ function switchModuleTab(tabId, btn) {
   currentModTab = tabId;
   document.querySelectorAll('.mod-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.mod-tab').forEach(b => b.classList.remove('active'));
-  const panel = el(tabId); if(panel) panel.classList.add('active');
-  if(btn) btn.classList.add('active');
+  const panel = el(tabId); if (panel) panel.classList.add('active');
+  if (btn) btn.classList.add('active');
   // Init lazy du panel
   try {
-    if(tabId === 'tab-convert') tcInit();
-    else if(tabId === 'tab-optimize') optInit();
-    else if(tabId === 'tab-tax') taxInit();
-    else if(tabId === 'tab-withdraw') swInit();
-    else if(tabId === 'tab-actions') renderActions();
-  } catch(e) { console.error('Tab init error:', tabId, e); }
+    if (tabId === 'tab-convert') tcInit();
+    else if (tabId === 'tab-optimize') optInit();
+    else if (tabId === 'tab-tax') taxInit();
+    else if (tabId === 'tab-withdraw') swInit();
+    else if (tabId === 'tab-actions') renderActions();
+  } catch (e) { console.error('Tab init error:', tabId, e); }
 }
 
 // ══════════════════════════════════════════════════════
@@ -4065,15 +4091,15 @@ let swFreq = 'weekly';
 let swEditId = null;
 
 const FREQ_CONFIG = {
-  weekly:    { label: 'Hebdomadaire', perMonth: 4.3, daysNext: 7 },
-  biweekly:  { label: 'Bimensuel',    perMonth: 2,   daysNext: 15 },
-  monthly:   { label: 'Mensuel',      perMonth: 1,   daysNext: 30 },
-  threshold: { label: 'Au seuil',     perMonth: null, daysNext: null },
+  weekly: { label: 'Hebdomadaire', perMonth: 4.3, daysNext: 7 },
+  biweekly: { label: 'Bimensuel', perMonth: 2, daysNext: 15 },
+  monthly: { label: 'Mensuel', perMonth: 1, daysNext: 30 },
+  threshold: { label: 'Au seuil', perMonth: null, daysNext: null },
 };
 
 function openSchedWithdraw(editId) {
   swEditId = editId || null;
-  const existing = editId ? SCHEDULED_WITHDRAWALS.find(s=>s.id===editId) : null;
+  const existing = editId ? SCHEDULED_WITHDRAWALS.find(s => s.id === editId) : null;
   swCoin = existing?.coin || 'XMR';
   swFreq = existing?.freq || 'weekly';
   // Populate wallet dropdown
@@ -4083,8 +4109,8 @@ function openSchedWithdraw(editId) {
     const cfg = NET_CONFIG[w.net];
     return cfg?.coins?.includes(swCoin);
   });
-  if(compatible.length) {
-    dropdown.innerHTML = compatible.map(w=>`<option value="${w.id}">${w.label} — ${w.addr.slice(0,18)}…</option>`).join('');
+  if (compatible.length) {
+    dropdown.innerHTML = compatible.map(w => `<option value="${w.id}">${w.label} — ${w.addr.slice(0, 18)}…</option>`).join('');
     dropdown.style.display = 'block';
     noWallets.style.display = 'none';
   } else {
@@ -4092,12 +4118,12 @@ function openSchedWithdraw(editId) {
     noWallets.style.display = 'block';
   }
   // Restore edit values
-  if(existing) {
+  if (existing) {
     el('sw-modal-title').textContent = '✏️ Modifier le retrait';
     el('sw-amount').value = existing.amount || '';
     el('sw-threshold').value = existing.threshold || '';
     el('sw-note').value = existing.note || '';
-    if(existing.walletId) dropdown.value = existing.walletId;
+    if (existing.walletId) dropdown.value = existing.walletId;
   } else {
     el('sw-modal-title').textContent = '📅 Planifier un retrait';
     el('sw-amount').value = '';
@@ -4112,17 +4138,17 @@ function openSchedWithdraw(editId) {
 
 function swSelectCoin(coin) {
   swCoin = coin;
-  el('sw-btn-xmr').className = coin==='XMR' ? 'btn btn-orange btn-sm' : 'btn btn-ghost btn-sm';
+  el('sw-btn-xmr').className = coin === 'XMR' ? 'btn btn-orange btn-sm' : 'btn btn-ghost btn-sm';
   el('sw-btn-xmr').style.flex = '1';
-  el('sw-btn-kas').className = coin==='KAS' ? 'btn btn-cyan btn-sm' : 'btn btn-ghost btn-sm';
+  el('sw-btn-kas').className = coin === 'KAS' ? 'btn btn-cyan btn-sm' : 'btn btn-ghost btn-sm';
   el('sw-btn-kas').style.flex = '1';
-  setText('sw-amount-label', 'Montant '+coin+' par retrait');
+  setText('sw-amount-label', 'Montant ' + coin + ' par retrait');
   // Refresh wallet dropdown
   const dropdown = el('sw-wallet-dropdown');
   const noWallets = el('sw-no-wallets');
   const compatible = EXT_WALLETS.filter(w => NET_CONFIG[w.net]?.coins?.includes(coin));
-  if(compatible.length) {
-    dropdown.innerHTML = compatible.map(w=>`<option value="${w.id}">${w.label} — ${w.addr.slice(0,18)}…</option>`).join('');
+  if (compatible.length) {
+    dropdown.innerHTML = compatible.map(w => `<option value="${w.id}">${w.label} — ${w.addr.slice(0, 18)}…</option>`).join('');
     dropdown.style.display = 'block'; noWallets.style.display = 'none';
   } else {
     dropdown.style.display = 'none'; noWallets.style.display = 'block';
@@ -4132,8 +4158,8 @@ function swSelectCoin(coin) {
 
 function swSelectFreq(freq, btn) {
   swFreq = freq;
-  ['weekly','biweekly','monthly','threshold'].forEach(f => {
-    const b = el('fr-'+f); if(b) b.className = 'freq-btn' + (f===freq?' active':'');
+  ['weekly', 'biweekly', 'monthly', 'threshold'].forEach(f => {
+    const b = el('fr-' + f); if (b) b.className = 'freq-btn' + (f === freq ? ' active' : '');
   });
   const isThreshold = freq === 'threshold';
   el('sw-amount-field').style.display = isThreshold ? 'none' : 'block';
@@ -4143,7 +4169,7 @@ function swSelectFreq(freq, btn) {
 
 function swSetPercent(pct) {
   const bal = WALLET[swCoin].balance;
-  const val = swCoin==='XMR' ? (bal * pct/100).toFixed(6) : Math.floor(bal * pct/100);
+  const val = swCoin === 'XMR' ? (bal * pct / 100).toFixed(6) : Math.floor(bal * pct / 100);
   el('sw-amount').value = val;
   swUpdateSummary();
 }
@@ -4151,34 +4177,34 @@ function swSetPercent(pct) {
 function swNextDate(freq) {
   const d = new Date();
   const cfg = FREQ_CONFIG[freq];
-  if(!cfg?.daysNext) return 'Selon solde';
+  if (!cfg?.daysNext) return 'Selon solde';
   d.setDate(d.getDate() + cfg.daysNext);
-  return d.toLocaleDateString('fr-FR', {day:'2-digit',month:'short',year:'numeric'});
+  return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
 function swMonthlyEstimate(freq, amount, coin) {
-  if(!amount || isNaN(amount)) return '—';
+  if (!amount || isNaN(amount)) return '—';
   const cfg = FREQ_CONFIG[freq];
-  if(freq === 'threshold') return '~'+amount+' '+coin+' / déclenchement';
-  const perMonth = (parseFloat(amount) * (cfg.perMonth||1)).toFixed(coin==='XMR'?4:0);
-  const usd = (parseFloat(perMonth) * (coin==='XMR'?xmrP:kasP)).toFixed(0);
-  return perMonth+' '+coin+' (≈$'+usd+')';
+  if (freq === 'threshold') return '~' + amount + ' ' + coin + ' / déclenchement';
+  const perMonth = (parseFloat(amount) * (cfg.perMonth || 1)).toFixed(coin === 'XMR' ? 4 : 0);
+  const usd = (parseFloat(perMonth) * (coin === 'XMR' ? xmrP : kasP)).toFixed(0);
+  return perMonth + ' ' + coin + ' (≈$' + usd + ')';
 }
 
 function swUpdateSummary() {
   const isThreshold = swFreq === 'threshold';
-  const amt = isThreshold ? parseFloat(el('sw-threshold').value)||0 : parseFloat(el('sw-amount').value)||0;
+  const amt = isThreshold ? parseFloat(el('sw-threshold').value) || 0 : parseFloat(el('sw-amount').value) || 0;
   const dropdown = el('sw-wallet-dropdown');
   const hasWallet = dropdown.style.display !== 'none' && dropdown.value;
   const ok = amt > 0 && hasWallet;
   el('sw-save-btn').disabled = !ok;
   el('sw-save-btn').style.opacity = ok ? '1' : '.4';
-  if(!ok) { el('sw-summary').style.display='none'; return; }
+  if (!ok) { el('sw-summary').style.display = 'none'; return; }
   el('sw-summary').style.display = 'block';
   const wOpt = dropdown.options[dropdown.selectedIndex];
   const destLabel = wOpt ? wOpt.text.split('—')[0].trim() : '—';
   setText('sw-r-coin', swCoin);
-  setText('sw-r-amount', isThreshold ? 'Si ≥ '+amt+' '+swCoin : amt+' '+swCoin+' (≈$'+(amt*(swCoin==='XMR'?xmrP:kasP)).toFixed(0)+')');
+  setText('sw-r-amount', isThreshold ? 'Si ≥ ' + amt + ' ' + swCoin : amt + ' ' + swCoin + ' (≈$' + (amt * (swCoin === 'XMR' ? xmrP : kasP)).toFixed(0) + ')');
   setText('sw-r-freq', FREQ_CONFIG[swFreq]?.label || swFreq);
   setText('sw-r-next', swNextDate(swFreq));
   setText('sw-r-dest', destLabel);
@@ -4187,24 +4213,24 @@ function swUpdateSummary() {
 
 function saveSchedWithdraw() {
   const isThreshold = swFreq === 'threshold';
-  const amount = isThreshold ? 0 : parseFloat(el('sw-amount').value)||0;
-  const threshold = isThreshold ? parseFloat(el('sw-threshold').value)||0 : 0;
+  const amount = isThreshold ? 0 : parseFloat(el('sw-amount').value) || 0;
+  const threshold = isThreshold ? parseFloat(el('sw-threshold').value) || 0 : 0;
   const walletId = el('sw-wallet-dropdown').value;
   const note = el('sw-note').value.trim();
-  const wallet = EXT_WALLETS.find(w=>w.id===walletId);
-  const id = swEditId || ('sw_'+Date.now());
+  const wallet = EXT_WALLETS.find(w => w.id === walletId);
+  const id = swEditId || ('sw_' + Date.now());
   const record = {
     id, coin: swCoin, freq: swFreq, amount, threshold,
-    walletId, walletLabel: wallet?.label||'—',
-    walletAddr: wallet?.addr||'—',
+    walletId, walletLabel: wallet?.label || '—',
+    walletAddr: wallet?.addr || '—',
     note, active: true,
     createdAt: new Date().toISOString(),
     nextDate: swNextDate(swFreq),
     executedCount: 0, totalSent: 0,
   };
-  if(swEditId) {
-    const idx = SCHEDULED_WITHDRAWALS.findIndex(s=>s.id===swEditId);
-    if(idx>=0) SCHEDULED_WITHDRAWALS[idx] = record;
+  if (swEditId) {
+    const idx = SCHEDULED_WITHDRAWALS.findIndex(s => s.id === swEditId);
+    if (idx >= 0) SCHEDULED_WITHDRAWALS[idx] = record;
   } else {
     SCHEDULED_WITHDRAWALS.push(record);
   }
@@ -4212,49 +4238,49 @@ function saveSchedWithdraw() {
   scheduleSave();
   renderScheduled();
   renderActions();
-  toast('success','Retrait planifié', FREQ_CONFIG[swFreq]?.label+' — '+swCoin+' → '+(wallet?.label||'Wallet'));
+  toast('success', 'Retrait planifié', FREQ_CONFIG[swFreq]?.label + ' — ' + swCoin + ' → ' + (wallet?.label || 'Wallet'));
 }
 
 function toggleSchedActive(id) {
-  const s = SCHEDULED_WITHDRAWALS.find(x=>x.id===id);
-  if(!s) return;
+  const s = SCHEDULED_WITHDRAWALS.find(x => x.id === id);
+  if (!s) return;
   s.active = !s.active;
   scheduleSave();
   renderScheduled();
-  toast(s.active?'success':'warn', s.active?'Retrait activé':'Retrait mis en pause', s.note||s.coin+' '+FREQ_CONFIG[s.freq]?.label);
+  toast(s.active ? 'success' : 'warn', s.active ? 'Retrait activé' : 'Retrait mis en pause', s.note || s.coin + ' ' + FREQ_CONFIG[s.freq]?.label);
 }
 
 function deleteSchedWithdraw(id) {
-  const s = SCHEDULED_WITHDRAWALS.find(x=>x.id===id);
-  if(!s || !confirm('Supprimer ce retrait planifié ?')) return;
-  const idx = SCHEDULED_WITHDRAWALS.findIndex(x=>x.id===id);
+  const s = SCHEDULED_WITHDRAWALS.find(x => x.id === id);
+  if (!s || !confirm('Supprimer ce retrait planifié ?')) return;
+  const idx = SCHEDULED_WITHDRAWALS.findIndex(x => x.id === id);
   SCHEDULED_WITHDRAWALS.splice(idx, 1);
   scheduleSave();
   renderScheduled();
-  toast('warn','Supprimé','Retrait planifié supprimé');
+  toast('warn', 'Supprimé', 'Retrait planifié supprimé');
 }
 
 function executeSchedNow(id) {
-  const s = SCHEDULED_WITHDRAWALS.find(x=>x.id===id);
-  if(!s) return;
+  const s = SCHEDULED_WITHDRAWALS.find(x => x.id === id);
+  if (!s) return;
   openSend(s.coin);
-  setTimeout(()=>{
+  setTimeout(() => {
     el('send-addr').value = s.walletAddr;
-    if(s.amount > 0) { el('send-amount').value = s.amount; onSendAmountChange(); }
+    if (s.amount > 0) { el('send-amount').value = s.amount; onSendAmountChange(); }
     onSendAddrChange();
-    toast('info','Prêt','Vérifiez et confirmez le retrait');
+    toast('info', 'Prêt', 'Vérifiez et confirmez le retrait');
   }, 350);
 }
 
 function swInit() {
-  if(!el('sched-list')) return;
+  if (!el('sched-list')) return;
   renderScheduled();
 }
 
 function renderScheduled() {
   const container = el('sched-list');
-  if(!container) return;
-  if(!SCHEDULED_WITHDRAWALS.length) {
+  if (!container) return;
+  if (!SCHEDULED_WITHDRAWALS.length) {
     container.innerHTML = `<div class="sched-empty"><div style="font-size:36px;margin-bottom:10px">📅</div><div style="font-weight:700;margin-bottom:6px">Aucun retrait planifié</div><div style="font-size:11px;margin-bottom:14px;color:var(--muted)">Créez une règle de retrait automatique vers votre exchange ou cold wallet.</div><button class="btn btn-primary" onclick="openSchedWithdraw()">+ Créer un retrait planifié</button></div>`;
     setText('sched-count-label', 'Aucun retrait configuré');
     setText('sk-monthly', '—');
@@ -4262,31 +4288,31 @@ function renderScheduled() {
     return;
   }
   // KPIs
-  const active = SCHEDULED_WITHDRAWALS.filter(s=>s.active);
+  const active = SCHEDULED_WITHDRAWALS.filter(s => s.active);
   let monthlyTotal = 0;
-  active.forEach(s=>{
+  active.forEach(s => {
     const fc = FREQ_CONFIG[s.freq];
-    if(fc?.perMonth && s.amount) monthlyTotal += s.amount * (s.coin==='XMR'?xmrP:kasP) * fc.perMonth;
+    if (fc?.perMonth && s.amount) monthlyTotal += s.amount * (s.coin === 'XMR' ? xmrP : kasP) * fc.perMonth;
   });
-  const nextDates = active.filter(s=>s.nextDate&&s.nextDate!=='Selon solde').map(s=>new Date(s.nextDate.split('/').reverse().join('-')));
-  const nextDate = nextDates.length ? nextDates.sort((a,b)=>a-b)[0].toLocaleDateString('fr-FR',{day:'2-digit',month:'short'}) : '—';
-  setText('sched-count-label', active.length+' retrait(s) actif(s)');
-  setText('sk-monthly', '$'+monthlyTotal.toFixed(0)+'/mois');
+  const nextDates = active.filter(s => s.nextDate && s.nextDate !== 'Selon solde').map(s => new Date(s.nextDate.split('/').reverse().join('-')));
+  const nextDate = nextDates.length ? nextDates.sort((a, b) => a - b)[0].toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' }) : '—';
+  setText('sched-count-label', active.length + ' retrait(s) actif(s)');
+  setText('sk-monthly', '$' + monthlyTotal.toFixed(0) + '/mois');
   setText('sk-next', nextDate);
   container.innerHTML = SCHEDULED_WITHDRAWALS.map(s => {
     const cfg = FREQ_CONFIG[s.freq];
-    const amtDisplay = s.freq==='threshold' ? 'Si ≥ '+s.threshold+' '+s.coin : s.amount+' '+s.coin;
-    const usdDisplay = s.freq!=='threshold' && s.amount ? ' (≈$'+(s.amount*(s.coin==='XMR'?xmrP:kasP)).toFixed(0)+')' : '';
-    return `<div class="sched-card ${s.active?'active-sched':'paused-sched'}">
-      <div class="sched-icon">${s.active?'🟢':'⏸'}</div>
+    const amtDisplay = s.freq === 'threshold' ? 'Si ≥ ' + s.threshold + ' ' + s.coin : s.amount + ' ' + s.coin;
+    const usdDisplay = s.freq !== 'threshold' && s.amount ? ' (≈$' + (s.amount * (s.coin === 'XMR' ? xmrP : kasP)).toFixed(0) + ')' : '';
+    return `<div class="sched-card ${s.active ? 'active-sched' : 'paused-sched'}">
+      <div class="sched-icon">${s.active ? '🟢' : '⏸'}</div>
       <div class="sched-body">
-        <div class="sched-title">${s.note||s.coin+' '+cfg?.label}</div>
+        <div class="sched-title">${s.note || s.coin + ' ' + cfg?.label}</div>
         <div class="sched-meta">${amtDisplay}${usdDisplay} → ${s.walletLabel}</div>
         <div class="sched-next">
-          <span class="next-date-chip">⏰ Prochain : ${s.nextDate||'—'}</span>
+          <span class="next-date-chip">⏰ Prochain : ${s.nextDate || '—'}</span>
         </div>
         <div class="sched-actions">
-          <button class="btn btn-ghost btn-sm" onclick="toggleSchedActive('${s.id}')">${s.active?'⏸ Pause':'▶ Activer'}</button>
+          <button class="btn btn-ghost btn-sm" onclick="toggleSchedActive('${s.id}')">${s.active ? '⏸ Pause' : '▶ Activer'}</button>
           <button class="btn btn-primary btn-sm" onclick="executeSchedNow('${s.id}')">↗ Exécuter maintenant</button>
           <button class="btn btn-ghost btn-sm" onclick="openSchedWithdraw('${s.id}')">✏️</button>
           <button class="btn btn-danger btn-sm" onclick="deleteSchedWithdraw('${s.id}')">🗑</button>
@@ -4303,44 +4329,44 @@ let tcCoin = 'XMR';
 let tcSelectedExchange = 'binance';
 
 const EXCHANGES = {
-  binance: { name:'Binance', tradeFee:0.001, withdrawFee:{trc20:1,erc20:15,bep20:0.8} },
-  bybit:   { name:'Bybit',   tradeFee:0.001, withdrawFee:{trc20:1,erc20:10,bep20:0.5} },
-  kraken:  { name:'Kraken',  tradeFee:0.002, withdrawFee:{trc20:2,erc20:25,bep20:null} },
-  kucoin:  { name:'KuCoin',  tradeFee:0.001, withdrawFee:{trc20:1,erc20:8,bep20:0.5} },
-  okx:     { name:'OKX',     tradeFee:0.001, withdrawFee:{trc20:1,erc20:12,bep20:0.5} },
-  coinbase:{ name:'Coinbase',tradeFee:0.006, withdrawFee:{trc20:null,erc20:5,bep20:null} },
+  binance: { name: 'Binance', tradeFee: 0.001, withdrawFee: { trc20: 1, erc20: 15, bep20: 0.8 } },
+  bybit: { name: 'Bybit', tradeFee: 0.001, withdrawFee: { trc20: 1, erc20: 10, bep20: 0.5 } },
+  kraken: { name: 'Kraken', tradeFee: 0.002, withdrawFee: { trc20: 2, erc20: 25, bep20: null } },
+  kucoin: { name: 'KuCoin', tradeFee: 0.001, withdrawFee: { trc20: 1, erc20: 8, bep20: 0.5 } },
+  okx: { name: 'OKX', tradeFee: 0.001, withdrawFee: { trc20: 1, erc20: 12, bep20: 0.5 } },
+  coinbase: { name: 'Coinbase', tradeFee: 0.006, withdrawFee: { trc20: null, erc20: 5, bep20: null } },
 };
 
 function tcInit() {
-  if(!el('tc-amount')) return;
+  if (!el('tc-amount')) return;
   tcSelectCoin(tcCoin);
   tcRenderHistory();
 }
 
 function tcSelectCoin(coin) {
   tcCoin = coin;
-  el('tc-btn-xmr').className = 'conv-coin-btn' + (coin==='XMR'?' active-xmr':'');
-  el('tc-btn-kas').className = 'conv-coin-btn' + (coin==='KAS'?' active-kas':'');
-  setText('tc-bal-xmr', WALLET.XMR.balance.toFixed(4)+' XMR');
-  setText('tc-bal-kas', Math.round(WALLET.KAS.balance)+' KAS');
-  setText('tc-amount-label', 'Montant '+coin);
+  el('tc-btn-xmr').className = 'conv-coin-btn' + (coin === 'XMR' ? ' active-xmr' : '');
+  el('tc-btn-kas').className = 'conv-coin-btn' + (coin === 'KAS' ? ' active-kas' : '');
+  setText('tc-bal-xmr', WALLET.XMR.balance.toFixed(4) + ' XMR');
+  setText('tc-bal-kas', Math.round(WALLET.KAS.balance) + ' KAS');
+  setText('tc-amount-label', 'Montant ' + coin);
   el('tc-amount').value = '';
   el('tc-exchange-section').style.display = 'none';
-  const price = coin==='XMR' ? xmrP : kasP;
-  setText('tc-rate-live', '1 '+coin+' = $'+price.toFixed(coin==='XMR'?2:4));
-  const t = lastPriceUpdate ? lastPriceUpdate.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}) : '—';
+  const price = coin === 'XMR' ? xmrP : kasP;
+  setText('tc-rate-live', '1 ' + coin + ' = $' + price.toFixed(coin === 'XMR' ? 2 : 4));
+  const t = lastPriceUpdate ? lastPriceUpdate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '—';
   setText('tc-rate-time', t);
 }
 
-function tcMax() { el('tc-amount').value = tcCoin==='XMR'?WALLET.XMR.balance.toFixed(6):Math.floor(WALLET.KAS.balance); tcCalc(); }
-function tcHalf() { el('tc-amount').value = tcCoin==='XMR'?(WALLET.XMR.balance/2).toFixed(6):Math.floor(WALLET.KAS.balance/2); tcCalc(); }
-function tcPercent(p) { const b=WALLET[tcCoin].balance; el('tc-amount').value=tcCoin==='XMR'?(b*p/100).toFixed(6):Math.floor(b*p/100); tcCalc(); }
+function tcMax() { el('tc-amount').value = tcCoin === 'XMR' ? WALLET.XMR.balance.toFixed(6) : Math.floor(WALLET.KAS.balance); tcCalc(); }
+function tcHalf() { el('tc-amount').value = tcCoin === 'XMR' ? (WALLET.XMR.balance / 2).toFixed(6) : Math.floor(WALLET.KAS.balance / 2); tcCalc(); }
+function tcPercent(p) { const b = WALLET[tcCoin].balance; el('tc-amount').value = tcCoin === 'XMR' ? (b * p / 100).toFixed(6) : Math.floor(b * p / 100); tcCalc(); }
 
 function tcCalc() {
-  const amt = parseFloat(el('tc-amount').value)||0;
-  if(amt <= 0) { el('tc-exchange-section').style.display='none'; return; }
+  const amt = parseFloat(el('tc-amount').value) || 0;
+  if (amt <= 0) { el('tc-exchange-section').style.display = 'none'; return; }
   el('tc-exchange-section').style.display = 'block';
-  const price = tcCoin==='XMR' ? xmrP : kasP;
+  const price = tcCoin === 'XMR' ? xmrP : kasP;
   const gross = amt * price;
   const network = el('tc-network').value;
   // Build exchange comparison grid
@@ -4350,9 +4376,9 @@ function tcCalc() {
     const withdrawFeeAmt = exch.withdrawFee[network] || null;
     const net = withdrawFeeAmt !== null ? gross - tradeFeeAmt - withdrawFeeAmt : null;
     const available = withdrawFeeAmt !== null;
-    return `<div class="exchange-option ${key===tcSelectedExchange?'selected':''} ${!available?'disabled':''}" onclick="${available?`tcSelectExchange('${key}')`:'toast(\"warn\",\"Non dispo\",\"'+exch.name+' ne supporte pas ce réseau.\")'}">
+    return `<div class="exchange-option ${key === tcSelectedExchange ? 'selected' : ''} ${!available ? 'disabled' : ''}" onclick="${available ? `tcSelectExchange('${key}')` : 'toast(\"warn\",\"Non dispo\",\"' + exch.name + ' ne supporte pas ce réseau.\")'}">
       <div class="exch-name">${exch.name}</div>
-      <div class="exch-fee">Frais: <span>${available?(exch.tradeFee*100).toFixed(1)+'% + $'+withdrawFeeAmt:'N/A'}</span></div>
+      <div class="exch-fee">Frais: <span>${available ? (exch.tradeFee * 100).toFixed(1) + '% + $' + withdrawFeeAmt : 'N/A'}</span></div>
       ${available ? `<div style="font-size:12px;font-weight:800;font-family:var(--mono);color:var(--green);margin-top:4px">$${net.toFixed(2)}</div>` : '<div style="font-size:10px;color:var(--muted);margin-top:4px">Non dispo</div>'}
     </div>`;
   }).join('');
@@ -4362,58 +4388,58 @@ function tcCalc() {
 function tcSelectExchange(key) {
   tcSelectedExchange = key;
   // Re-highlight
-  document.querySelectorAll('.exchange-option').forEach((el,i)=>{
+  document.querySelectorAll('.exchange-option').forEach((el, i) => {
     const k = Object.keys(EXCHANGES)[i];
-    el.classList.toggle('selected', k===key);
+    el.classList.toggle('selected', k === key);
   });
-  const amt = parseFloat(el('tc-amount').value)||0;
-  const price = tcCoin==='XMR' ? xmrP : kasP;
-  tcUpdateResult(amt, amt*price, el('tc-network').value);
+  const amt = parseFloat(el('tc-amount').value) || 0;
+  const price = tcCoin === 'XMR' ? xmrP : kasP;
+  tcUpdateResult(amt, amt * price, el('tc-network').value);
 }
 
 function tcUpdateResult(amt, gross, network) {
   const exch = EXCHANGES[tcSelectedExchange];
-  if(!exch) return;
+  if (!exch) return;
   const tradeFee = gross * exch.tradeFee;
   const withdrawFee = exch.withdrawFee[network] || 0;
   const net = Math.max(0, gross - tradeFee - withdrawFee);
-  setText('tc-gross', '$'+gross.toFixed(2));
-  setText('tc-fee-exch', '- $'+tradeFee.toFixed(2)+' ('+((exch.tradeFee||0)*100).toFixed(1)+'%)');
-  setText('tc-fee-net', '- $'+(withdrawFee||0).toFixed(2)+' (réseau '+network.toUpperCase()+')');
-  setText('tc-net', '$'+net.toFixed(2));
-  setText('tc-result-usdt', net.toFixed(2)+' USDT');
-  setText('tc-result-sub', 'via '+exch.name+' · '+tcCoin+'→USDT · réseau '+network.toUpperCase());
+  setText('tc-gross', '$' + gross.toFixed(2));
+  setText('tc-fee-exch', '- $' + tradeFee.toFixed(2) + ' (' + ((exch.tradeFee || 0) * 100).toFixed(1) + '%)');
+  setText('tc-fee-net', '- $' + (withdrawFee || 0).toFixed(2) + ' (réseau ' + network.toUpperCase() + ')');
+  setText('tc-net', '$' + net.toFixed(2));
+  setText('tc-result-usdt', net.toFixed(2) + ' USDT');
+  setText('tc-result-sub', 'via ' + exch.name + ' · ' + tcCoin + '→USDT · réseau ' + network.toUpperCase());
 }
 
 function tcSimulate() {
-  const amt = parseFloat(el('tc-amount').value)||0;
-  if(!amt) return;
-  const price = tcCoin==='XMR' ? xmrP : kasP;
+  const amt = parseFloat(el('tc-amount').value) || 0;
+  if (!amt) return;
+  const price = tcCoin === 'XMR' ? xmrP : kasP;
   const gross = amt * price;
   const network = el('tc-network').value;
   const exch = EXCHANGES[tcSelectedExchange];
-  const net = Math.max(0, gross - gross*exch.tradeFee - (exch.withdrawFee[network]||0));
+  const net = Math.max(0, gross - gross * exch.tradeFee - (exch.withdrawFee[network] || 0));
   const record = {
-    id: 'cv_'+Date.now(),
+    id: 'cv_' + Date.now(),
     date: new Date().toLocaleDateString('fr-FR'),
     coin: tcCoin, amount: amt, grossUSD: gross,
     netUSDT: net, exchange: exch.name, network,
     rate: price, savedAt: new Date().toISOString(),
   };
   CONV_HISTORY.unshift(record);
-  if(CONV_HISTORY.length > 50) CONV_HISTORY.pop();
+  if (CONV_HISTORY.length > 50) CONV_HISTORY.pop();
   scheduleSave();
   tcRenderHistory();
-  toast('success','Estimation sauvegardée', net.toFixed(2)+' USDT via '+exch.name);
+  toast('success', 'Estimation sauvegardée', net.toFixed(2) + ' USDT via ' + exch.name);
 }
 
 function tcRenderHistory() {
   const wrap = el('tc-history-wrap');
   const list = el('tc-history-list');
-  if(!wrap||!list) return;
-  if(!CONV_HISTORY.length) { wrap.style.display='none'; return; }
+  if (!wrap || !list) return;
+  if (!CONV_HISTORY.length) { wrap.style.display = 'none'; return; }
   wrap.style.display = 'block';
-  list.innerHTML = CONV_HISTORY.slice(0,10).map(c => `
+  list.innerHTML = CONV_HISTORY.slice(0, 10).map(c => `
     <div class="conv-hist-item">
       <div><div style="font-size:10px;color:var(--muted);font-family:var(--mono)">${c.date}</div><div style="font-size:12px;font-weight:700">${c.amount} ${c.coin}</div></div>
       <div class="conv-hist-arrow">→ ${c.netUSDT.toFixed(2)} USDT</div>
@@ -4429,52 +4455,64 @@ function refreshConvertPage() {
   setText('tc-hero-xmr', xBal.toFixed(4));
   setText('tc-hero-kas', Math.round(kBal).toLocaleString('fr'));
   const total = xBal * xmrP + kBal * kasP;
-  setText('tc-hero-total', '$' + total.toLocaleString('fr', {minimumFractionDigits:2,maximumFractionDigits:2}));
+  setText('tc-hero-total', '$' + total.toLocaleString('fr', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
   tcSelectCoin(tcCoin);
   tcRenderHistory();
 }
 
 function tcShowGuide() {
   const amt = parseFloat(el('tc-amount').value) || 0;
-  if (amt <= 0) { toast('warn','Montant requis','Saisissez un montant à convertir.'); return; }
+  if (amt <= 0) { toast('warn', 'Montant requis', 'Saisissez un montant à convertir.'); return; }
   const exch = EXCHANGES[tcSelectedExchange];
   if (!exch) return;
-  const network   = el('tc-network').value;
-  const price     = tcCoin === 'XMR' ? xmrP : kasP;
-  const gross     = amt * price;
-  const tradeFee  = gross * exch.tradeFee;
-  const wFee      = exch.withdrawFee[network] || 0;
-  const net       = Math.max(0, gross - tradeFee - wFee);
-  const unit      = tcCoin;
-  const dp        = unit === 'XMR' ? 6 : 2;
-  const netLabel  = {trc20:'TRC-20 (TRON)', erc20:'ERC-20 (Ethereum)', bep20:'BEP-20 (BSC)'};
+  const network = el('tc-network').value;
+  const price = tcCoin === 'XMR' ? xmrP : kasP;
+  const gross = amt * price;
+  const tradeFee = gross * exch.tradeFee;
+  const wFee = exch.withdrawFee[network] || 0;
+  const net = Math.max(0, gross - tradeFee - wFee);
+  const unit = tcCoin;
+  const dp = unit === 'XMR' ? 6 : 2;
+  const netLabel = { trc20: 'TRC-20 (TRON)', erc20: 'ERC-20 (Ethereum)', bep20: 'BEP-20 (BSC)' };
   const walletApp = unit === 'XMR' ? 'Monero GUI / CLI' : 'Kaspa Web Wallet';
 
   const steps = [
-    { icon:'🏦', title:'Créer / se connecter à ' + exch.name,
-      desc:'Ouvrez un compte sur <strong>' + exch.name + '</strong>. Complétez la vérification KYC si nécessaire (pièce d\'identité).' },
-    { icon:'📬', title:'Obtenir votre adresse de dépôt ' + unit,
-      desc:'Dans ' + exch.name + ' → Portefeuille → Dépôt → <strong>' + unit + '</strong>. Copiez l\'adresse générée.' },
-    { icon:'↗', title:'Envoyer ' + amt.toFixed(dp) + ' ' + unit + ' depuis votre wallet',
-      desc:'Depuis <strong>' + walletApp + '</strong>, envoyez <strong>' + amt.toFixed(dp) + ' ' + unit + '</strong> vers l\'adresse de dépôt ' + exch.name + '.' },
-    { icon:'⏱', title:'Attendre la confirmation on-chain',
+    {
+      icon: '🏦', title: 'Créer / se connecter à ' + exch.name,
+      desc: 'Ouvrez un compte sur <strong>' + exch.name + '</strong>. Complétez la vérification KYC si nécessaire (pièce d\'identité).'
+    },
+    {
+      icon: '📬', title: 'Obtenir votre adresse de dépôt ' + unit,
+      desc: 'Dans ' + exch.name + ' → Portefeuille → Dépôt → <strong>' + unit + '</strong>. Copiez l\'adresse générée.'
+    },
+    {
+      icon: '↗', title: 'Envoyer ' + amt.toFixed(dp) + ' ' + unit + ' depuis votre wallet',
+      desc: 'Depuis <strong>' + walletApp + '</strong>, envoyez <strong>' + amt.toFixed(dp) + ' ' + unit + '</strong> vers l\'adresse de dépôt ' + exch.name + '.'
+    },
+    {
+      icon: '⏱', title: 'Attendre la confirmation on-chain',
       desc: unit === 'XMR'
         ? 'Monero : environ <strong>10-20 min</strong> (10 confirmations requises).'
-        : 'Kaspa : généralement <strong>moins d\'1 minute</strong> (confirmation native rapide).' },
-    { icon:'⇄', title:'Trader ' + unit + ' → USDT (marché spot)',
-      desc:'Exchange → Spot → Paire <strong>' + unit + '/USDT</strong> → Vendre ' + unit + ' au cours du marché. Frais estimés : <strong>$' + tradeFee.toFixed(2) + '</strong> (' + (exch.tradeFee*100).toFixed(1) + '%).' },
-    { icon:'💸', title:'Retirer USDT vers votre wallet',
-      desc:'Portefeuille → Retrait → USDT → Réseau <strong>' + netLabel[network] + '</strong>. Frais réseau estimés : <strong>$' + wFee.toFixed(2) + '</strong>. Vous recevrez : <strong style="color:var(--green)">' + net.toFixed(2) + ' USDT</strong>.' },
+        : 'Kaspa : généralement <strong>moins d\'1 minute</strong> (confirmation native rapide).'
+    },
+    {
+      icon: '⇄', title: 'Trader ' + unit + ' → USDT (marché spot)',
+      desc: 'Exchange → Spot → Paire <strong>' + unit + '/USDT</strong> → Vendre ' + unit + ' au cours du marché. Frais estimés : <strong>$' + tradeFee.toFixed(2) + '</strong> (' + (exch.tradeFee * 100).toFixed(1) + '%).'
+    },
+    {
+      icon: '💸', title: 'Retirer USDT vers votre wallet',
+      desc: 'Portefeuille → Retrait → USDT → Réseau <strong>' + netLabel[network] + '</strong>. Frais réseau estimés : <strong>$' + wFee.toFixed(2) + '</strong>. Vous recevrez : <strong style="color:var(--green)">' + net.toFixed(2) + ' USDT</strong>.'
+    },
   ];
 
   const g = el('tc-guide-steps');
   if (!g) return;
-  g.innerHTML = steps.map((s,i) => `
+  g.innerHTML = steps.map((s, i) => `
     <div style="display:flex;gap:11px;align-items:flex-start;padding:10px 12px;background:var(--surface2);border-radius:8px;border:1px solid var(--border)">
       <div style="font-size:20px;flex-shrink:0;margin-top:1px">${s.icon}</div>
       <div>
         <div style="font-size:11.5px;font-weight:700;margin-bottom:3px;color:var(--text)">
-          <span style="color:var(--accent);font-family:var(--mono);margin-right:4px">${i+1}.</span>${s.title}
+          <span style="color:var(--accent);font-family:var(--mono);margin-right:4px">${i + 1}.</span>${s.title}
         </div>
         <div style="font-size:10.5px;color:var(--muted);line-height:1.55">${s.desc}</div>
       </div>
@@ -4482,11 +4520,11 @@ function tcShowGuide() {
 
   const links = {
     binance: 'https://www.binance.com/en/trade/' + unit + '_USDT',
-    bybit:   'https://www.bybit.com/trade/usdt/' + unit + 'USDT',
-    kraken:  'https://www.kraken.com/prices/' + unit.toLowerCase(),
-    kucoin:  'https://www.kucoin.com/trade/' + unit + '-USDT',
-    okx:     'https://www.okx.com/trade-spot/' + unit.toLowerCase() + '-usdt',
-    coinbase:'https://www.coinbase.com/price/' + (unit==='XMR'?'monero':'kaspa'),
+    bybit: 'https://www.bybit.com/trade/usdt/' + unit + 'USDT',
+    kraken: 'https://www.kraken.com/prices/' + unit.toLowerCase(),
+    kucoin: 'https://www.kucoin.com/trade/' + unit + '-USDT',
+    okx: 'https://www.okx.com/trade-spot/' + unit.toLowerCase() + '-usdt',
+    coinbase: 'https://www.coinbase.com/price/' + (unit === 'XMR' ? 'monero' : 'kaspa'),
   };
   const linkEl = el('tc-exchange-link');
   if (linkEl) { linkEl.href = links[tcSelectedExchange] || '#'; linkEl.textContent = '🔗 Ouvrir ' + exch.name; }
@@ -4494,26 +4532,26 @@ function tcShowGuide() {
   const gc = el('tc-guide-card');
   if (gc) {
     gc.style.display = 'block';
-    gc.scrollIntoView({behavior:'smooth', block:'nearest'});
+    gc.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 }
 
 function tcSaveRecord() {
   const amt = parseFloat(el('tc-amount').value) || 0;
-  if (amt <= 0) { toast('warn','Rien à sauvegarder','Saisissez un montant d\'abord.'); return; }
-  const exch    = EXCHANGES[tcSelectedExchange];
+  if (amt <= 0) { toast('warn', 'Rien à sauvegarder', 'Saisissez un montant d\'abord.'); return; }
+  const exch = EXCHANGES[tcSelectedExchange];
   const network = el('tc-network').value;
-  const price   = tcCoin === 'XMR' ? xmrP : kasP;
-  const gross   = amt * price;
-  const net     = Math.max(0, gross - gross*(exch?.tradeFee||0.001) - (exch?.withdrawFee[network]||1));
-  const dp      = tcCoin === 'XMR' ? 6 : 2;
-  const now     = new Date();
+  const price = tcCoin === 'XMR' ? xmrP : kasP;
+  const gross = amt * price;
+  const net = Math.max(0, gross - gross * (exch?.tradeFee || 0.001) - (exch?.withdrawFee[network] || 1));
+  const dp = tcCoin === 'XMR' ? 6 : 2;
+  const now = new Date();
   CONV_HISTORY.unshift({
-    date:     now.toLocaleDateString('fr-FR') + ' ' + now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}),
-    coin:     tcCoin,
-    amount:   amt.toFixed(dp),
-    gross:    gross.toFixed(2),
-    netUSDT:  net,
+    date: now.toLocaleDateString('fr-FR') + ' ' + now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+    coin: tcCoin,
+    amount: amt.toFixed(dp),
+    gross: gross.toFixed(2),
+    netUSDT: net,
     exchange: exch?.name || tcSelectedExchange,
     network,
   });
@@ -4531,12 +4569,12 @@ function tcClearHistory() {
 }
 
 function exportConvCSV() {
-  if(!CONV_HISTORY.length) { toast('warn','Vide','Aucune estimation à exporter'); return; }
-  const rows = [['Date','Coin','Montant','Prix','Brut USD','Net USDT','Exchange','Réseau'],
-    ...CONV_HISTORY.map(c=>[c.date,c.coin,c.amount,c.rate.toFixed(4),c.grossUSD.toFixed(2),c.netUSDT.toFixed(2),c.exchange,c.network])];
-  const csv = rows.map(r=>r.map(v=>`"${v}"`).join(',')).join('\n');
-  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='conversions_usdt.csv';a.click();
-  toast('success','Export','conversions_usdt.csv téléchargé');
+  if (!CONV_HISTORY.length) { toast('warn', 'Vide', 'Aucune estimation à exporter'); return; }
+  const rows = [['Date', 'Coin', 'Montant', 'Prix', 'Brut USD', 'Net USDT', 'Exchange', 'Réseau'],
+  ...CONV_HISTORY.map(c => [c.date, c.coin, c.amount, c.rate.toFixed(4), c.grossUSD.toFixed(2), c.netUSDT.toFixed(2), c.exchange, c.network])];
+  const csv = rows.map(r => r.map(v => `"${v}"`).join(',')).join('\n');
+  const a = document.createElement('a'); a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv); a.download = 'conversions_usdt.csv'; a.click();
+  toast('success', 'Export', 'conversions_usdt.csv téléchargé');
 }
 
 // ══════════════════════════════════════════════════════
@@ -4547,52 +4585,52 @@ let optXmrPct = 62; // % hashrate alloué à XMR
 // Paramètres du réseau (revenus estimés par KH/s ou GH/s par mois)
 // Source: estimations basées sur difficulté réseau actuelle
 const MINE_PARAMS = {
-  XMR: { hrUnit:'KH/s', revenuePerUnit: 0.00052 },
-  KAS: { hrUnit:'GH/s', revenuePerUnit: 188 },
+  XMR: { hrUnit: 'KH/s', revenuePerUnit: 0.00052 },
+  KAS: { hrUnit: 'GH/s', revenuePerUnit: 188 },
 
   // ── Config xmrig permanente (RandomX — CPU) ──────────────────
   xmrig: {
-    algo:               'rx/0',
-    'donate-level':     0,
+    algo: 'rx/0',
+    'donate-level': 0,
     'max-threads-hint': 100,
-    'huge-pages':       true,
-    'huge-pages-jit':   true,
-    'hw-aes':           null,
-    'priority':         2,
-    'keepalive':        true,
-    'print-time':       60,
-    'retries':          5,
-    'retry-pause':      5,
+    'huge-pages': true,
+    'huge-pages-jit': true,
+    'hw-aes': null,
+    'priority': 2,
+    'keepalive': true,
+    'print-time': 60,
+    'retries': 5,
+    'retry-pause': 5,
   },
 
   // ── Config gminer permanente (kHeavyHash — GPU) ──────────────
   gminer: {
-    algo:        'kheavyhash',
-    'server':    'kaspa.k1pool.com',
-    'port':      3333,
-    'ssl-port':  5555,
-    'api-port':  10000,
-    'watchdog':  true,
-    'use-ssl':   false,
-    'log-file':  null,
+    algo: 'kheavyhash',
+    'server': 'kaspa.k1pool.com',
+    'port': 3333,
+    'ssl-port': 5555,
+    'api-port': 10000,
+    'watchdog': true,
+    'use-ssl': false,
+    'log-file': null,
   },
 };
 
 function optInit() {
-  if(!el('opt-slider')) return; // panel pas encore dans le DOM
+  if (!el('opt-slider')) return; // panel pas encore dans le DOM
   const slider = el('opt-slider');
-  const xmrRigs = RIGS.filter(r=>r.coin==='XMR'&&r.status!=='offline');
-  const kasRigs = RIGS.filter(r=>r.coin==='KAS'&&r.status!=='offline');
+  const xmrRigs = RIGS.filter(r => r.coin === 'XMR' && r.status !== 'offline');
+  const kasRigs = RIGS.filter(r => r.coin === 'KAS' && r.status !== 'offline');
   const totalRigs = xmrRigs.length + kasRigs.length;
-  if(totalRigs > 0) optXmrPct = Math.round(xmrRigs.length/totalRigs*100);
+  if (totalRigs > 0) optXmrPct = Math.round(xmrRigs.length / totalRigs * 100);
   slider.value = optXmrPct;
-  setText('sc-current-desc', optXmrPct+'% XMR / '+(100-optXmrPct)+'% KAS');
-  setText('opt-xmr-price', '$'+xmrP.toFixed(2));
-  setText('opt-kas-price', '$'+kasP.toFixed(4));
-  const xmrHR = xmrRigs.reduce((s,r)=>s+(r.hrn||0),0);
-  const kasHR = kasRigs.reduce((s,r)=>s+(r.hrn||0),0);
-  setText('opt-total-xmr-hr', xmrHR.toFixed(1)+' KH/s');
-  setText('opt-total-kas-hr', kasHR.toFixed(1)+' GH/s');
+  setText('sc-current-desc', optXmrPct + '% XMR / ' + (100 - optXmrPct) + '% KAS');
+  setText('opt-xmr-price', '$' + xmrP.toFixed(2));
+  setText('opt-kas-price', '$' + kasP.toFixed(4));
+  const xmrHR = xmrRigs.reduce((s, r) => s + (r.hrn || 0), 0);
+  const kasHR = kasRigs.reduce((s, r) => s + (r.hrn || 0), 0);
+  setText('opt-total-xmr-hr', xmrHR.toFixed(1) + ' KH/s');
+  setText('opt-total-kas-hr', kasHR.toFixed(1) + ' GH/s');
   optUpdate(optXmrPct);
 }
 
@@ -4603,66 +4641,66 @@ function optUpdate(pct) {
   setText('opt-kas-pct', kasPct);
   setText('opt-cmp-xmr-pct', optXmrPct);
   setText('opt-cmp-kas-pct', kasPct);
-  const bar_xmr = el('opt-bar-xmr'); if(bar_xmr) bar_xmr.style.width=optXmrPct+'%';
-  const bar_kas = el('opt-bar-kas'); if(bar_kas) bar_kas.style.width=kasPct+'%';
+  const bar_xmr = el('opt-bar-xmr'); if (bar_xmr) bar_xmr.style.width = optXmrPct + '%';
+  const bar_kas = el('opt-bar-kas'); if (bar_kas) bar_kas.style.width = kasPct + '%';
   // Calculate revenues
-  const allXmrHR = RIGS.filter(r=>r.status!=='offline').reduce((s,r)=>s+(r.coin==='XMR'?r.hrn||0:0),0) + RIGS.filter(r=>r.status!=='offline'&&r.coin==='KAS').reduce((s,r)=>s+(r.hrn||0)*0.3,0);
-  const allKasHR = RIGS.filter(r=>r.status!=='offline').reduce((s,r)=>s+(r.coin==='KAS'?r.hrn||0:0),0);
-  const totalXmrHR_equiv = (allXmrHR + allKasHR * 0.1) * optXmrPct/100;
-  const totalKasHR_equiv = (allXmrHR * 5 + allKasHR) * kasPct/100;
+  const allXmrHR = RIGS.filter(r => r.status !== 'offline').reduce((s, r) => s + (r.coin === 'XMR' ? r.hrn || 0 : 0), 0) + RIGS.filter(r => r.status !== 'offline' && r.coin === 'KAS').reduce((s, r) => s + (r.hrn || 0) * 0.3, 0);
+  const allKasHR = RIGS.filter(r => r.status !== 'offline').reduce((s, r) => s + (r.coin === 'KAS' ? r.hrn || 0 : 0), 0);
+  const totalXmrHR_equiv = (allXmrHR + allKasHR * 0.1) * optXmrPct / 100;
+  const totalKasHR_equiv = (allXmrHR * 5 + allKasHR) * kasPct / 100;
   const xmrRevMonth = totalXmrHR_equiv * MINE_PARAMS.XMR.revenuePerUnit * xmrP;
   const kasRevMonth = totalKasHR_equiv * MINE_PARAMS.KAS.revenuePerUnit * kasP;
   const totalRev = xmrRevMonth + kasRevMonth;
-  const elecCost = parseFloat(el('m-elec')?.value||0.20) * RIGS.filter(r=>r.status!=='offline').reduce((s,r)=>s+(r.watt||0),0) * 24*30 / 1000;
+  const elecCost = parseFloat(el('m-elec')?.value || 0.20) * RIGS.filter(r => r.status !== 'offline').reduce((s, r) => s + (r.watt || 0), 0) * 24 * 30 / 1000;
   const profit = totalRev - elecCost;
-  setText('opt-rev-month', '$'+totalRev.toFixed(0));
-  setText('opt-rev-day', '$'+(totalRev/30).toFixed(1));
-  setText('opt-profit-month', '$'+profit.toFixed(0));
-  setText('opt-cmp-xmr-rev', '$'+xmrRevMonth.toFixed(0));
-  setText('opt-cmp-xmr-sub', (totalXmrHR_equiv).toFixed(1)+' KH/s → '+(totalXmrHR_equiv*MINE_PARAMS.XMR.revenuePerUnit).toFixed(4)+' XMR/mois');
-  setText('opt-cmp-kas-rev', '$'+kasRevMonth.toFixed(0));
-  setText('opt-cmp-kas-sub', (totalKasHR_equiv).toFixed(1)+' GH/s → '+(totalKasHR_equiv*MINE_PARAMS.KAS.revenuePerUnit).toFixed(0)+' KAS/mois');
+  setText('opt-rev-month', '$' + totalRev.toFixed(0));
+  setText('opt-rev-day', '$' + (totalRev / 30).toFixed(1));
+  setText('opt-profit-month', '$' + profit.toFixed(0));
+  setText('opt-cmp-xmr-rev', '$' + xmrRevMonth.toFixed(0));
+  setText('opt-cmp-xmr-sub', (totalXmrHR_equiv).toFixed(1) + ' KH/s → ' + (totalXmrHR_equiv * MINE_PARAMS.XMR.revenuePerUnit).toFixed(4) + ' XMR/mois');
+  setText('opt-cmp-kas-rev', '$' + kasRevMonth.toFixed(0));
+  setText('opt-cmp-kas-sub', (totalKasHR_equiv).toFixed(1) + ' GH/s → ' + (totalKasHR_equiv * MINE_PARAMS.KAS.revenuePerUnit).toFixed(0) + ' KAS/mois');
   // Auto-recommendation
   const rec = xmrRevMonth > kasRevMonth
-    ? `⬡ XMR est actuellement plus rentable (+$${(xmrRevMonth-kasRevMonth).toFixed(0)}/mois). Augmentez l'allocation XMR pour maximiser vos revenus.`
-    : `◈ KAS est actuellement plus rentable (+$${(kasRevMonth-xmrRevMonth).toFixed(0)}/mois). Augmentez l'allocation KAS ou attendez une correction XMR.`;
+    ? `⬡ XMR est actuellement plus rentable (+$${(xmrRevMonth - kasRevMonth).toFixed(0)}/mois). Augmentez l'allocation XMR pour maximiser vos revenus.`
+    : `◈ KAS est actuellement plus rentable (+$${(kasRevMonth - xmrRevMonth).toFixed(0)}/mois). Augmentez l'allocation KAS ou attendez une correction XMR.`;
   setText('opt-recommendation', rec);
   // Highlight active scenario
-  ['sc-btn-xmr','sc-btn-kas','sc-btn-balanced','sc-btn-bull-xmr','sc-btn-bull-kas','sc-btn-current'].forEach(id=>{
+  ['sc-btn-xmr', 'sc-btn-kas', 'sc-btn-balanced', 'sc-btn-bull-xmr', 'sc-btn-bull-kas', 'sc-btn-current'].forEach(id => {
     el(id)?.classList.remove('active');
   });
-  if(optXmrPct===100) el('sc-btn-xmr')?.classList.add('active');
-  else if(optXmrPct===0) el('sc-btn-kas')?.classList.add('active');
-  else if(optXmrPct===50) el('sc-btn-balanced')?.classList.add('active');
-  else if(optXmrPct===70) el('sc-btn-bull-xmr')?.classList.add('active');
-  else if(optXmrPct===30) el('sc-btn-bull-kas')?.classList.add('active');
+  if (optXmrPct === 100) el('sc-btn-xmr')?.classList.add('active');
+  else if (optXmrPct === 0) el('sc-btn-kas')?.classList.add('active');
+  else if (optXmrPct === 50) el('sc-btn-balanced')?.classList.add('active');
+  else if (optXmrPct === 70) el('sc-btn-bull-xmr')?.classList.add('active');
+  else if (optXmrPct === 30) el('sc-btn-bull-kas')?.classList.add('active');
 }
 
 function applyScenario(sc) {
-  const map = {xmr:100, kas:0, balanced:50, bull_xmr:70, bull_kas:30};
-  const val = sc==='current' ? optXmrPct : (map[sc]??62);
-  if(el('opt-slider')) el('opt-slider').value = val;
+  const map = { xmr: 100, kas: 0, balanced: 50, bull_xmr: 70, bull_kas: 30 };
+  const val = sc === 'current' ? optXmrPct : (map[sc] ?? 62);
+  if (el('opt-slider')) el('opt-slider').value = val;
   optUpdate(val);
 }
 
 function applyOptToRigs() {
-  const xmrPct = optXmrPct/100;
-  const onlineRigs = RIGS.filter(r=>r.status!=='offline');
-  if(!onlineRigs.length) { toast('warn','Aucun rig','Tous les rigs sont hors ligne'); return; }
+  const xmrPct = optXmrPct / 100;
+  const onlineRigs = RIGS.filter(r => r.status !== 'offline');
+  if (!onlineRigs.length) { toast('warn', 'Aucun rig', 'Tous les rigs sont hors ligne'); return; }
   const xmrCount = Math.round(onlineRigs.length * xmrPct);
-  onlineRigs.forEach((r,i) => { r.coin = i < xmrCount ? 'XMR' : 'KAS'; });
+  onlineRigs.forEach((r, i) => { r.coin = i < xmrCount ? 'XMR' : 'KAS'; });
   scheduleSave();
   renderDash(); renderRigs();
-  toast('success','Allocation appliquée', xmrCount+' rig(s) → XMR · '+(onlineRigs.length-xmrCount)+' rig(s) → KAS');
+  toast('success', 'Allocation appliquée', xmrCount + ' rig(s) → XMR · ' + (onlineRigs.length - xmrCount) + ' rig(s) → KAS');
 }
 
 function exportOptPlan() {
   const lines = [`Plan d'allocation BitOS — ${new Date().toLocaleDateString('fr-FR')}`,
-    `Allocation: ${optXmrPct}% XMR / ${100-optXmrPct}% KAS`,
+  `Allocation: ${optXmrPct}% XMR / ${100 - optXmrPct}% KAS`,
     '',
     'Rig,Coin actuel,Nouvelle assignation',
-    ...RIGS.map(r=>`${r.name},${r.coin},${r.coin}`)];
-  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(lines.join('\n'));a.download='plan_allocation.csv';a.click();
+  ...RIGS.map(r => `${r.name},${r.coin},${r.coin}`)];
+  const a = document.createElement('a'); a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(lines.join('\n')); a.download = 'plan_allocation.csv'; a.click();
 }
 
 // ══════════════════════════════════════════════════════
@@ -4670,32 +4708,32 @@ function exportOptPlan() {
 // ══════════════════════════════════════════════════════
 
 const TAX_RATES = {
-  fr: { mining: 0.30, capital: 0.30, label:'BNC + PFU 30%', currency:'EUR', rate:0.93 },
-  ca: { mining: 0.33, capital: 0.165, label:'Revenu ordinaire ~33%', currency:'CAD', rate:1.35 },
-  be: { mining: 0.33, capital: 0.33, label:'Revenus divers 33%', currency:'EUR', rate:0.93 },
-  ch: { mining: 0.15, capital: 0.0,  label:'Revenu ordinaire ~15%', currency:'CHF', rate:0.90 },
+  fr: { mining: 0.30, capital: 0.30, label: 'BNC + PFU 30%', currency: 'EUR', rate: 0.93 },
+  ca: { mining: 0.33, capital: 0.165, label: 'Revenu ordinaire ~33%', currency: 'CAD', rate: 1.35 },
+  be: { mining: 0.33, capital: 0.33, label: 'Revenus divers 33%', currency: 'EUR', rate: 0.93 },
+  ch: { mining: 0.15, capital: 0.0, label: 'Revenu ordinaire ~15%', currency: 'CHF', rate: 0.90 },
 };
 
 function selectTaxCountry(country, rowEl) {
   TAX_COUNTRY = country;
-  document.querySelectorAll('.tax-country-row').forEach(r=>r.classList.remove('selected'));
-  if(rowEl) rowEl.classList.add('selected');
+  document.querySelectorAll('.tax-country-row').forEach(r => r.classList.remove('selected'));
+  if (rowEl) rowEl.classList.add('selected');
   scheduleSave();
   taxCalc();
 }
 
 function selectTaxYear(year, btn) {
   TAX_YEAR = year;
-  document.querySelectorAll('.tax-year-btn').forEach(b=>b.classList.remove('active'));
-  if(btn) btn.classList.add('active');
+  document.querySelectorAll('.tax-year-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
   taxCalc();
 }
 
 function taxInit() {
-  if(!el('tax-events-tbody')) return;
-  document.querySelectorAll('.tax-country-row').forEach(r=>r.classList.remove('selected'));
-  const sel = document.getElementById('tax-'+TAX_COUNTRY);
-  if(sel) sel.classList.add('selected');
+  if (!el('tax-events-tbody')) return;
+  document.querySelectorAll('.tax-country-row').forEach(r => r.classList.remove('selected'));
+  const sel = document.getElementById('tax-' + TAX_COUNTRY);
+  if (sel) sel.classList.add('selected');
   taxCalc();
 }
 
@@ -4705,17 +4743,17 @@ function taxCalc() {
   // Build taxable events from PAYMENTS (minage) + TX_HISTORY (envois = cessions potentielles)
   const year = TAX_YEAR;
   const yearStr = year.slice(-2); // ex: '26'
-  const miningEvents = PAYMENTS.filter(p => p.type==='recv' && p.date && p.date.includes('/'+yearStr));
-  const sendEvents = TX_HISTORY.filter(t => t.date && t.date.includes('/'+yearStr));
+  const miningEvents = PAYMENTS.filter(p => p.type === 'recv' && p.date && p.date.includes('/' + yearStr));
+  const sendEvents = TX_HISTORY.filter(t => t.date && t.date.includes('/' + yearStr));
   const convEvents = CONV_HISTORY.filter(c => c.date && c.date.includes(year.slice(-2)));
 
   // Mining revenue
   let miningUSD = 0;
-  miningEvents.forEach(p => { miningUSD += parseFloat(p.usd?.replace('$','').replace(',',''))||0; });
-  
+  miningEvents.forEach(p => { miningUSD += parseFloat(p.usd?.replace('$', '').replace(',', '')) || 0; });
+
   // Cessions (sends sont considérés comme des cessions)
   let cessionUSD = 0;
-  sendEvents.forEach(t => { cessionUSD += parseFloat(t.usd?.replace('$','').replace(',',''))||0; });
+  sendEvents.forEach(t => { cessionUSD += parseFloat(t.usd?.replace('$', '').replace(',', '')) || 0; });
   convEvents.forEach(c => { cessionUSD += c.netUSDT || 0; });
 
   const miningTax = miningUSD * cfg.mining;
@@ -4723,40 +4761,40 @@ function taxCalc() {
   const totalTax = miningTax + cessionTax;
   const totalEvents = miningEvents.length + sendEvents.length + convEvents.length;
 
-  setText('tax-mining-total', '$'+miningUSD.toFixed(2));
-  setText('tax-mining-sub', miningEvents.length+' paiements pool');
-  setText('tax-cession-total', '$'+cessionUSD.toFixed(2));
-  setText('tax-cession-sub', (sendEvents.length+convEvents.length)+' transactions/conversions');
-  setText('tax-impot-total', '$'+totalTax.toFixed(2)+' ≈ '+cfg.currency+' '+(totalTax*fxRate).toFixed(2));
+  setText('tax-mining-total', '$' + miningUSD.toFixed(2));
+  setText('tax-mining-sub', miningEvents.length + ' paiements pool');
+  setText('tax-cession-total', '$' + cessionUSD.toFixed(2));
+  setText('tax-cession-sub', (sendEvents.length + convEvents.length) + ' transactions/conversions');
+  setText('tax-impot-total', '$' + totalTax.toFixed(2) + ' ≈ ' + cfg.currency + ' ' + (totalTax * fxRate).toFixed(2));
   setText('tax-impot-sub', cfg.label);
   setText('tax-events-count', totalEvents);
 
   // Table events
   const tbody = document.getElementById('tax-events-tbody');
-  if(!tbody) return;
+  if (!tbody) return;
   const allEvents = [
-    ...miningEvents.map(p=>({date:p.date, type:'mine', desc:p.pool||'Pool', coin:p.coin, amount:p.amount, priceUSD:(parseFloat(p.usd?.replace('$',''))||0)/parseFloat(p.amount)||0, valueUSD:parseFloat(p.usd?.replace('$','').replace(',',''))||0})),
-    ...sendEvents.map(t=>({date:t.date, type:'send', desc:'Envoi → '+t.dest, coin:t.coin, amount:t.amount, priceUSD:(parseFloat(t.usd?.replace('$',''))||0)/parseFloat(t.amount)||0, valueUSD:parseFloat(t.usd?.replace('$','').replace(',',''))||0})),
-    ...convEvents.map(c=>({date:c.date, type:'conv', desc:'Conversion → USDT', coin:c.coin, amount:c.amount, priceUSD:c.rate, valueUSD:c.grossUSD})),
-  ].sort((a,b)=>{
-    const da=a.date.split('/').reverse().join('-'), db=b.date.split('/').reverse().join('-');
+    ...miningEvents.map(p => ({ date: p.date, type: 'mine', desc: p.pool || 'Pool', coin: p.coin, amount: p.amount, priceUSD: (parseFloat(p.usd?.replace('$', '')) || 0) / parseFloat(p.amount) || 0, valueUSD: parseFloat(p.usd?.replace('$', '').replace(',', '')) || 0 })),
+    ...sendEvents.map(t => ({ date: t.date, type: 'send', desc: 'Envoi → ' + t.dest, coin: t.coin, amount: t.amount, priceUSD: (parseFloat(t.usd?.replace('$', '')) || 0) / parseFloat(t.amount) || 0, valueUSD: parseFloat(t.usd?.replace('$', '').replace(',', '')) || 0 })),
+    ...convEvents.map(c => ({ date: c.date, type: 'conv', desc: 'Conversion → USDT', coin: c.coin, amount: c.amount, priceUSD: c.rate, valueUSD: c.grossUSD })),
+  ].sort((a, b) => {
+    const da = a.date.split('/').reverse().join('-'), db = b.date.split('/').reverse().join('-');
     return db.localeCompare(da);
   });
-  if(!allEvents.length) {
-    tbody.innerHTML=`<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px;font-size:11px">Aucun événement fiscal pour ${TAX_YEAR}</td></tr>`;
+  if (!allEvents.length) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px;font-size:11px">Aucun événement fiscal pour ${TAX_YEAR}</td></tr>`;
     return;
   }
-  const badgeCls = {mine:'tax-badge-mine', send:'tax-badge-send', conv:'tax-badge-conv'};
-  const badgeLabel = {mine:'Minage', send:'Cession', conv:'Conversion'};
-  const taxRate = {mine:cfg.mining, send:cfg.capital, conv:cfg.capital};
+  const badgeCls = { mine: 'tax-badge-mine', send: 'tax-badge-send', conv: 'tax-badge-conv' };
+  const badgeLabel = { mine: 'Minage', send: 'Cession', conv: 'Conversion' };
+  const taxRate = { mine: cfg.mining, send: cfg.capital, conv: cfg.capital };
   tbody.innerHTML = allEvents.map(e => {
-    const impot = (e.valueUSD||0) * (taxRate[e.type]||0);
+    const impot = (e.valueUSD || 0) * (taxRate[e.type] || 0);
     return `<tr>
       <td style="padding:9px 12px;font-size:11px;font-family:var(--mono)">${e.date}</td>
-      <td><span class="tax-badge ${badgeCls[e.type]||''}">${badgeLabel[e.type]||e.type}</span></td>
+      <td><span class="tax-badge ${badgeCls[e.type] || ''}">${badgeLabel[e.type] || e.type}</span></td>
       <td style="font-size:11px;font-family:var(--mono)">${e.amount} ${e.coin}</td>
-      <td style="font-size:11px;font-family:var(--mono)">$${(e.priceUSD||0).toFixed(2)}</td>
-      <td style="font-size:11px;font-family:var(--mono);color:var(--green)">$${(e.valueUSD||0).toFixed(2)}</td>
+      <td style="font-size:11px;font-family:var(--mono)">$${(e.priceUSD || 0).toFixed(2)}</td>
+      <td style="font-size:11px;font-family:var(--mono);color:var(--green)">$${(e.valueUSD || 0).toFixed(2)}</td>
       <td style="font-size:11px;font-family:var(--mono);color:var(--red)">$${impot.toFixed(2)}</td>
     </tr>`;
   }).join('');
@@ -4765,29 +4803,29 @@ function taxCalc() {
 function exportTaxCSV() {
   const cfg = TAX_RATES[TAX_COUNTRY] || TAX_RATES.fr;
   const rows = [
-    ['BitOS — Rapport fiscal '+TAX_YEAR, 'Régime: '+cfg.label, '', '', '', ''],
-    ['Date','Type','Coin','Montant','Prix USD','Valeur USD','Impôt estimé','Notes'],
+    ['BitOS — Rapport fiscal ' + TAX_YEAR, 'Régime: ' + cfg.label, '', '', '', ''],
+    ['Date', 'Type', 'Coin', 'Montant', 'Prix USD', 'Valeur USD', 'Impôt estimé', 'Notes'],
   ];
-  PAYMENTS.filter(p=>p.date?.includes(TAX_YEAR.slice(-2))).forEach(p=>{
-    const val = parseFloat(p.usd?.replace('$','').replace(',',''))||0;
-    rows.push([p.date,'Minage',p.coin,p.amount,'—','$'+val.toFixed(2),'$'+(val*cfg.mining).toFixed(2),p.pool||'']);
+  PAYMENTS.filter(p => p.date?.includes(TAX_YEAR.slice(-2))).forEach(p => {
+    const val = parseFloat(p.usd?.replace('$', '').replace(',', '')) || 0;
+    rows.push([p.date, 'Minage', p.coin, p.amount, '—', '$' + val.toFixed(2), '$' + (val * cfg.mining).toFixed(2), p.pool || '']);
   });
-  TX_HISTORY.filter(t=>t.date?.includes(TAX_YEAR.slice(-2))).forEach(t=>{
-    const val = parseFloat(t.usd?.replace('$','').replace(',',''))||0;
-    rows.push([t.date,'Cession',t.coin,t.amount,'—','$'+val.toFixed(2),'$'+(val*cfg.capital).toFixed(2),t.note||'']);
+  TX_HISTORY.filter(t => t.date?.includes(TAX_YEAR.slice(-2))).forEach(t => {
+    const val = parseFloat(t.usd?.replace('$', '').replace(',', '')) || 0;
+    rows.push([t.date, 'Cession', t.coin, t.amount, '—', '$' + val.toFixed(2), '$' + (val * cfg.capital).toFixed(2), t.note || '']);
   });
-  const csv = rows.map(r=>r.map(v=>`"${v}"`).join(',')).join('\n');
-  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='declaration_fiscale_'+TAX_YEAR+'.csv';a.click();
-  toast('success','Export fiscal','declaration_fiscale_'+TAX_YEAR+'.csv téléchargé');
+  const csv = rows.map(r => r.map(v => `"${v}"`).join(',')).join('\n');
+  const a = document.createElement('a'); a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv); a.download = 'declaration_fiscale_' + TAX_YEAR + '.csv'; a.click();
+  toast('success', 'Export fiscal', 'declaration_fiscale_' + TAX_YEAR + '.csv téléchargé');
 }
 
 function exportTaxPDF() {
   // On génère un HTML minimaliste printable
   const cfg = TAX_RATES[TAX_COUNTRY] || TAX_RATES.fr;
-  const w = window.open('','_blank');
-  const miningUSD = PAYMENTS.filter(p=>p.date?.includes(TAX_YEAR.slice(-2))).reduce((s,p)=>s+(parseFloat(p.usd?.replace('$','').replace(',',''))||0),0);
-  const cessionUSD = TX_HISTORY.filter(t=>t.date?.includes(TAX_YEAR.slice(-2))).reduce((s,t)=>s+(parseFloat(t.usd?.replace('$','').replace(',',''))||0),0);
-  const totalTax = miningUSD*cfg.mining + cessionUSD*cfg.capital;
+  const w = window.open('', '_blank');
+  const miningUSD = PAYMENTS.filter(p => p.date?.includes(TAX_YEAR.slice(-2))).reduce((s, p) => s + (parseFloat(p.usd?.replace('$', '').replace(',', '')) || 0), 0);
+  const cessionUSD = TX_HISTORY.filter(t => t.date?.includes(TAX_YEAR.slice(-2))).reduce((s, t) => s + (parseFloat(t.usd?.replace('$', '').replace(',', '')) || 0), 0);
+  const totalTax = miningUSD * cfg.mining + cessionUSD * cfg.capital;
   w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>BitOS — Rapport Fiscal ${TAX_YEAR}</title>
   <style>body{font-family:Arial,sans-serif;padding:30px;color:#111}h1{color:#0a3d62;border-bottom:2px solid #0a3d62;padding-bottom:8px}table{width:100%;border-collapse:collapse;margin-top:16px}th,td{border:1px solid #ddd;padding:8px 12px;text-align:left;font-size:13px}th{background:#f0f4f8;font-weight:700}.kpi{display:inline-block;background:#f8f9fa;border:1px solid #dee2e6;border-radius:8px;padding:14px 20px;margin:8px;text-align:center}.kpi-val{font-size:22px;font-weight:700;color:#0a3d62}.kpi-label{font-size:11px;color:#888;margin-top:4px}.footer{margin-top:30px;font-size:11px;color:#888;border-top:1px solid #eee;padding-top:14px}
 .exchange-option.disabled{opacity:.35;cursor:default;}
@@ -4862,7 +4900,7 @@ function exportTaxPDF() {
 </style>
   </head><body>
   <h1>📊 BitOS Cloud — Rapport Fiscal ${TAX_YEAR}</h1>
-  <p><strong>Généré le :</strong> ${new Date().toLocaleDateString('fr-FR', {day:'2-digit',month:'long',year:'numeric'})}</p>
+  <p><strong>Généré le :</strong> ${new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
   <p><strong>Régime fiscal :</strong> ${cfg.label}</p>
   <div style="margin:20px 0">
     <div class="kpi"><div class="kpi-val">$${miningUSD.toFixed(2)}</div><div class="kpi-label">Revenus de minage</div></div>
@@ -4871,8 +4909,8 @@ function exportTaxPDF() {
   </div>
   <h2>Détail des événements fiscaux</h2>
   <table><thead><tr><th>Date</th><th>Type</th><th>Coin</th><th>Montant</th><th>Valeur USD</th><th>Impôt est.</th></tr></thead><tbody>
-  ${PAYMENTS.filter(p=>p.date?.includes(TAX_YEAR.slice(-2))).map(p=>{const v=parseFloat(p.usd?.replace('$','').replace(',',''))||0;return`<tr><td>${p.date}</td><td>Minage</td><td>${p.coin}</td><td>${p.amount}</td><td>$${v.toFixed(2)}</td><td>$${(v*cfg.mining).toFixed(2)}</td></tr>`;}).join('')}
-  ${TX_HISTORY.filter(t=>t.date?.includes(TAX_YEAR.slice(-2))).map(t=>{const v=parseFloat(t.usd?.replace('$','').replace(',',''))||0;return`<tr><td>${t.date}</td><td>Cession</td><td>${t.coin}</td><td>${t.amount}</td><td>$${v.toFixed(2)}</td><td>$${(v*cfg.capital).toFixed(2)}</td></tr>`;}).join('')}
+  ${PAYMENTS.filter(p => p.date?.includes(TAX_YEAR.slice(-2))).map(p => { const v = parseFloat(p.usd?.replace('$', '').replace(',', '')) || 0; return `<tr><td>${p.date}</td><td>Minage</td><td>${p.coin}</td><td>${p.amount}</td><td>$${v.toFixed(2)}</td><td>$${(v * cfg.mining).toFixed(2)}</td></tr>`; }).join('')}
+  ${TX_HISTORY.filter(t => t.date?.includes(TAX_YEAR.slice(-2))).map(t => { const v = parseFloat(t.usd?.replace('$', '').replace(',', '')) || 0; return `<tr><td>${t.date}</td><td>Cession</td><td>${t.coin}</td><td>${t.amount}</td><td>$${v.toFixed(2)}</td><td>$${(v * cfg.capital).toFixed(2)}</td></tr>`; }).join('')}
   </tbody></table>
   <div class="footer">⚠️ Ce rapport est une estimation générée automatiquement par BitOS. Il ne constitue pas un conseil fiscal. Consultez un comptable agréé spécialisé en crypto-monnaies pour votre déclaration officielle.</div>
   
@@ -5203,7 +5241,7 @@ function exportTaxPDF() {
 function getTop3Recommendations() {
   const recs = [];
   const hasPin = _pinMigrated || _pinHash != null ||
-    (() => { try { return !!localStorage.getItem('bitosdash_pin_hash'); } catch(e) { return false; } })();
+    (() => { try { return !!localStorage.getItem('bitosdash_pin_hash'); } catch (e) { return false; } })();
   const hasExtWallet = EXT_WALLETS.length > 0;
   const hasDefaultWallet = EXT_WALLETS.some(w => w.isDefault);
   const offlineRigs = RIGS.filter(r => r.status === 'offline').length;
@@ -5211,32 +5249,32 @@ function getTop3Recommendations() {
   const xmrBal = WALLET.XMR.balance;
   const kasBal = WALLET.KAS.balance;
   const totalUSD = xmrBal * xmrP + kasBal * kasP;
-  const xmrRev = RIGS.filter(r=>r.coin==='XMR'&&r.status!=='offline').reduce((s,r)=>s+(r.hrn||0),0) * MINE_PARAMS.XMR.revenuePerUnit * xmrP;
-  const kasRev = RIGS.filter(r=>r.coin==='KAS'&&r.status!=='offline').reduce((s,r)=>s+(r.hrn||0),0) * MINE_PARAMS.KAS.revenuePerUnit * kasP;
+  const xmrRev = RIGS.filter(r => r.coin === 'XMR' && r.status !== 'offline').reduce((s, r) => s + (r.hrn || 0), 0) * MINE_PARAMS.XMR.revenuePerUnit * xmrP;
+  const kasRev = RIGS.filter(r => r.coin === 'KAS' && r.status !== 'offline').reduce((s, r) => s + (r.hrn || 0), 0) * MINE_PARAMS.KAS.revenuePerUnit * kasP;
 
   // Priorité 1 — Sécurité critique
-  if (!hasPin) recs.push({ num:1, cls:'reco-num-1', icon:'🔐', title:'Sécurisez votre accès maintenant', desc:"Votre PIN est celui par défaut (1234). Changez-le immédiatement : n'importe qui peut exécuter des retraits.", cta:"Changer le PIN", action:"showPage('settings');openModal('modal-change-pin')" });
-  else if (offlineRigs > 0) recs.push({ num:1, cls:'reco-num-1', icon:'🔴', title:`${offlineRigs} rig(s) hors ligne — perte de revenus`, desc:`Chaque heure d'arrêt représente ≈$${((xmrRev+kasRev)/24/30*offlineRigs).toFixed(2)} de perdu. Vérifiez la connexion réseau et les alimentations.`, cta:'Voir les rigs', action:"showPage('rigs')" });
-  else if (hotRigs > 0) recs.push({ num:1, cls:'reco-num-1', icon:'🌡️', title:`${hotRigs} GPU(s) en surchauffe (≥80°C)`, desc:"Risque de dommage matériel. Nettoyez les filtres, vérifiez le flux d'air et réduisez l'overclocking.", cta:'Monitoring', action:"showPage('monitoring')" });
-  else if (!hasExtWallet) recs.push({ num:1, cls:'reco-num-1', icon:'🔗', title:'Aucun wallet de retrait configuré', desc:'Sans wallet enregistré, vous ne pouvez pas planifier de retraits automatiques. Ajoutez votre adresse Binance, Kraken ou Ledger.', cta:'Associer un wallet', action:"showPage('wallet');setTimeout(openAddExtWallet,400)" });
-  else recs.push({ num:1, cls:'reco-num-1', icon:'✅', title:'Infrastructure sécurisée', desc:`PIN personnalisé · ${EXT_WALLETS.length} wallet(s) associé(s) · Rigs opérationnels. Excellent état général.`, cta:null });
+  if (!hasPin) recs.push({ num: 1, cls: 'reco-num-1', icon: '🔐', title: 'Sécurisez votre accès maintenant', desc: "Votre PIN est celui par défaut (1234). Changez-le immédiatement : n'importe qui peut exécuter des retraits.", cta: "Changer le PIN", action: "showPage('settings');openModal('modal-change-pin')" });
+  else if (offlineRigs > 0) recs.push({ num: 1, cls: 'reco-num-1', icon: '🔴', title: `${offlineRigs} rig(s) hors ligne — perte de revenus`, desc: `Chaque heure d'arrêt représente ≈$${((xmrRev + kasRev) / 24 / 30 * offlineRigs).toFixed(2)} de perdu. Vérifiez la connexion réseau et les alimentations.`, cta: 'Voir les rigs', action: "showPage('rigs')" });
+  else if (hotRigs > 0) recs.push({ num: 1, cls: 'reco-num-1', icon: '🌡️', title: `${hotRigs} GPU(s) en surchauffe (≥80°C)`, desc: "Risque de dommage matériel. Nettoyez les filtres, vérifiez le flux d'air et réduisez l'overclocking.", cta: 'Monitoring', action: "showPage('monitoring')" });
+  else if (!hasExtWallet) recs.push({ num: 1, cls: 'reco-num-1', icon: '🔗', title: 'Aucun wallet de retrait configuré', desc: 'Sans wallet enregistré, vous ne pouvez pas planifier de retraits automatiques. Ajoutez votre adresse Binance, Kraken ou Ledger.', cta: 'Associer un wallet', action: "showPage('wallet');setTimeout(openAddExtWallet,400)" });
+  else recs.push({ num: 1, cls: 'reco-num-1', icon: '✅', title: 'Infrastructure sécurisée', desc: `PIN personnalisé · ${EXT_WALLETS.length} wallet(s) associé(s) · Rigs opérationnels. Excellent état général.`, cta: null });
 
   // Priorité 2 — Optimisation financière
-  if (totalUSD > 300 && !SCHEDULED_WITHDRAWALS.some(s=>s.active)) {
-    recs.push({ num:2, cls:'reco-num-2', icon:'📅', title:`$${totalUSD.toFixed(0)} non planifié — risque de perte`, desc:'Votre solde croît sans stratégie de retrait. Planifiez un retrait hebdomadaire ou mensuel pour sécuriser vos gains contre les krachs.', cta:'Planifier un retrait', action:"showPage('actions');setTimeout(()=>switchModuleTab('tab-withdraw',document.querySelector('[onclick*=tab-withdraw]')),200)" });
+  if (totalUSD > 300 && !SCHEDULED_WITHDRAWALS.some(s => s.active)) {
+    recs.push({ num: 2, cls: 'reco-num-2', icon: '📅', title: `$${totalUSD.toFixed(0)} non planifié — risque de perte`, desc: 'Votre solde croît sans stratégie de retrait. Planifiez un retrait hebdomadaire ou mensuel pour sécuriser vos gains contre les krachs.', cta: 'Planifier un retrait', action: "showPage('actions');setTimeout(()=>switchModuleTab('tab-withdraw',document.querySelector('[onclick*=tab-withdraw]')),200)" });
   } else {
     const betterCoin = xmrRev > kasRev ? 'XMR' : 'KAS';
     const diff = Math.abs(xmrRev - kasRev).toFixed(0);
-    recs.push({ num:2, cls:'reco-num-2', icon:'⚖️', title:`${betterCoin} est $${diff}/mois plus rentable actuellement`, desc:`Avec XMR à $${xmrP.toFixed(0)} et KAS à $${kasP.toFixed(4)}, ajustez l'allocation de hashrate via l'optimiseur pour maximiser vos revenus.`, cta:"Optimiseur", action:"showPage('actions');setTimeout(()=>switchModuleTab('tab-optimize',document.querySelector('[onclick*=tab-optimize]')),200)" });
+    recs.push({ num: 2, cls: 'reco-num-2', icon: '⚖️', title: `${betterCoin} est $${diff}/mois plus rentable actuellement`, desc: `Avec XMR à $${xmrP.toFixed(0)} et KAS à $${kasP.toFixed(4)}, ajustez l'allocation de hashrate via l'optimiseur pour maximiser vos revenus.`, cta: "Optimiseur", action: "showPage('actions');setTimeout(()=>switchModuleTab('tab-optimize',document.querySelector('[onclick*=tab-optimize]')),200)" });
   }
 
   // Priorité 3 — Conformité / long terme
-  const payThisYear = PAYMENTS.filter(p=>p.date?.includes('/26')||p.date?.includes('/2026'));
-  const totalMined = payThisYear.reduce((s,p)=>s+(parseFloat(p.usd?.replace('$','').replace(',',''))||0),0);
+  const payThisYear = PAYMENTS.filter(p => p.date?.includes('/26') || p.date?.includes('/2026'));
+  const totalMined = payThisYear.reduce((s, p) => s + (parseFloat(p.usd?.replace('$', '').replace(',', '')) || 0), 0);
   if (totalMined > 100) {
-    recs.push({ num:3, cls:'reco-num-3', icon:'📊', title:`$${totalMined.toFixed(0)} de revenus à déclarer (2026)`, desc:`En France, les revenus de minage sont imposables en BNC. Exportez votre rapport fiscal mensuel pour éviter une régularisation surprise.`, cta:'Rapport fiscal', action:"showPage('actions');setTimeout(()=>switchModuleTab('tab-tax',document.querySelector('[onclick*=tab-tax]')),200)" });
+    recs.push({ num: 3, cls: 'reco-num-3', icon: '📊', title: `$${totalMined.toFixed(0)} de revenus à déclarer (2026)`, desc: `En France, les revenus de minage sont imposables en BNC. Exportez votre rapport fiscal mensuel pour éviter une régularisation surprise.`, cta: 'Rapport fiscal', action: "showPage('actions');setTimeout(()=>switchModuleTab('tab-tax',document.querySelector('[onclick*=tab-tax]')),200)" });
   } else {
-    recs.push({ num:3, cls:'reco-num-3', icon:'💡', title:'Diversifiez vers un cold wallet', desc:`$${totalUSD.toFixed(0)} en hot wallet est exposé. Transférez 70-80% vers un Ledger Nano X (XMR) pour une sécurité maximale contre les hacks.`, cta:'Associer Ledger', action:"openAddExtWallet('XMR')" });
+    recs.push({ num: 3, cls: 'reco-num-3', icon: '💡', title: 'Diversifiez vers un cold wallet', desc: `$${totalUSD.toFixed(0)} en hot wallet est exposé. Transférez 70-80% vers un Ledger Nano X (XMR) pour une sécurité maximale contre les hacks.`, cta: 'Associer Ledger', action: "openAddExtWallet('XMR')" });
   }
   return recs;
 }
@@ -5244,22 +5282,22 @@ function getTop3Recommendations() {
 
 function renderRecoChips() {
   const container = el('reco-strip-list');
-  if(!container) return;
+  if (!container) return;
   const recs = getTop3Recommendations();
-  const pCls = {1:'rc-high',2:'rc-med',3:'rc-low'};
+  const pCls = { 1: 'rc-high', 2: 'rc-med', 3: 'rc-low' };
   container.innerHTML = recs.map(r => `
-    <div class="reco-chip ${pCls[r.num]||''}" onclick="${r.cta ? r.action : ''}">
+    <div class="reco-chip ${pCls[r.num] || ''}" onclick="${r.cta ? r.action : ''}">
       <div class="reco-chip-top">
         <div class="reco-chip-icon">${r.icon}</div>
         <div class="reco-chip-title">${r.title}</div>
       </div>
-      <div class="reco-chip-desc">${r.desc.slice(0,90)}${r.desc.length>90?'…':''}</div>
+      <div class="reco-chip-desc">${r.desc.slice(0, 90)}${r.desc.length > 90 ? '…' : ''}</div>
     </div>`).join('');
 }
 
 function renderDashReco() {
   const container = el('reco-strip-list');
-  if(!container) return;
+  if (!container) return;
   const recs = getTop3Recommendations();
   container.innerHTML = recs.map(r => `
     <div class="reco-item">
@@ -5282,12 +5320,12 @@ const NOTIF = {
   enabled: false,
   permission: 'default',
   rules: {
-    rig_offline:   { enabled: true,  label: 'Rig hors ligne', icon: '🔴' },
-    payment_recv:  { enabled: true,  label: 'Paiement reçu',  icon: '💰' },
-    temp_critical: { enabled: true,  label: 'Température critique (≥80°C)', icon: '🌡️' },
-    hashrate_drop: { enabled: true,  label: 'Chute de hashrate (>15%)', icon: '⛏' },
-    low_balance:   { enabled: false, label: 'Solde faible (<$50)', icon: '⚠️' },
-    tx_confirmed:  { enabled: true,  label: 'Transaction confirmée', icon: '✅' },
+    rig_offline: { enabled: true, label: 'Rig hors ligne', icon: '🔴' },
+    payment_recv: { enabled: true, label: 'Paiement reçu', icon: '💰' },
+    temp_critical: { enabled: true, label: 'Température critique (≥80°C)', icon: '🌡️' },
+    hashrate_drop: { enabled: true, label: 'Chute de hashrate (>15%)', icon: '⛏' },
+    low_balance: { enabled: false, label: 'Solde faible (<$50)', icon: '⚠️' },
+    tx_confirmed: { enabled: true, label: 'Transaction confirmée', icon: '✅' },
   },
   lastHashrate: 0,
 };
@@ -5329,7 +5367,7 @@ function sendNotif(title, subtitle, body, icon_emoji) {
     });
     n.onclick = () => { window.focus(); n.close(); };
     setTimeout(() => n.close(), 8000);
-  } catch(e) { console.warn('Notif error:', e); }
+  } catch (e) { console.warn('Notif error:', e); }
 }
 
 // ── Vérifications automatiques déclenchant des notifications ──
@@ -5358,7 +5396,7 @@ function checkNotifTriggers() {
   // 3. Chute de hashrate
   if (NOTIF.rules.hashrate_drop.enabled) {
     const active = RIGS.filter(r => r.status !== 'offline');
-    const currentHR = active.reduce((s,r) => s+(r.hrn||0), 0);
+    const currentHR = active.reduce((s, r) => s + (r.hrn || 0), 0);
     if (NOTIF.lastHashrate > 0 && currentHR < NOTIF.lastHashrate * 0.85) {
       const drop = ((NOTIF.lastHashrate - currentHR) / NOTIF.lastHashrate * 100).toFixed(0);
       sendNotif('BitOS Cloud', '⛏ Chute de hashrate', 'Hashrate en baisse de ' + drop + '% — vérifiez vos miners.');
@@ -5382,7 +5420,7 @@ function updateNotifUI() {
   if (btn) {
     btn.textContent = NOTIF.enabled ? '🔔 Activées' : '🔕 Activer les notifications';
     btn.className = NOTIF.enabled ? 'btn btn-success btn-sm' : 'btn btn-primary btn-sm';
-    if (NOTIF.enabled) btn.onclick = () => toast('info','Notifications','Déjà activées. Désactivez-les depuis les paramètres du navigateur.');
+    if (NOTIF.enabled) btn.onclick = () => toast('info', 'Notifications', 'Déjà activées. Désactivez-les depuis les paramètres du navigateur.');
     else btn.onclick = requestNotifPermission;
   }
   if (status) status.textContent = NOTIF.enabled ? '✅ Autorisées' : (NOTIF.permission === 'denied' ? '❌ Refusées par le navigateur' : '⚪ Non activées');
@@ -5430,7 +5468,7 @@ const SEC = {
 // ── SHA-256 via SubtleCrypto (natif navigateur) ──
 async function sha256(str) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
 // ── Vérifier si le PIN est stocké en clair (migration) ──
@@ -5442,7 +5480,7 @@ function migratePin() {
   if (_pinPlain && /^\d{4}$/.test(_pinPlain)) {
     sha256(_pinPlain).then(h => {
       _pinHash = h;
-      try { localStorage.setItem('bitosdash_pin_hash', h); } catch(e) {}
+      try { localStorage.setItem('bitosdash_pin_hash', h); } catch (e) { }
       // Note: _pinPlain gardé jusqu'à la 1ère vérification réussie, effacé dans verifyPin()
     });
   }
@@ -5468,25 +5506,25 @@ async function verifyPin(entered) {
     try {
       const stored = localStorage.getItem('bitosdash_pin_hash');
       if (stored) _pinHash = stored;
-    } catch(e) {}
+    } catch (e) { }
   }
 
-  const hashMatch  = _pinHash ? (enteredHash === _pinHash) : false;
+  const hashMatch = _pinHash ? (enteredHash === _pinHash) : false;
   const plainMatch = !_pinMigrated && _pinPlain != null && (entered === _pinPlain);
 
   if (hashMatch || plainMatch) {
     SEC.failedAttempts = 0;
-    SEC.lockedUntil    = 0;
-    SEC.lastActivity   = Date.now();
-    SEC.sessionValid   = true;
-    SEC.sessionPin     = enteredHash;
-    _pinHash           = enteredHash;
+    SEC.lockedUntil = 0;
+    SEC.lastActivity = Date.now();
+    SEC.sessionValid = true;
+    SEC.sessionPin = enteredHash;
+    _pinHash = enteredHash;
 
     // ── Effacer le PIN en clair de la mémoire (définitif) ──
     if (!_pinMigrated) {
       _pinMigrated = true;
-      _pinPlain    = null;
-      try { localStorage.setItem('bitosdash_pin_hash', enteredHash); } catch(e) {}
+      _pinPlain = null;
+      try { localStorage.setItem('bitosdash_pin_hash', enteredHash); } catch (e) { }
       // Purger 'pin' en clair du LS principal s'il existe encore
       try {
         const raw = localStorage.getItem('bitosdash_v1');
@@ -5494,7 +5532,7 @@ async function verifyPin(entered) {
           const d = JSON.parse(raw);
           if (d && d.pin) { delete d.pin; localStorage.setItem('bitosdash_v1', JSON.stringify(d)); }
         }
-      } catch(e) {}
+      } catch (e) { }
     }
     return true;
   } else {
@@ -5505,10 +5543,12 @@ async function verifyPin(entered) {
       const mins = SEC.LOCKOUT_DURATION / 60;
       setText('pin-err', `🔒 Compte bloqué ${mins} min — trop de tentatives incorrectes`);
       try {
-        ALERTS.unshift({ id:'sec-'+Date.now(), type:'err', title:'Blocage sécurité PIN',
-          time:"À l'instant", detail:`${SEC.failedAttempts} tentatives échouées. Compte verrouillé ${mins} min.` });
+        ALERTS.unshift({
+          id: 'sec-' + Date.now(), type: 'err', title: 'Blocage sécurité PIN',
+          time: "À l'instant", detail: `${SEC.failedAttempts} tentatives échouées. Compte verrouillé ${mins} min.`
+        });
         renderAlerts();
-      } catch(e) {}
+      } catch (e) { }
     } else {
       const left = SEC.LOCKOUT_THRESHOLD - SEC.failedAttempts;
       setText('pin-err', `✗ PIN incorrect — ${left} tentative(s) restante(s)`);
@@ -5519,11 +5559,11 @@ async function verifyPin(entered) {
 }
 
 function shakeKeypad() {
-  for(let i=0;i<4;i++) { const d=el('pd'+i); if(d) d.classList.add('error'); }
+  for (let i = 0; i < 4; i++) { const d = el('pd' + i); if (d) d.classList.add('error'); }
   const kp = document.querySelector('.pin-keypad');
-  if (kp) { kp.style.animation='shake .4s ease'; setTimeout(()=>kp.style.animation='',400); }
+  if (kp) { kp.style.animation = 'shake .4s ease'; setTimeout(() => kp.style.animation = '', 400); }
   setTimeout(() => {
-    for(let i=0;i<4;i++) { const d=el('pd'+i); if(d) d.classList.remove('error'); }
+    for (let i = 0; i < 4; i++) { const d = el('pd' + i); if (d) d.classList.remove('error'); }
   }, 600);
 }
 
@@ -5559,15 +5599,15 @@ function updateLockoutTimer() {
 }
 
 // Intercepter les événements utilisateur pour reset le timer
-['click','keydown','touchstart','mousemove'].forEach(evt =>
-  document.addEventListener(evt, resetActivityTimer, {passive:true})
+['click', 'keydown', 'touchstart', 'mousemove'].forEach(evt =>
+  document.addEventListener(evt, resetActivityTimer, { passive: true })
 );
 setInterval(checkSessionTimeout, 30000);  // Vérifier toutes les 30s
 
 // ── Override de pinOK pour utiliser verifyPin async ──
 // (remplace la version synchrone précédente)
 function pinOK() {
-  if (pinBuf.length < 4) { setText('pin-err','⚠ Entrez 4 chiffres'); return; }
+  if (pinBuf.length < 4) { setText('pin-err', '⚠ Entrez 4 chiffres'); return; }
   verifyPin(pinBuf).then(ok => {
     if (ok) {
       pinBuf = '';
@@ -5585,18 +5625,18 @@ async function changePin() {
   const oldVal = el('cp-old')?.value.trim();
   const newVal = el('cp-new')?.value.trim();
   const confVal = el('cp-conf')?.value.trim();
-  if (!oldVal || !newVal || !confVal) { toast('warn','PIN','Remplissez tous les champs'); return; }
-  if (!/^\d{4}$/.test(newVal)) { toast('err','PIN','Le PIN doit être 4 chiffres'); return; }
-  if (newVal !== confVal) { toast('err','PIN','Les PINs ne correspondent pas'); return; }
-  if (newVal === '1234') { toast('err','PIN','Ce PIN est trop simple — choisissez autre chose'); return; }
+  if (!oldVal || !newVal || !confVal) { toast('warn', 'PIN', 'Remplissez tous les champs'); return; }
+  if (!/^\d{4}$/.test(newVal)) { toast('err', 'PIN', 'Le PIN doit être 4 chiffres'); return; }
+  if (newVal !== confVal) { toast('err', 'PIN', 'Les PINs ne correspondent pas'); return; }
+  if (newVal === '1234') { toast('err', 'PIN', 'Ce PIN est trop simple — choisissez autre chose'); return; }
   const oldOk = await verifyPin(oldVal);
-  if (!oldOk) { toast('err','PIN','Ancien PIN incorrect'); return; }
+  if (!oldOk) { toast('err', 'PIN', 'Ancien PIN incorrect'); return; }
   const newHash = await sha256(newVal);
-  _pinHash     = newHash;
-  _pinPlain    = null;
+  _pinHash = newHash;
+  _pinPlain = null;
   _pinMigrated = true;
   SEC.sessionPin = newHash;
-  try { localStorage.setItem('bitosdash_pin_hash', newHash); } catch(e) {}
+  try { localStorage.setItem('bitosdash_pin_hash', newHash); } catch (e) { }
   // Purger 'pin' en clair du LS principal
   try {
     const raw = localStorage.getItem('bitosdash_v1');
@@ -5604,11 +5644,11 @@ async function changePin() {
       const d = JSON.parse(raw);
       if (d && d.pin) { delete d.pin; localStorage.setItem('bitosdash_v1', JSON.stringify(d)); }
     }
-  } catch(e) {}
+  } catch (e) { }
   closeModal('modal-change-pin');
   scheduleSave();
-  toast('success','PIN','PIN modifié avec succès — session sécurisée');
-  ALERTS.unshift({ id:'pin-'+Date.now(), type:'info', title:'PIN modifié', time:"À l'instant", detail:'Nouveau code de sécurité actif.' });
+  toast('success', 'PIN', 'PIN modifié avec succès — session sécurisée');
+  ALERTS.unshift({ id: 'pin-' + Date.now(), type: 'info', title: 'PIN modifié', time: "À l'instant", detail: 'Nouveau code de sécurité actif.' });
   renderAlerts();
   // Mettre à jour indicateur settings
   setText('pin-security-level', 'Fort — SHA-256');
@@ -5635,10 +5675,10 @@ function openSelfWithdrawModal() {
   el('swself-confirm-btn').disabled = true;
   // Update balances
   const xb = WALLET.XMR.balance, kb = WALLET.KAS.balance;
-  setText('swself-xmr-bal', xb.toFixed(4)+' XMR');
-  setText('swself-xmr-usd', '≈ $'+(xb*xmrP).toFixed(0));
-  setText('swself-kas-bal', Math.round(kb).toLocaleString()+' KAS');
-  setText('swself-kas-usd', '≈ $'+(kb*kasP).toFixed(0));
+  setText('swself-xmr-bal', xb.toFixed(4) + ' XMR');
+  setText('swself-xmr-usd', '≈ $' + (xb * xmrP).toFixed(0));
+  setText('swself-kas-bal', Math.round(kb).toLocaleString() + ' KAS');
+  setText('swself-kas-usd', '≈ $' + (kb * kasP).toFixed(0));
   // Update fee labels
   swSelfUpdateFeeLabels();
   // Render wallets
@@ -5649,9 +5689,9 @@ function openSelfWithdrawModal() {
 function swSelfSelectCoin(coin) {
   swSelfCoin = coin;
   swSelfWalletId = null;
-  el('swself-xmr').className = 'sw-coin-opt' + (coin==='XMR'?' active-coin':'');
-  el('swself-kas').className = 'sw-coin-opt' + (coin==='KAS'?' active-coin':'');
-  setText('swself-amount-label', 'Montant '+coin);
+  el('swself-xmr').className = 'sw-coin-opt' + (coin === 'XMR' ? ' active-coin' : '');
+  el('swself-kas').className = 'sw-coin-opt' + (coin === 'KAS' ? ' active-coin' : '');
+  setText('swself-amount-label', 'Montant ' + coin);
   el('swself-amount').value = '';
   el('swself-summary').style.display = 'none';
   el('swself-confirm-btn').style.display = 'none';
@@ -5661,10 +5701,10 @@ function swSelfSelectCoin(coin) {
 
 function swSelfUpdateFeeLabels() {
   const fees = FEES[swSelfCoin] || FEES.XMR;
-  const dp = swSelfCoin==='XMR' ? 6 : 2;
-  setText('ft-slow-val', fees.slow.toFixed(dp)+' '+swSelfCoin);
-  setText('ft-normal-val', fees.normal.toFixed(dp)+' '+swSelfCoin);
-  setText('ft-fast-val', fees.fast.toFixed(dp)+' '+swSelfCoin);
+  const dp = swSelfCoin === 'XMR' ? 6 : 2;
+  setText('ft-slow-val', fees.slow.toFixed(dp) + ' ' + swSelfCoin);
+  setText('ft-normal-val', fees.normal.toFixed(dp) + ' ' + swSelfCoin);
+  setText('ft-fast-val', fees.fast.toFixed(dp) + ' ' + swSelfCoin);
 }
 
 function swSelfRenderWallets() {
@@ -5693,15 +5733,15 @@ function swSelfRenderWallets() {
 
   wList.innerHTML = compatible.map(w => {
     const cfg = NET_CONFIG[w.net] || {};
-    const shortAddr = w.addr.slice(0,20)+'…'+w.addr.slice(-8);
+    const shortAddr = w.addr.slice(0, 20) + '…' + w.addr.slice(-8);
     const isSelected = w.id === swSelfWalletId;
-    return `<div class="sw-wallet-choice ${isSelected?'active-w':''}" onclick="swSelfSelectWallet('${w.id}')">
-      <div class="sw-w-icon">${cfg.icon||'💳'}</div>
+    return `<div class="sw-wallet-choice ${isSelected ? 'active-w' : ''}" onclick="swSelfSelectWallet('${w.id}')">
+      <div class="sw-w-icon">${cfg.icon || '💳'}</div>
       <div style="flex:1">
         <div class="sw-w-name">${w.label}</div>
         <div class="sw-w-addr">${shortAddr}</div>
-        ${w.isDefault?'<div class="sw-w-default">★ Défaut</div>':''}
-        ${w.platform?`<div style="font-size:9px;color:var(--muted);font-family:var(--mono)">${w.platform}</div>`:''}
+        ${w.isDefault ? '<div class="sw-w-default">★ Défaut</div>' : ''}
+        ${w.platform ? `<div style="font-size:9px;color:var(--muted);font-family:var(--mono)">${w.platform}</div>` : ''}
       </div>
       <div class="sw-w-check">✓</div>
     </div>`;
@@ -5713,14 +5753,14 @@ function swSelfSelectWallet(id) {
   swSelfWalletId = id;
   document.querySelectorAll('.sw-wallet-choice').forEach(el => el.classList.remove('active-w'));
   const chosen = document.querySelector(`.sw-wallet-choice[onclick*="${id}"]`);
-  if(chosen) chosen.classList.add('active-w');
+  if (chosen) chosen.classList.add('active-w');
   swSelfUpdateSummary();
 }
 
 function swSelfSelectFee(tier, btn) {
   swSelfFeeTier = tier;
   document.querySelectorAll('.fee-tier').forEach(b => b.classList.remove('active-tier'));
-  if(btn) btn.classList.add('active-tier');
+  if (btn) btn.classList.add('active-tier');
   swSelfUpdateSummary();
 }
 
@@ -5728,26 +5768,26 @@ function swSelfMax() {
   const bal = WALLET[swSelfCoin].balance;
   const fee = FEES[swSelfCoin][swSelfFeeTier];
   const max = Math.max(0, bal - fee);
-  el('swself-amount').value = swSelfCoin==='XMR' ? max.toFixed(6) : Math.floor(max);
+  el('swself-amount').value = swSelfCoin === 'XMR' ? max.toFixed(6) : Math.floor(max);
   swSelfUpdateSummary();
 }
 
 function swSelfPct(pct) {
   const bal = WALLET[swSelfCoin].balance;
-  el('swself-amount').value = swSelfCoin==='XMR' ? (bal*pct/100).toFixed(6) : Math.floor(bal*pct/100);
+  el('swself-amount').value = swSelfCoin === 'XMR' ? (bal * pct / 100).toFixed(6) : Math.floor(bal * pct / 100);
   swSelfUpdateSummary();
 }
 
 function swSelfUpdateSummary() {
-  const amt = parseFloat(el('swself-amount').value)||0;
+  const amt = parseFloat(el('swself-amount').value) || 0;
   const wallet = EXT_WALLETS.find(w => w.id === swSelfWalletId);
-  const price = swSelfCoin==='XMR' ? xmrP : kasP;
+  const price = swSelfCoin === 'XMR' ? xmrP : kasP;
   const fee = FEES[swSelfCoin]?.[swSelfFeeTier] || 0;
-  const dp = swSelfCoin==='XMR' ? 6 : 2;
+  const dp = swSelfCoin === 'XMR' ? 6 : 2;
   const net = Math.max(0, amt - fee);
   const usdPreview = (amt * price).toFixed(2);
 
-  setText('swself-usd-preview', amt>0 ? '≈ $'+usdPreview+' USD' : '≈ $0.00');
+  setText('swself-usd-preview', amt > 0 ? '≈ $' + usdPreview + ' USD' : '≈ $0.00');
 
   const ok = amt > 0 && wallet && amt <= WALLET[swSelfCoin].balance && net > 0;
   const confirmBtn = el('swself-confirm-btn');
@@ -5755,28 +5795,28 @@ function swSelfUpdateSummary() {
   confirmBtn.disabled = !ok;
   confirmBtn.style.opacity = ok ? '1' : '.4';
 
-  if(!ok || !wallet) { el('swself-summary').style.display='none'; return; }
+  if (!ok || !wallet) { el('swself-summary').style.display = 'none'; return; }
 
   el('swself-summary').style.display = 'block';
   setText('swself-r-coin', swSelfCoin);
-  setText('swself-r-amount', amt.toFixed(dp)+' '+swSelfCoin);
-  setText('swself-r-fee', '- '+fee.toFixed(dp)+' '+swSelfCoin+' ('+swSelfFeeTier+')');
-  setText('swself-r-net', net.toFixed(dp)+' '+swSelfCoin);
-  setText('swself-r-dest', wallet.label+' — '+wallet.addr.slice(0,22)+'…');
-  setText('swself-r-usd', '≈ $'+(net*price).toFixed(2));
+  setText('swself-r-amount', amt.toFixed(dp) + ' ' + swSelfCoin);
+  setText('swself-r-fee', '- ' + fee.toFixed(dp) + ' ' + swSelfCoin + ' (' + swSelfFeeTier + ')');
+  setText('swself-r-net', net.toFixed(dp) + ' ' + swSelfCoin);
+  setText('swself-r-dest', wallet.label + ' — ' + wallet.addr.slice(0, 22) + '…');
+  setText('swself-r-usd', '≈ $' + (net * price).toFixed(2));
 }
 
 function swSelfConfirm() {
-  const amt = parseFloat(el('swself-amount').value)||0;
+  const amt = parseFloat(el('swself-amount').value) || 0;
   const wallet = EXT_WALLETS.find(w => w.id === swSelfWalletId);
-  if(!wallet || amt <= 0) return;
+  if (!wallet || amt <= 0) return;
   // Route vers le modal PIN avec les données pré-remplies
   // On pré-remplit S (l'état global du send) puis on ouvre le flux PIN
   S.coin = swSelfCoin;
   S.prio = swSelfFeeTier;
   S.amount = amt;
   S.addr = wallet.addr;
-  S.note = el('swself-note').value.trim() || '↙ Retrait vers '+wallet.label;
+  S.note = el('swself-note').value.trim() || '↙ Retrait vers ' + wallet.label;
   S.addrValid = true;
   closeModal('modal-self-withdraw');
   goToPin();
@@ -5785,13 +5825,13 @@ function swSelfConfirm() {
 // ── swSelf sub-text sur le dashboard (bouton hero) ──
 function updateSwbSubText() {
   const sub = el('swb-sub-text');
-  if(!sub) return;
-  const totalUSD = WALLET.XMR.balance*xmrP + WALLET.KAS.balance*kasP;
-  const defaultW = EXT_WALLETS.find(w=>w.isDefault);
-  if(defaultW) {
-    setText('swb-sub-text', '$'+totalUSD.toFixed(0)+' disponible → '+defaultW.label);
-  } else if(EXT_WALLETS.length > 0) {
-    setText('swb-sub-text', '$'+totalUSD.toFixed(0)+' disponible · '+EXT_WALLETS.length+' wallet(s)');
+  if (!sub) return;
+  const totalUSD = WALLET.XMR.balance * xmrP + WALLET.KAS.balance * kasP;
+  const defaultW = EXT_WALLETS.find(w => w.isDefault);
+  if (defaultW) {
+    setText('swb-sub-text', '$' + totalUSD.toFixed(0) + ' disponible → ' + defaultW.label);
+  } else if (EXT_WALLETS.length > 0) {
+    setText('swb-sub-text', '$' + totalUSD.toFixed(0) + ' disponible · ' + EXT_WALLETS.length + ' wallet(s)');
   } else {
     setText('swb-sub-text', 'Associez un wallet pour commencer');
   }
@@ -5817,7 +5857,7 @@ function toggleHiveOS(enabled) {
   if (panel) panel.style.display = enabled ? 'block' : 'none';
   if (msg) msg.style.display = enabled ? 'none' : 'block';
   if (tog) tog.checked = enabled;
-  try { localStorage.setItem('bitosdash_hive_enabled', enabled ? '1' : '0'); } catch(e) {}
+  try { localStorage.setItem('bitosdash_hive_enabled', enabled ? '1' : '0'); } catch (e) { }
   if (enabled && HIVE_TOKEN) { fetchHiveOS && fetchHiveOS(); }
   scheduleSave();
 }
@@ -5825,7 +5865,7 @@ function restoreHiveToggle() {
   try {
     const v = localStorage.getItem('bitosdash_hive_enabled');
     HIVE_ENABLED = v === '1';
-  } catch(e) { HIVE_ENABLED = false; }
+  } catch (e) { HIVE_ENABLED = false; }
   toggleHiveOS(HIVE_ENABLED);
 }
 
@@ -5835,27 +5875,27 @@ function restoreHiveToggle() {
 // Endpoints : farms, workers, wallets, flight_sheets
 // ══════════════════════════════════════════════════════
 
-let HIVE_TOKEN   = ''; // Chargé depuis localStorage via lsRestore()
+let HIVE_TOKEN = ''; // Chargé depuis localStorage via lsRestore()
 let HIVE_FARM_ID = ''; // Auto-découverte au démarrage
 let hiveLastFetch = 0;
-let hiveWallets   = [];   // wallets configurés sur HiveOS
-let hiveFS        = [];   // flight sheets
+let hiveWallets = [];   // wallets configurés sur HiveOS
+let hiveFS = [];   // flight sheets
 
 // Mode standalone HTML : accès direct à HiveOS API
 // Note : si CORS bloqué, utiliser python bitosdash.py à la place
 const IS_LOCAL = false;
 // ── Détection environnement ─────────────────────────────────────
-const ENV = (function() {
-  var loc  = (typeof location !== 'undefined') ? location : {};
+const ENV = (function () {
+  var loc = (typeof location !== 'undefined') ? location : {};
   var proto = loc.protocol || 'https:';
-  var host  = loc.hostname  || '';
+  var host = loc.hostname || '';
   return {
-    isHTTP:      proto === 'http:',
-    isHTTPS:     proto === 'https:',
-    isFile:      proto === 'file:',
-    isGHPages:   host.indexOf('github.io') >= 0,
+    isHTTP: proto === 'http:',
+    isHTTPS: proto === 'https:',
+    isFile: proto === 'file:',
+    isGHPages: host.indexOf('github.io') >= 0,
     isLocalhost: host === 'localhost' || host === '127.0.0.1',
-    isLAN:       /^192\.168\.|^10\.|^172\.(1[6-9]|2\d|3[01])\./.test(host),
+    isLAN: /^192\.168\.|^10\.|^172\.(1[6-9]|2\d|3[01])\./.test(host),
     host: host,
   };
 })();
@@ -5865,7 +5905,7 @@ function getHiveBase() {
   try {
     var saved = localStorage.getItem('bitosdash_hive_proxy_url');
     if (saved && saved.length > 8) return saved.replace(/\/$/, '');
-  } catch(e) {}
+  } catch (e) { }
   if (ENV.isLocalhost || ENV.isLAN) {
     var proto = ENV.isHTTPS ? 'https' : 'http';
     var h = (typeof location !== 'undefined') ? location.host : 'localhost:8765';
@@ -5879,31 +5919,31 @@ function refreshHiveBase() { HIVE_BASE = getHiveBase(); }
 // ── URL builder centralisé — proxy si HTTP local ─────────────────
 // Retourne l'URL correcte selon l'environnement
 var API_BASES = {
-  coingecko:    'https://api.coingecko.com/api/v3',
-  kaspa:        'https://api.kaspa.org',
-  xmrchain:     'https://xmrchain.net/api',
-  xmrpool:      'https://supportxmr.com/api',
-  moneroocean:  'https://api.moneroocean.stream',
-  kaspool:      'https://api-kas.k1pool.com/api',
+  coingecko: 'https://api.coingecko.com/api/v3',
+  kaspa: 'https://api.kaspa.org',
+  xmrchain: 'https://xmrchain.net/api',
+  xmrpool: 'https://supportxmr.com/api',
+  moneroocean: 'https://api.moneroocean.stream',
+  kaspool: 'https://api-kas.k1pool.com/api',
 };
 
 function getApiBase(service) {
   // Lire location EN LIVE (pas via ENV statique pour supporter les rechargements)
-  var _loc  = (typeof location !== 'undefined') ? location : {};
+  var _loc = (typeof location !== 'undefined') ? location : {};
   var _host = _loc.hostname || '';
-  var _proto= _loc.protocol || 'https:';
+  var _proto = _loc.protocol || 'https:';
   var _isLocal = _host === 'localhost' || _host === '127.0.0.1';
-  var _isLAN   = /^192\.168\.|^10\.|^172\.(1[6-9]|2\d|3[01])\./.test(_host);
+  var _isLAN = /^192\.168\.|^10\.|^172\.(1[6-9]|2\d|3[01])\./.test(_host);
   // Mode proxy: HTTP local (server.py) ou HTTPS localhost (dev)
   if (_isLocal || _isLAN) {
-    var proxyBase = _proto.replace(':','') + '://' + (_loc.host || 'localhost:8765');
+    var proxyBase = _proto.replace(':', '') + '://' + (_loc.host || 'localhost:8765');
     var proxyMap = {
-      coingecko:    proxyBase + '/proxy/coingecko',
-      kaspa:        proxyBase + '/proxy/kaspa',
-      xmrchain:     proxyBase + '/proxy/xmrchain',
-      xmrpool:      proxyBase + '/proxy/xmr-pool',
-      moneroocean:  proxyBase + '/proxy/moneroocean',
-      kaspool:      proxyBase + '/proxy/kas-pool',
+      coingecko: proxyBase + '/proxy/coingecko',
+      kaspa: proxyBase + '/proxy/kaspa',
+      xmrchain: proxyBase + '/proxy/xmrchain',
+      xmrpool: proxyBase + '/proxy/xmr-pool',
+      moneroocean: proxyBase + '/proxy/moneroocean',
+      kaspool: proxyBase + '/proxy/kas-pool',
     };
     if (proxyMap[service]) return proxyMap[service];
   }
@@ -5917,7 +5957,7 @@ async function hiveApiFetch(endpoint, method = 'GET', body = null) {
     method,
     headers: {
       'Authorization': 'Bearer ' + HIVE_TOKEN,
-      'Content-Type':  'application/json',
+      'Content-Type': 'application/json',
     },
     signal: AbortSignal.timeout(12000),
   };
@@ -5927,7 +5967,7 @@ async function hiveApiFetch(endpoint, method = 'GET', body = null) {
 
   if (!res.ok) {
     let msg = `HTTP ${res.status}`;
-    try { const j = await res.json(); msg += ' — ' + (j.message || j.error || JSON.stringify(j)); } catch(e) {}
+    try { const j = await res.json(); msg += ' — ' + (j.message || j.error || JSON.stringify(j)); } catch (e) { }
     throw new Error(msg);
   }
   return res.json();
@@ -5955,7 +5995,7 @@ async function fetchHiveOS() {
       const wltData = await hiveApiFetch(`/farms/${HIVE_FARM_ID}/wallets`);
       hiveWallets = wltData?.data || [];
       hiveLog(`✅ ${hiveWallets.length} wallet(s) HiveOS configuré(s)`);
-    } catch(e) { hiveLog('⚠ Wallets non accessibles : ' + e.message); }
+    } catch (e) { hiveLog('⚠ Wallets non accessibles : ' + e.message); }
 
     // 3. Flight sheets
     try {
@@ -5963,7 +6003,7 @@ async function fetchHiveOS() {
       const fsData = await hiveApiFetch(`/farms/${HIVE_FARM_ID}/flight_sheets`);
       hiveFS = fsData?.data || [];
       hiveLog(`✅ ${hiveFS.length} flight sheet(s)`);
-    } catch(e) { hiveLog('⚠ Flight sheets non accessibles : ' + e.message); }
+    } catch (e) { hiveLog('⚠ Flight sheets non accessibles : ' + e.message); }
 
     hiveLastFetch = Date.now();
 
@@ -5979,20 +6019,20 @@ async function fetchHiveOS() {
     setHiveAPIBadge('live');
 
     // Alimenter le mini-dashboard stats
-    const online  = RIGS.filter(r => r.status === 'online').length;
+    const online = RIGS.filter(r => r.status === 'online').length;
     setText('hive-stat-workers', String(RIGS.length));
-    setText('hive-stat-online',  String(online));
-    setText('hive-stat-wallets',  String(hiveWallets.length));
+    setText('hive-stat-online', String(online));
+    setText('hive-stat-wallets', String(hiveWallets.length));
     // Mettre à jour le badge rigs dans la sidebar
     setText('nb-rigs', String(RIGS.length));
     // Mettre à jour le badge alertes
-    const unread = ALERTS.filter(function(a){return !a.read;}).length;
+    const unread = ALERTS.filter(function (a) { return !a.read; }).length;
     setText('nb-alerts', unread || '');
     // Mettre à jour d-xmr-hr et d-kas-hr
-    const xmrTotal = RIGS.filter(r=>r.coin==='XMR'&&r.status!=='offline').reduce((s,r)=>s+(r.hrn||0),0);
-    const kasTotal = RIGS.filter(r=>r.coin==='KAS'&&r.status!=='offline').reduce((s,r)=>s+(r.hrn||0),0);
-    if (xmrTotal > 0) setText('d-xmr-hr', xmrTotal.toFixed(2)+' KH/s');
-    if (kasTotal > 0) setText('d-kas-hr', kasTotal.toFixed(2)+' GH/s');
+    const xmrTotal = RIGS.filter(r => r.coin === 'XMR' && r.status !== 'offline').reduce((s, r) => s + (r.hrn || 0), 0);
+    const kasTotal = RIGS.filter(r => r.coin === 'KAS' && r.status !== 'offline').reduce((s, r) => s + (r.hrn || 0), 0);
+    if (xmrTotal > 0) setText('d-xmr-hr', xmrTotal.toFixed(2) + ' KH/s');
+    if (kasTotal > 0) setText('d-kas-hr', kasTotal.toFixed(2) + ' GH/s');
     // Rafraîchir la page Rigs si active
     if (el('page-rigs')?.classList.contains('active')) renderRigs();
     const statsEl = el('hive-conn-stats');
@@ -6003,10 +6043,10 @@ async function fetchHiveOS() {
 
     takeSnapshot();
     renderDash();
-    try { renderRigs(); } catch(e) {}
+    try { renderRigs(); } catch (e) { }
 
     return true;
-  } catch(e) {
+  } catch (e) {
     console.warn('HiveOS API error:', e);
     setHiveAPIBadge('offline');
 
@@ -6034,12 +6074,12 @@ function syncWorkersToRigs(workers) {
   // ── Détection coin robuste ─────────────────────────────────────────────
   function detectCoin(miners) {
     for (const m of miners) {
-      const algo  = (m.algo  || '').toLowerCase();
-      const coin  = (m.coin  || '').toLowerCase();
+      const algo = (m.algo || '').toLowerCase();
+      const coin = (m.coin || '').toLowerCase();
       const miner = (m.miner || '').toLowerCase();
       if (algo.includes('randomx') || algo.includes('rx/0') || coin.includes('xmr') || coin.includes('monero')) return 'XMR';
       if (algo.includes('kaspa') || algo.includes('ghostdag') || algo.includes('heavyhash') ||
-          algo.includes('kheavyhash') || coin.includes('kas') || miner.includes('kaspa')) return 'KAS';
+        algo.includes('kheavyhash') || coin.includes('kas') || miner.includes('kaspa')) return 'KAS';
     }
     return 'KAS'; // fallback ferme KAS
   }
@@ -6052,47 +6092,47 @@ function syncWorkersToRigs(workers) {
     return gpus.map((g, i) => {
       // Hashrate GPU individuel — depuis gpu_stats.hashrate ou réparti proportionnellement
       const gpuHR = g.hashrate != null ? g.hashrate
-                  : gpus.length > 0 ? totalHR / gpus.length : 0;
+        : gpus.length > 0 ? totalHR / gpus.length : 0;
       const hrn = coin === 'XMR' ? gpuHR / 1000 : gpuHR / 1e9;
       return {
-        idx:        i,
-        model:      g.model       || ('GPU ' + i),
-        temp:       g.temp        || 0,
-        fan:        g.fan         || 0,
-        power:      g.power       || 0,
-        mem:        g.mem_clock   || g.mem  || 0,
-        core:       g.core_clock  || g.core || 0,
-        memOffset:  g.mem_offset  || 0,
+        idx: i,
+        model: g.model || ('GPU ' + i),
+        temp: g.temp || 0,
+        fan: g.fan || 0,
+        power: g.power || 0,
+        mem: g.mem_clock || g.mem || 0,
+        core: g.core_clock || g.core || 0,
+        memOffset: g.mem_offset || 0,
         coreOffset: g.core_offset || 0,
         powerLimit: g.power_limit || 0,
-        vram:       g.vram        || 0,
-        hr:         coin === 'XMR' ? hrn.toFixed(2) + ' KH/s' : hrn.toFixed(2) + ' GH/s',
-        hrn:        parseFloat(hrn.toFixed(3)),
+        vram: g.vram || 0,
+        hr: coin === 'XMR' ? hrn.toFixed(2) + ' KH/s' : hrn.toFixed(2) + ' GH/s',
+        hrn: parseFloat(hrn.toFixed(3)),
       };
     });
   }
 
   const newRigs = workers.map((w, idx) => {
-    const gpus   = w.gpu_stats      || [];
-    const miners = w.miners_summary  || [];
+    const gpus = w.gpu_stats || [];
+    const miners = w.miners_summary || [];
 
     // Températures & ventilateurs
     const temps = gpus.map(g => g.temp || 0).filter(Boolean);
-    const fans  = gpus.map(g => g.fan  || 0).filter(Boolean);
-    const avgTmp = temps.length ? Math.round(temps.reduce((s,t)=>s+t,0)/temps.length) : 0;
+    const fans = gpus.map(g => g.fan || 0).filter(Boolean);
+    const avgTmp = temps.length ? Math.round(temps.reduce((s, t) => s + t, 0) / temps.length) : 0;
     const maxTmp = temps.length ? Math.max(...temps) : 0;
-    const avgFan = fans.length  ? Math.round(fans.reduce((s,f)=>s+f,0)/fans.length)   : 0;
+    const avgFan = fans.length ? Math.round(fans.reduce((s, f) => s + f, 0) / fans.length) : 0;
 
     // Puissance — w.stats.power_draw en priorité, sinon somme GPU
-    const gpuPowerSum = gpus.reduce((s,g) => s + (g.power || 0), 0);
+    const gpuPowerSum = gpus.reduce((s, g) => s + (g.power || 0), 0);
     const watt = w.stats?.power_draw || w.stats?.power || gpuPowerSum || 0;
 
     // Hashrate total depuis miners_summary
     const hrRaw = miners.reduce((s, m) => s + (m.hashrate || 0), 0);
 
     // Coin & conversion hashrate
-    const coin  = detectCoin(miners);
-    const hrn   = coin === 'XMR' ? hrRaw / 1000 : hrRaw / 1e9;
+    const coin = detectCoin(miners);
+    const hrn = coin === 'XMR' ? hrRaw / 1000 : hrRaw / 1e9;
 
     // Modèle GPU dominant (le plus fréquent ou le premier)
     const gpu_count = gpus.length || w.gpu_info?.length || 0;
@@ -6106,26 +6146,26 @@ function syncWorkersToRigs(workers) {
     const status = !online ? 'offline' : maxTmp >= 80 ? 'warning' : 'online';
 
     return {
-      id:         'hive-' + (w.id || idx),
-      name:       w.name || ('Worker-' + (idx + 1)),
-      gpus:       gpu_count > 0 ? `${gpu_count}× ${gpu_model}` : '—',
-      os:         'HiveOS',
+      id: 'hive-' + (w.id || idx),
+      name: w.name || ('Worker-' + (idx + 1)),
+      gpus: gpu_count > 0 ? `${gpu_count}× ${gpu_model}` : '—',
+      os: 'HiveOS',
       coin,
-      hr:         status === 'offline' ? '—' : coin === 'XMR' ? hrn.toFixed(2) + ' KH/s' : hrn.toFixed(2) + ' GH/s',
-      hrn:        status === 'offline' ? 0 : parseFloat(hrn.toFixed(3)),
-      temp:       avgTmp,
-      maxTemp:    maxTmp,
-      fan:        avgFan,
+      hr: status === 'offline' ? '—' : coin === 'XMR' ? hrn.toFixed(2) + ' KH/s' : hrn.toFixed(2) + ' GH/s',
+      hrn: status === 'offline' ? 0 : parseFloat(hrn.toFixed(3)),
+      temp: avgTmp,
+      maxTemp: maxTmp,
+      fan: avgFan,
       watt,
       status,
-      margin:     0,  // recalculé par updateRigProfits()
-      profit:     0,
-      hiveId:     w.id,
-      _farmId:    w._farmId   || HIVE_FARM_ID || '',
-      _farmName:  w._farmName || '',
+      margin: 0,  // recalculé par updateRigProfits()
+      profit: 0,
+      hiveId: w.id,
+      _farmId: w._farmId || HIVE_FARM_ID || '',
+      _farmName: w._farmName || '',
       gpuDetails,     // tableau détails par GPU
-      gpuCount:   gpu_count,
-      lastSync:   Date.now(),
+      gpuCount: gpu_count,
+      lastSync: Date.now(),
     };
   });
 
@@ -6158,21 +6198,21 @@ function updateRigProfits() {
     if (r.status === 'offline' || !r.hrn || !r.watt) {
       r.profit = 0; r.margin = 0; return;
     }
-    const ns    = NET_STATS[r.coin];
+    const ns = NET_STATS[r.coin];
     const price = r.coin === 'XMR' ? xmrP : kasP;
     if (!ns?.networkHashrate || !price) { r.profit = 0; r.margin = 0; return; }
 
     // Convertir hrn (KH/s pour XMR, GH/s pour KAS) → H/s pour comparaison avec networkHashrate
-    const hrnHS      = r.coin === 'XMR' ? r.hrn * 1000 : r.hrn * 1e9;
+    const hrnHS = r.coin === 'XMR' ? r.hrn * 1000 : r.hrn * 1e9;
     const blocksPerDay = 86400 / (ns.blockTime || (r.coin === 'XMR' ? 120 : 1));
-    const share      = hrnHS / ns.networkHashrate;
+    const share = hrnHS / ns.networkHashrate;
     const coinPerDay = share * (ns.blockReward || 0) * blocksPerDay;
-    const revDay     = coinPerDay * price;
-    const elecDay    = (r.watt / 1000) * elecRate * 24;
-    const feeDay     = revDay * POOL_FEE;
-    const netDay     = revDay - elecDay - feeDay;
-    const netMonth   = netDay * 30;
-    const margin     = revDay > 0 ? Math.round(netDay / revDay * 100) : 0;
+    const revDay = coinPerDay * price;
+    const elecDay = (r.watt / 1000) * elecRate * 24;
+    const feeDay = revDay * POOL_FEE;
+    const netDay = revDay - elecDay - feeDay;
+    const netMonth = netDay * 30;
+    const margin = revDay > 0 ? Math.round(netDay / revDay * 100) : 0;
 
     r.profit = parseFloat(netMonth.toFixed(2));
     r.margin = margin;
@@ -6189,31 +6229,31 @@ function renderHiveWallets() {
     return;
   }
 
-  const ownXMR  = OWN_WALLET.xmrAddress;
-  const ownKAS  = OWN_WALLET.kasAddress;
+  const ownXMR = OWN_WALLET.xmrAddress;
+  const ownKAS = OWN_WALLET.kasAddress;
   const ownUSDT = OWN_WALLET.usdtAddress;
 
   container.innerHTML = hiveWallets.map(w => {
-    const addr    = w.wal || '';
-    const coin    = (w.coin || '').toUpperCase();
-    const name    = w.name || coin;
-    const isOwn   = addr === ownXMR || addr === ownKAS || addr === ownUSDT;
-    const color   = coin==='XMR'?'var(--orange)':coin==='KAS'?'var(--accent)':'var(--green)';
-    const icon    = coin==='XMR'?'⬡':coin==='KAS'?'◈':'₮';
+    const addr = w.wal || '';
+    const coin = (w.coin || '').toUpperCase();
+    const name = w.name || coin;
+    const isOwn = addr === ownXMR || addr === ownKAS || addr === ownUSDT;
+    const color = coin === 'XMR' ? 'var(--orange)' : coin === 'KAS' ? 'var(--accent)' : 'var(--green)';
+    const icon = coin === 'XMR' ? '⬡' : coin === 'KAS' ? '◈' : '₮';
 
     // Adresse du wallet perso correspondant
-    const myAddr  = coin==='XMR' ? ownXMR : coin==='KAS' ? ownKAS : null;
+    const myAddr = coin === 'XMR' ? ownXMR : coin === 'KAS' ? ownKAS : null;
     const differs = myAddr && addr !== myAddr;
 
     return `
-    <div style="background:${isOwn?'rgba(0,255,135,.04)':'var(--surface2)'};border:1px solid ${isOwn?'rgba(0,255,135,.2)':differs?'rgba(255,214,10,.2)':'var(--border)'};border-radius:10px;padding:10px 12px;margin-bottom:8px">
+    <div style="background:${isOwn ? 'rgba(0,255,135,.04)' : 'var(--surface2)'};border:1px solid ${isOwn ? 'rgba(0,255,135,.2)' : differs ? 'rgba(255,214,10,.2)' : 'var(--border)'};border-radius:10px;padding:10px 12px;margin-bottom:8px">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
         <div style="font-size:16px;color:${color}">${icon}</div>
         <div>
           <div style="font-size:11px;font-weight:700">${name}</div>
           <div style="font-size:9px;font-family:var(--mono);color:var(--muted)">${coin} · ID: ${w.id}</div>
         </div>
-        <div style="margin-left:auto;font-size:9px;font-family:var(--mono);padding:2px 7px;border-radius:5px;${isOwn?'background:rgba(0,255,135,.15);color:var(--green)':differs?'background:rgba(255,214,10,.15);color:var(--yellow)':'background:var(--surface);color:var(--muted)'}">
+        <div style="margin-left:auto;font-size:9px;font-family:var(--mono);padding:2px 7px;border-radius:5px;${isOwn ? 'background:rgba(0,255,135,.15);color:var(--green)' : differs ? 'background:rgba(255,214,10,.15);color:var(--yellow)' : 'background:var(--surface);color:var(--muted)'}">
           ${isOwn ? '✅ Mon wallet' : differs ? '⚠ Différent' : '—'}
         </div>
       </div>
@@ -6232,27 +6272,27 @@ function renderHiveWallets() {
 
 // ── Mettre à jour l'adresse d'un wallet HiveOS ──
 async function updateHiveWallet(walletId, coin) {
-  if (!OWN_WALLET.created) { toast('warn','Wallet','Créez d\'abord votre wallet personnel'); return; }
-  if (!SEC.sessionValid)    { toast('warn','PIN requis','Session expirée'); return; }
+  if (!OWN_WALLET.created) { toast('warn', 'Wallet', 'Créez d\'abord votre wallet personnel'); return; }
+  if (!SEC.sessionValid) { toast('warn', 'PIN requis', 'Session expirée'); return; }
 
-  const newAddr = coin==='XMR' ? OWN_WALLET.xmrAddress
-                : coin==='KAS' ? OWN_WALLET.kasAddress
-                : OWN_WALLET.usdtAddress;
-  if (!newAddr) { toast('err','Wallet','Adresse non disponible'); return; }
+  const newAddr = coin === 'XMR' ? OWN_WALLET.xmrAddress
+    : coin === 'KAS' ? OWN_WALLET.kasAddress
+      : OWN_WALLET.usdtAddress;
+  if (!newAddr) { toast('err', 'Wallet', 'Adresse non disponible'); return; }
 
-  if (!confirm(`Mettre à jour l\'adresse ${coin} dans HiveOS vers :\n${newAddr.slice(0,30)}…\n\nCette action modifie votre configuration HiveOS.`)) return;
+  if (!confirm(`Mettre à jour l\'adresse ${coin} dans HiveOS vers :\n${newAddr.slice(0, 30)}…\n\nCette action modifie votre configuration HiveOS.`)) return;
 
   try {
-    hiveLog(`🔄 Mise à jour wallet HiveOS ${walletId} → ${newAddr.slice(0,20)}…`);
+    hiveLog(`🔄 Mise à jour wallet HiveOS ${walletId} → ${newAddr.slice(0, 20)}…`);
     await hiveApiFetch(`/farms/${HIVE_FARM_ID}/wallets/${walletId}`, 'PUT', { wal: newAddr });
     hiveLog(`✅ Wallet ${coin} mis à jour dans HiveOS`);
-    toast('success','HiveOS',`Adresse ${coin} mise à jour. Redémarrez les workers.`);
+    toast('success', 'HiveOS', `Adresse ${coin} mise à jour. Redémarrez les workers.`);
     // Rafraîchir
     hiveLastFetch = 0;
     await fetchHiveOS();
-  } catch(e) {
+  } catch (e) {
     hiveLog('❌ Erreur mise à jour wallet : ' + e.message);
-    toast('err','HiveOS','Échec : ' + e.message);
+    toast('err', 'HiveOS', 'Échec : ' + e.message);
   }
 }
 
@@ -6261,39 +6301,39 @@ function hiveLog(msg) {
   console.log('[HiveOS]', msg);
   const log = el('hive-debug-log');
   if (!log) return;
-  const time = new Date().toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const time = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
   // Couleur selon le contenu
   let color = 'rgba(232,240,254,.7)';
   if (msg.startsWith('✅') || msg.startsWith('🎉')) color = 'var(--green)';
-  else if (msg.startsWith('❌'))                    color = 'var(--red)';
-  else if (msg.startsWith('⚠'))                    color = 'var(--yellow)';
+  else if (msg.startsWith('❌')) color = 'var(--red)';
+  else if (msg.startsWith('⚠')) color = 'var(--yellow)';
   else if (msg.startsWith('🔄') || msg.startsWith('📡') || msg.startsWith('🔍')) color = 'var(--accent)';
   else if (msg.startsWith('💾') || msg.startsWith('🚀')) color = 'rgba(200,180,255,.8)';
 
   const line = document.createElement('div');
   line.style.cssText = `font-family:var(--mono);font-size:9.5px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.03);color:${color}`;
   line.innerHTML = `<span style="color:var(--muted);margin-right:6px">${time}</span>${msg}`;
-  try { log.insertBefore(line, log.firstChild); } catch(_e) {}
-  try { while (log.children && log.children.length > 50) log.removeChild(log.lastChild); } catch(_e) {}
+  try { log.insertBefore(line, log.firstChild); } catch (_e) { }
+  try { while (log.children && log.children.length > 50) log.removeChild(log.lastChild); } catch (_e) { }
 }
 
 async function saveHiveSettings() {
   const t = el('hive-token-input')?.value.trim();
   const f = el('hive-farm-input')?.value.trim();
-  if (!t) { toast('warn','HiveOS','Token requis'); return; }
+  if (!t) { toast('warn', 'HiveOS', 'Token requis'); return; }
 
   HIVE_TOKEN = t;
   if (f) HIVE_FARM_ID = f;
   var _pu = el('hive-proxy-url-input') ? el('hive-proxy-url-input').value.trim() : '';
   if (_pu) {
-    try { localStorage.setItem('bitosdash_hive_proxy_url', _pu); } catch(e) {}
+    try { localStorage.setItem('bitosdash_hive_proxy_url', _pu); } catch (e) { }
     refreshHiveBase();
   }
   lsSave();
 
   el('hive-test-btn') && (el('hive-test-btn').style.display = 'inline-flex');
-  var _dab=el('btn-discover-all-farms');if(_dab)_dab.style.display='inline-flex';
+  var _dab = el('btn-discover-all-farms'); if (_dab) _dab.style.display = 'inline-flex';
   setHiveAPIBadge('loading');
   hiveLog('💾 Token sauvegardé…');
 
@@ -6309,36 +6349,36 @@ async function saveHiveSettings() {
 
 async function testHiveConnection() {
   if (!HIVE_TOKEN || !HIVE_FARM_ID) {
-    toast('err','HiveOS','Token et Farm ID requis');
+    toast('err', 'HiveOS', 'Token et Farm ID requis');
     return;
   }
 
   hiveLastFetch = 0; // Forcer le fetch
   const ok = await fetchHiveOS();
 
-  const preview  = el('hive-worker-preview');
-  const list     = el('hive-workers-list');
+  const preview = el('hive-worker-preview');
+  const list = el('hive-workers-list');
 
   if (ok) {
     setHiveAPIBadge('live');
-    setText('hive-badge-txt','Connecté');
+    setText('hive-badge-txt', 'Connecté');
 
     if (preview && list) {
       preview.style.display = 'block';
       list.innerHTML = RIGS.map(r => `
         <div class="hive-worker-row">
-          <div class="hive-worker-dot ${r.status==='online'?'dot-online':r.status==='warning'?'dot-warning':'dot-offline'}"></div>
+          <div class="hive-worker-dot ${r.status === 'online' ? 'dot-online' : r.status === 'warning' ? 'dot-warning' : 'dot-offline'}"></div>
           <div style="flex:1">
             <div class="hive-worker-name">${r.name}</div>
-            <div class="hive-worker-algo">${r.gpus} · ${r.hr||'—'}</div>
+            <div class="hive-worker-algo">${r.gpus} · ${r.hr || '—'}</div>
           </div>
-          <div class="hive-worker-temp" style="color:${r.temp>=80?'var(--red)':r.temp>=70?'var(--yellow)':'var(--muted)'}">${r.temp||'—'}°C</div>
-          <div class="hive-worker-hr" style="margin-left:8px">${r.status==='online'?'🟢':'🔴'}</div>
+          <div class="hive-worker-temp" style="color:${r.temp >= 80 ? 'var(--red)' : r.temp >= 70 ? 'var(--yellow)' : 'var(--muted)'}">${r.temp || '—'}°C</div>
+          <div class="hive-worker-hr" style="margin-left:8px">${r.status === 'online' ? '🟢' : '🔴'}</div>
         </div>`).join('');
     }
   } else {
     setHiveAPIBadge('offline');
-    setText('hive-badge-txt','Erreur');
+    setText('hive-badge-txt', 'Erreur');
   }
 }
 
@@ -6352,7 +6392,7 @@ function setHiveAPIBadge(state) {
   // Badge dans Settings
   const b = el('hive-status-badge');
   if (b) {
-    const labels = { live:'Connecté', loading:'Connexion…', offline:'Hors ligne', err:'Erreur' };
+    const labels = { live: 'Connecté', loading: 'Connexion…', offline: 'Hors ligne', err: 'Erreur' };
     b.className = 'api-badge api-' + state;
     b.style.display = 'flex';
     setText('hive-badge-txt', labels[state] || state);
@@ -6360,11 +6400,11 @@ function setHiveAPIBadge(state) {
   // Badge dans le hero wallet (badge-hiveos)
   const bHero = el('badge-hiveos');
   if (bHero) {
-    const heroLabels = { live:'HiveOS ✓', loading:'HiveOS…', offline:'HiveOS ✗', err:'HiveOS ✗' };
+    const heroLabels = { live: 'HiveOS ✓', loading: 'HiveOS…', offline: 'HiveOS ✗', err: 'HiveOS ✗' };
     bHero.className = 'api-badge api-' + state;
     const dot = bHero.querySelector('.api-dot');
     if (dot) dot.className = 'api-dot' + (state === 'live' ? ' blink' : '');
-    bHero.innerHTML = `<div class="api-dot${state==='live'?' blink':''}"></div>${heroLabels[state]||'HiveOS'}`;
+    bHero.innerHTML = `<div class="api-dot${state === 'live' ? ' blink' : ''}"></div>${heroLabels[state] || 'HiveOS'}`;
   }
 }
 
@@ -6374,9 +6414,9 @@ function initHiveSettings() {
   renderFarmList();
   // Pré-remplir token et farm si déjà configurés
   var tokenInp = el('hive-token-input');
-  var farmInp  = el('hive-farm-input');
+  var farmInp = el('hive-farm-input');
   if (tokenInp && HIVE_TOKEN && !tokenInp.value) tokenInp.value = HIVE_TOKEN;
-  if (farmInp  && HIVE_FARM_ID && !farmInp.value) farmInp.value  = HIVE_FARM_ID;
+  if (farmInp && HIVE_FARM_ID && !farmInp.value) farmInp.value = HIVE_FARM_ID;
   // Status XMR pool
   // Pré-remplir le champ nœud Monero
   var nodeUrlInp = el('xmr-node-url');
@@ -6385,16 +6425,16 @@ function initHiveSettings() {
   if (nodeEnabledInp) nodeEnabledInp.checked = XMR_NODE.enabled;
   var nodeBadge = el('xmr-node-badge');
   if (nodeBadge && XMR_NODE.enabled && XMR_NODE.url) {
-    nodeBadge.textContent = 'PRÊT'; nodeBadge.style.background='rgba(245,158,11,0.2)'; nodeBadge.style.color='var(--yellow)';
+    nodeBadge.textContent = 'PRÊT'; nodeBadge.style.background = 'rgba(245,158,11,0.2)'; nodeBadge.style.color = 'var(--yellow)';
   }
   var sg = el('sg-xmr-pool');
   if (sg && POOL_CONFIG.XMR.walletAddr) {
-    sg.textContent = '✅ ' + POOL_CONFIG.XMR.walletAddr.slice(0,12) + '…' + POOL_CONFIG.XMR.walletAddr.slice(-6);
+    sg.textContent = '✅ ' + POOL_CONFIG.XMR.walletAddr.slice(0, 12) + '…' + POOL_CONFIG.XMR.walletAddr.slice(-6);
     sg.style.color = 'var(--green)';
   }
   var sgk = el('sg-kas-pool');
   if (sgk && POOL_CONFIG.KAS.walletAddr) {
-    sgk.textContent = '✅ ' + POOL_CONFIG.KAS.walletAddr.slice(0,12) + '…' + POOL_CONFIG.KAS.walletAddr.slice(-6);
+    sgk.textContent = '✅ ' + POOL_CONFIG.KAS.walletAddr.slice(0, 12) + '…' + POOL_CONFIG.KAS.walletAddr.slice(-6);
     sgk.style.color = 'var(--green)';
   }
   // Afficher le mode proxy/direct dans le guide
@@ -6403,14 +6443,14 @@ function initHiveSettings() {
   var _envMode = ENV.isGHPages ? 'ghpages' : (ENV.isLocalhost || ENV.isLAN) ? 'local' : 'cloud';
   var _proxyInput = el('hive-proxy-url-input');
   if (_proxyInput && !_proxyInput.value) {
-    try { _proxyInput.value = localStorage.getItem('bitosdash_hive_proxy_url') || ''; } catch(e) {}
+    try { _proxyInput.value = localStorage.getItem('bitosdash_hive_proxy_url') || ''; } catch (e) { }
   }
   var _modeLabel = el('hive-proxy-mode-label');
   if (_modeLabel) {
     var _modes = {
       ghpages: 'GitHub Pages - CORS HiveOS bloque - entrez URL proxy ci-dessous',
-      local:   'Serveur local detecte - proxy /proxy/hiveos actif automatiquement',
-      cloud:   'Cloud deploye - CORS HiveOS limite - proxy recommande',
+      local: 'Serveur local detecte - proxy /proxy/hiveos actif automatiquement',
+      cloud: 'Cloud deploye - CORS HiveOS limite - proxy recommande',
     };
     _modeLabel.textContent = _modes[_envMode] || '';
     _modeLabel.style.color = _envMode === 'local' ? 'var(--green)' : 'var(--yellow)';
@@ -6432,28 +6472,28 @@ function initHiveSettings() {
   }
 
   // Toujours pré-remplir le token (déjà configuré)
-  const inp  = el('hive-token-input');
+  const inp = el('hive-token-input');
   const fInp = el('hive-farm-input');
-  if (inp && !inp.value)  inp.value  = HIVE_TOKEN;
+  if (inp && !inp.value) inp.value = HIVE_TOKEN;
   if (fInp && !fInp.value && HIVE_FARM_ID) fInp.value = HIVE_FARM_ID;
   hiveSettingsChanged();
 
   if (HIVE_TOKEN) {
     el('hive-test-btn') && (el('hive-test-btn').style.display = 'inline-flex');
     setHiveAPIBadge('live');
-    setText('hive-badge-txt','Configuré');
+    setText('hive-badge-txt', 'Configuré');
   }
   refreshHistoryInfo();
   renderHiveWallets();
 }
 
 function refreshHistoryInfo() {
-  const raw   = localStorage.getItem('bitosdash_history_v1');
-  const kb    = raw ? (raw.length/1024).toFixed(1) : '0';
+  const raw = localStorage.getItem('bitosdash_history_v1');
+  const kb = raw ? (raw.length / 1024).toFixed(1) : '0';
   const count = SNAPSHOTS.length;
-  const span  = count > 1 ? ((SNAPSHOTS[count-1].ts - SNAPSHOTS[0].ts)/3600000).toFixed(1)+'h' : '—';
-  setText('hist-snap-count', count+' points · '+kb+' KB · '+span+' couverts');
-  setText('hist-source-info', typeof HIVE_TOKEN!=='undefined'&&HIVE_TOKEN ? '📡 HiveOS — Données réelles' : '🔵 Simulation locale');
+  const span = count > 1 ? ((SNAPSHOTS[count - 1].ts - SNAPSHOTS[0].ts) / 3600000).toFixed(1) + 'h' : '—';
+  setText('hist-snap-count', count + ' points · ' + kb + ' KB · ' + span + ' couverts');
+  setText('hist-source-info', typeof HIVE_TOKEN !== 'undefined' && HIVE_TOKEN ? '📡 HiveOS — Données réelles' : '🔵 Simulation locale');
 
   // ── Graphique aperçu 24h (ch-hist-snap) ────────────────
   try {
@@ -6461,23 +6501,23 @@ function refreshHistoryInfo() {
     const cv = el('ch-hist-snap');
     if (cv) {
       if (snaps24.length >= 2) {
-        const ds = snaps24.map(s => (s.xmrHR||0)/1000 + (s.kasHR||0)/1e9);
-        const lbls = snaps24.map(s => new Date(s.ts).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}));
-        drawChart('ch-hist-snap','line',
-          [{ data: ds, color:'#7c3aed', fill:true, label:'HR total' }],
+        const ds = snaps24.map(s => (s.xmrHR || 0) / 1000 + (s.kasHR || 0) / 1e9);
+        const lbls = snaps24.map(s => new Date(s.ts).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }));
+        drawChart('ch-hist-snap', 'line',
+          [{ data: ds, color: '#7c3aed', fill: true, label: 'HR total' }],
           lbls);
       } else {
         const ctx = cv.getContext('2d');
         if (ctx) {
-          const W=cv.offsetWidth||300, H=cv.offsetHeight||130;
-          cv.width=W; cv.height=H; ctx.clearRect(0,0,W,H);
-          ctx.fillStyle='var(--muted,#64748b)'; ctx.font='11px monospace';
-          ctx.textAlign='center';
-          ctx.fillText('En attente de données ('+count+' pts)…', W/2, H/2);
+          const W = cv.offsetWidth || 300, H = cv.offsetHeight || 130;
+          cv.width = W; cv.height = H; ctx.clearRect(0, 0, W, H);
+          ctx.fillStyle = 'var(--muted,#64748b)'; ctx.font = '11px monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText('En attente de données (' + count + ' pts)…', W / 2, H / 2);
         }
       }
     }
-  } catch(_e){}
+  } catch (_e) { }
 }
 
 
@@ -6487,10 +6527,10 @@ function refreshHistoryInfo() {
 let currentChartWindow = '24h'; // '1h' | '24h' | '7j' | '30j'
 
 const WINDOWS = {
-  '1h':  { ms: 3600000,        max_points: 60,  label: 'Dernière heure',   dateFormat: h => new Date(h.ts).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}) },
-  '24h': { ms: 86400000,       max_points: 48,  label: 'Dernières 24h',    dateFormat: h => new Date(h.ts).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}) },
-  '7j':  { ms: 604800000,      max_points: 84,  label: '7 derniers jours', dateFormat: h => new Date(h.ts).toLocaleDateString('fr-FR',{weekday:'short',day:'2-digit'}) },
-  '30j': { ms: 2592000000,     max_points: 60,  label: '30 derniers jours',dateFormat: h => new Date(h.ts).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'}) },
+  '1h': { ms: 3600000, max_points: 60, label: 'Dernière heure', dateFormat: h => new Date(h.ts).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) },
+  '24h': { ms: 86400000, max_points: 48, label: 'Dernières 24h', dateFormat: h => new Date(h.ts).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) },
+  '7j': { ms: 604800000, max_points: 84, label: '7 derniers jours', dateFormat: h => new Date(h.ts).toLocaleDateString('fr-FR', { weekday: 'short', day: '2-digit' }) },
+  '30j': { ms: 2592000000, max_points: 60, label: '30 derniers jours', dateFormat: h => new Date(h.ts).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }) },
 };
 
 function downsample(arr, maxPts) {
@@ -6498,12 +6538,12 @@ function downsample(arr, maxPts) {
   const step = Math.ceil(arr.length / maxPts);
   const result = [];
   for (let i = 0; i < arr.length; i += step) {
-    const chunk = arr.slice(i, i+step);
+    const chunk = arr.slice(i, i + step);
     // Average the chunk
     const avg = {};
     Object.keys(chunk[0]).forEach(k => {
-      if (k === 'ts') avg[k] = chunk[Math.floor(chunk.length/2)][k];
-      else avg[k] = parseFloat((chunk.reduce((s,p) => s + (p[k]||0), 0) / chunk.length).toFixed(3));
+      if (k === 'ts') avg[k] = chunk[Math.floor(chunk.length / 2)][k];
+      else avg[k] = parseFloat((chunk.reduce((s, p) => s + (p[k] || 0), 0) / chunk.length).toFixed(3));
     });
     result.push(avg);
   }
@@ -6525,13 +6565,13 @@ function drawChart(canvasId, type, datasets, labels) {
     if (!datasets || !datasets.length || !labels || !labels.length) {
       ctx.fillStyle = 'var(--muted,#64748b)'; ctx.font = '11px monospace';
       ctx.textAlign = 'center';
-      ctx.fillText('En attente de données…', W/2, H/2);
+      ctx.fillText('En attente de données…', W / 2, H / 2);
       return;
     }
     const allVals = datasets.flatMap(d => d.data || []);
     const maxV = Math.max(...allVals, 0.001), minV = Math.min(...allVals, 0);
     const range = maxV - minV || 1;
-    const padX = 6, padY = 10, W2 = W - padX*2, H2 = H - padY*2;
+    const padX = 6, padY = 10, W2 = W - padX * 2, H2 = H - padY * 2;
     const n = labels.length;
 
     if (type === 'bar') {
@@ -6541,7 +6581,7 @@ function drawChart(canvasId, type, datasets, labels) {
       const barW = Math.max(2, groupW / nDs - 2);
       datasets.forEach((ds, di) => {
         const data = ds.data || [];
-        const color = ds.color || ['#ff6b2b','#00e5ff','#7c3aed'][di] || '#888';
+        const color = ds.color || ['#ff6b2b', '#00e5ff', '#7c3aed'][di] || '#888';
         data.forEach((v, i) => {
           const x = padX + i * groupW + di * (barW + 1);
           const barH = Math.max(1, (v / maxV) * H2);
@@ -6555,15 +6595,15 @@ function drawChart(canvasId, type, datasets, labels) {
       ctx.fillStyle = 'var(--muted,#64748b)'; ctx.font = '8px monospace';
       ctx.textAlign = 'center';
       labels.forEach((lbl, i) => {
-        const x = padX + i * groupW + groupW/2;
-        ctx.fillText(String(lbl).slice(0,6), x, H - 2);
+        const x = padX + i * groupW + groupW / 2;
+        ctx.fillText(String(lbl).slice(0, 6), x, H - 2);
       });
     } else {
       // ── Line chart (avec fill optionnel) ──
       datasets.forEach((ds, di) => {
         const data = ds.data || [];
         if (!data.length) return;
-        const color = ds.color || ds.borderColor || ['#ff6b2b','#00e5ff','#7c3aed'][di] || '#888';
+        const color = ds.color || ds.borderColor || ['#ff6b2b', '#00e5ff', '#7c3aed'][di] || '#888';
         ctx.beginPath();
         ctx.strokeStyle = color;
         ctx.lineWidth = 1.5;
@@ -6586,12 +6626,12 @@ function drawChart(canvasId, type, datasets, labels) {
             grad.addColorStop(0, hex + '40');
             grad.addColorStop(1, hex + '05');
             ctx.fillStyle = grad;
-          } catch(_e) { ctx.fillStyle = color + '20'; }
+          } catch (_e) { ctx.fillStyle = color + '20'; }
           ctx.fill();
         }
       });
     }
-  } catch(e) { console.warn('[drawChart]', canvasId, e.message); }
+  } catch (e) { console.warn('[drawChart]', canvasId, e.message); }
 }
 
 function redrawDashboardCharts(window_key) {
@@ -6610,20 +6650,20 @@ function redrawDashboardCharts(window_key) {
   drawChart('ch-hash', 'line', [
     { data: snaps.map(s => s.xmrHR), color: '#ff6b2b', fill: true, label: 'XMR KH/s' },
     { data: snaps.map(s => s.kasHR), color: '#00e5ff', fill: true, label: 'KAS GH/s' },
-  ], labels, { yLbl: v => v.toFixed(1)+'K' });
+  ], labels, { yLbl: v => v.toFixed(1) + 'K' });
   chartInited['dashboard'] = true;
 
   // Revenus
   chartInited['dashboard_rev'] = false;
   drawChart('ch-rev', 'bar', [
     { data: snaps.map(s => parseFloat((s.rev / 24).toFixed(2))), color: '#00ff87', label: 'Rev/h $' },
-  ], labels, { yLbl: v => '$'+v.toFixed(2) });
+  ], labels, { yLbl: v => '$' + v.toFixed(2) });
 
   // Températures
   chartInited['dashboard_temp'] = false;
   drawChart('ch-temp', 'line', [
     { data: snaps.map(s => s.avgTemp), color: '#ff6b2b', fill: true, label: 'Temp moy. °C' },
-  ], labels, { yLbl: v => v.toFixed(0)+'°' });
+  ], labels, { yLbl: v => v.toFixed(0) + '°' });
 
   // Update window selector UI
   document.querySelectorAll('.chart-win-btn').forEach(b => {
@@ -6633,12 +6673,12 @@ function redrawDashboardCharts(window_key) {
   // Update stats from real snapshots
   if (snaps.length > 0) {
     const latest = snaps[snaps.length - 1];
-    const first  = snaps[0];
-    const avgRev = snaps.reduce((s,p) => s + p.rev, 0) / snaps.length;
-    setText('hist-avg-rev',   '$' + avgRev.toFixed(2) + '/j');
-    setText('hist-avg-hr',    (latest.xmrHR + latest.kasHR/100).toFixed(1) + ' mix');
+    const first = snaps[0];
+    const avgRev = snaps.reduce((s, p) => s + p.rev, 0) / snaps.length;
+    setText('hist-avg-rev', '$' + avgRev.toFixed(2) + '/j');
+    setText('hist-avg-hr', (latest.xmrHR + latest.kasHR / 100).toFixed(1) + ' mix');
     setText('hist-peak-temp', Math.max(...snaps.map(s => s.avgTemp)).toFixed(0) + '°C');
-    setText('hist-uptime',    calcUptime(snaps) + '%');
+    setText('hist-uptime', calcUptime(snaps) + '%');
   }
 }
 
@@ -6668,7 +6708,7 @@ function saveHistory() {
   try {
     const keep = SNAPSHOTS.slice(-2016);
     localStorage.setItem(LS_HIST_KEY, JSON.stringify(keep));
-  } catch(e) {}
+  } catch (e) { }
 }
 
 function loadHistory() {
@@ -6678,33 +6718,33 @@ function loadHistory() {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed)) { SNAPSHOTS = parsed; }
     }
-  } catch(e) {}
+  } catch (e) { }
 }
 
 function takeSnapshot() {
   try {
     const activeRigs = RIGS.filter(r => r.status !== 'offline');
-    const xmrHR = activeRigs.filter(r=>r.coin==='XMR').reduce((s,r)=>s+(r.hrn||0),0);
-    const kasHR  = activeRigs.filter(r=>r.coin==='KAS').reduce((s,r)=>s+(r.hrn||0),0);
-    const temps  = activeRigs.map(r=>r.temp||0).filter(t=>t>0);
-    const avgTemp = temps.length ? Math.round(temps.reduce((a,b)=>a+b,0)/temps.length) : 0;
-    const totalWatt = activeRigs.reduce((s,r)=>s+(r.watt||0),0);
-    var _ssXMR=RIGS.filter(function(r){return r.coin==='XMR'&&r.status!=='offline';}).reduce(function(s,r){return s+(r.hrn||0);},0);
-  var _ssKAS=RIGS.filter(function(r){return r.coin==='KAS'&&r.status!=='offline';}).reduce(function(s,r){return s+(r.hrn||0);},0);
-  const _revDay = typeof calcMiningRevenue === 'function'
-    ? (calcMiningRevenue('XMR').daily || 0) + (calcMiningRevenue('KAS').daily || 0)
-    : activeRigs.reduce(function(s,r){return s+(r.profit||0);},0)/30;
-  SNAPSHOTS.push({
-    hrXMR:_ssXMR, hrKAS:_ssKAS,
-    ts: Date.now(), xmrHR, kasHR, avgTemp, totalWatt,
-    xmrP: (typeof xmrP!=='undefined' ? xmrP : 0),
-    kasP:  (typeof kasP !=='undefined' ? kasP  : 0),
-    rev: parseFloat(_revDay.toFixed(4)),
-    netRev: parseFloat(((calcMiningRevenue&&calcMiningRevenue('XMR').netDaily||0)+(calcMiningRevenue&&calcMiningRevenue('KAS').netDaily||0)).toFixed(4)),
-  });
+    const xmrHR = activeRigs.filter(r => r.coin === 'XMR').reduce((s, r) => s + (r.hrn || 0), 0);
+    const kasHR = activeRigs.filter(r => r.coin === 'KAS').reduce((s, r) => s + (r.hrn || 0), 0);
+    const temps = activeRigs.map(r => r.temp || 0).filter(t => t > 0);
+    const avgTemp = temps.length ? Math.round(temps.reduce((a, b) => a + b, 0) / temps.length) : 0;
+    const totalWatt = activeRigs.reduce((s, r) => s + (r.watt || 0), 0);
+    var _ssXMR = RIGS.filter(function (r) { return r.coin === 'XMR' && r.status !== 'offline'; }).reduce(function (s, r) { return s + (r.hrn || 0); }, 0);
+    var _ssKAS = RIGS.filter(function (r) { return r.coin === 'KAS' && r.status !== 'offline'; }).reduce(function (s, r) { return s + (r.hrn || 0); }, 0);
+    const _revDay = typeof calcMiningRevenue === 'function'
+      ? (calcMiningRevenue('XMR').daily || 0) + (calcMiningRevenue('KAS').daily || 0)
+      : activeRigs.reduce(function (s, r) { return s + (r.profit || 0); }, 0) / 30;
+    SNAPSHOTS.push({
+      hrXMR: _ssXMR, hrKAS: _ssKAS,
+      ts: Date.now(), xmrHR, kasHR, avgTemp, totalWatt,
+      xmrP: (typeof xmrP !== 'undefined' ? xmrP : 0),
+      kasP: (typeof kasP !== 'undefined' ? kasP : 0),
+      rev: parseFloat(_revDay.toFixed(4)),
+      netRev: parseFloat(((calcMiningRevenue && calcMiningRevenue('XMR').netDaily || 0) + (calcMiningRevenue && calcMiningRevenue('KAS').netDaily || 0)).toFixed(4)),
+    });
     if (SNAPSHOTS.length > 2016) SNAPSHOTS.splice(0, SNAPSHOTS.length - 2016);
     saveHistory();
-  } catch(e) { console.warn('[takeSnapshot]', e.message); }
+  } catch (e) { console.warn('[takeSnapshot]', e.message); }
 }
 
 function getSnaps(ms) {
@@ -6725,32 +6765,32 @@ function renderHistV2() {
 
   const all = [];
   if (Array.isArray(TX_HISTORY)) TX_HISTORY.forEach(t => all.push(t));
-  if (Array.isArray(PAYMENTS))   PAYMENTS.forEach(p => all.push(p));
+  if (Array.isArray(PAYMENTS)) PAYMENTS.forEach(p => all.push(p));
 
   const activeBtn = document.querySelector && document.querySelector('.hfilt-btn.active');
   const filter = (activeBtn && activeBtn.dataset && activeBtn.dataset.filter) || 'all';
-  const search  = ((el('hist-search') && el('hist-search').value) || '').toLowerCase();
+  const search = ((el('hist-search') && el('hist-search').value) || '').toLowerCase();
 
   const filtered = all.filter(tx => {
     if (filter === 'send' && tx.type !== 'send') return false;
     if (filter === 'recv' && tx.type !== 'recv') return false;
-    if (filter === 'xmr'  && (tx.coin||'').toUpperCase() !== 'XMR') return false;
-    if (filter === 'kas'  && (tx.coin||'').toUpperCase() !== 'KAS') return false;
+    if (filter === 'xmr' && (tx.coin || '').toUpperCase() !== 'XMR') return false;
+    if (filter === 'kas' && (tx.coin || '').toUpperCase() !== 'KAS') return false;
     if (search) {
       if (!JSON.stringify(tx).toLowerCase().includes(search)) return false;
     }
     return true;
   });
 
-  filtered.sort((a,b) => {
-    const ta = a.ts ? a.ts : (new Date(a.date||0).getTime()||0);
-    const tb = b.ts ? b.ts : (new Date(b.date||0).getTime()||0);
+  filtered.sort((a, b) => {
+    const ta = a.ts ? a.ts : (new Date(a.date || 0).getTime() || 0);
+    const tb = b.ts ? b.ts : (new Date(b.date || 0).getTime() || 0);
     return tb - ta;
   });
 
-  setText('hs-count', filtered.length+' tx');
-  setText('hs-recv',  filtered.filter(t=>t.type==='recv').length+' reçus');
-  setText('hs-sent',  filtered.filter(t=>t.type==='send').length+' envoyés');
+  setText('hs-count', filtered.length + ' tx');
+  setText('hs-recv', filtered.filter(t => t.type === 'recv').length + ' reçus');
+  setText('hs-sent', filtered.filter(t => t.type === 'send').length + ' envoyés');
 
   if (filtered.length === 0) {
     tbody.innerHTML = '';
@@ -6760,13 +6800,13 @@ function renderHistV2() {
   if (empty) empty.style.display = 'none';
 
   tbody.innerHTML = filtered.map(tx => {
-    const icon  = tx.type==='send' ? '↑' : '↓';
-    const clr   = tx.type==='send' ? 'var(--red)' : 'var(--green)';
-    const coin  = (tx.coin||'').toUpperCase();
-    const amt   = tx.amount||'—';
-    const usd   = tx.usd||'';
-    const date  = tx.date||(tx.ts?new Date(tx.ts).toLocaleDateString('fr-FR'):'—');
-    const dest  = tx.pool||tx.note||tx.to||'';
+    const icon = tx.type === 'send' ? '↑' : '↓';
+    const clr = tx.type === 'send' ? 'var(--red)' : 'var(--green)';
+    const coin = (tx.coin || '').toUpperCase();
+    const amt = tx.amount || '—';
+    const usd = tx.usd || '';
+    const date = tx.date || (tx.ts ? new Date(tx.ts).toLocaleDateString('fr-FR') : '—');
+    const dest = tx.pool || tx.note || tx.to || '';
     return `<tr>
       <td style="color:${clr};font-size:18px;text-align:center">${icon}</td>
       <td><span class="badge-coin">${coin}</span></td>
@@ -6787,262 +6827,262 @@ function initHistory() {
 
 // BIP-39 compatible Word List — 2048 words
 const BIP39_WORDLIST = [
-  "abandon","ability","able","about","above","absent","absorb","abstract",
-  "absurd","abuse","access","accident","account","accuse","achieve","acid",
-  "acoustic","acquire","across","act","action","actor","actress","actual",
-  "adapt","add","addict","address","adjust","admit","adult","advance",
-  "advice","aerobic","afford","afraid","again","age","agent","agree",
-  "ahead","aim","air","airport","aisle","alarm","album","alcohol",
-  "alert","alien","all","alley","allow","almost","alone","alpha",
-  "already","also","alter","always","amateur","amazing","among","amount",
-  "amused","analyst","anchor","ancient","anger","angle","angry","animal",
-  "ankle","announce","annual","another","answer","antenna","antique","anxiety",
-  "any","apart","apology","appear","apple","approve","april","arch",
-  "arctic","area","arena","argue","arm","armed","armor","army",
-  "around","arrange","arrest","arrive","arrow","art","artefact","artist",
-  "artwork","ask","aspect","assault","asset","assist","assume","asthma",
-  "athlete","atom","attack","attend","attitude","attract","auction","audit",
-  "august","aunt","author","auto","autumn","average","avocado","avoid",
-  "awake","aware","away","awesome","awful","awkward","axis","baby",
-  "bachelor","bacon","badge","bag","balance","balcony","ball","bamboo",
-  "banana","banner","bar","barely","bargain","barrel","base","basic",
-  "basket","battle","beach","bean","beauty","because","become","beef",
-  "before","begin","behave","behind","believe","below","belt","bench",
-  "benefit","best","betray","better","between","beyond","bicycle","bid",
-  "bike","bind","biology","bird","birth","bitter","black","blade",
-  "blame","blanket","blast","bleak","bless","blind","blood","blossom",
-  "blouse","blue","blur","blush","board","boat","body","boil",
-  "bomb","bone","book","boost","border","boring","borrow","boss",
-  "bottom","bounce","box","boy","bracket","brain","brand","brave",
-  "breeze","brick","bridge","brief","bright","bring","brisk","broccoli",
-  "broken","bronze","broom","brother","brown","brush","bubble","buddy",
-  "budget","buffalo","build","bulb","bulk","bullet","bundle","bunker",
-  "burden","burger","burst","bus","business","busy","butter","buyer",
-  "buzz","cabbage","cabin","cable","cactus","cage","cake","call",
-  "calm","camera","camp","can","canal","cancel","candy","cannon",
-  "canvas","canyon","capable","capital","captain","car","carbon","card",
-  "cargo","carpet","carry","cart","case","cash","casino","castle",
-  "casual","cat","catalog","catch","category","cattle","caught","cause",
-  "caution","cave","cease","cell","census","chair","chaos","chapter",
-  "charge","chase","chat","cheap","check","cheese","chef","cherry",
-  "chest","chicken","chief","child","chimney","choice","choose","chronic",
-  "chuckle","chunk","cinnamon","circle","citizen","city","civil","claim",
-  "clap","clarify","claw","clay","clean","clerk","clever","click",
-  "client","cliff","climb","clinic","clip","clock","clog","close",
-  "cloth","cloud","clown","club","clump","cluster","clutch","coach",
-  "coast","coconut","code","coffee","coil","coin","collect","color",
-  "column","combine","come","comfort","comic","common","company","concert",
-  "conduct","confirm","congress","connect","consider","control","convince","cook",
-  "cool","copper","copy","coral","core","corn","correct","cost",
-  "cotton","couch","country","couple","course","cousin","cover","coyote",
-  "crack","cradle","craft","cram","crane","crash","crater","crawl",
-  "crazy","cream","credit","creek","crew","cricket","crime","crisp",
-  "critic","cross","crouch","crowd","crucial","cruel","cruise","crumble",
-  "crunch","crush","cry","crystal","cube","culture","cup","cupboard",
-  "curious","current","curtain","cycle","dad","damage","damp","dance",
-  "danger","daring","dash","daughter","dawn","day","deal","debate",
-  "debris","decade","december","decide","decline","decorate","decrease","deer",
-  "defense","define","defy","degree","delay","deliver","demand","demise",
-  "denial","dentist","deny","depart","depend","deposit","depth","deputy",
-  "derive","describe","desert","design","desk","despair","destroy","detail",
-  "detect","develop","device","devote","diagram","dial","diamond","diary",
-  "dice","diesel","diet","differ","digital","dignity","dilemma","dinner",
-  "dinosaur","direct","dirt","disagree","discover","disease","dish","dismiss",
-  "disorder","display","distance","divert","divide","divorce","dizzy","doctor",
-  "document","dog","doll","dolphin","domain","donate","donkey","donor",
-  "door","dose","double","dove","draft","dragon","drama","drastic",
-  "draw","dream","dress","drift","drill","drink","drip","drive",
-  "drop","drum","dry","duck","dumb","dune","during","dust",
-  "dutch","duty","dwarf","dynamic","eager","eagle","early","earn",
-  "earth","easily","east","easy","echo","ecology","edge","edit",
-  "educate","effort","egg","eight","either","elbow","elder","electric",
-  "elegant","element","elephant","elevator","elite","else","embark","embody",
-  "embrace","emerge","emotion","employ","empower","empty","enable","enact",
-  "endless","endorse","enemy","engage","engine","enhance","enjoy","enlist",
-  "enough","enrich","enroll","ensure","enter","entire","entry","envelope",
-  "episode","equal","equip","era","erase","erode","erosion","error",
-  "erupt","escape","essay","essence","estate","eternal","ethics","evidence",
-  "evil","evoke","evolve","exact","example","excess","exchange","excite",
-  "exclude","exercise","exhaust","exhibit","exile","exist","exit","exotic",
-  "expand","expire","explain","expose","express","extend","extra","eye",
-  "fable","face","faculty","fade","faint","faith","fall","false",
-  "fame","family","famous","fan","fancy","fantasy","far","fashion",
-  "fat","fatal","father","fatigue","fault","favorite","feature","february",
-  "federal","fee","feed","feel","feet","fellow","felt","fence",
-  "festival","fetch","fever","few","fiber","fiction","field","figure",
-  "file","film","filter","final","find","fine","finger","finish",
-  "fire","firm","first","fiscal","fish","fit","fitness","fix",
-  "flag","flame","flash","flat","flavor","flee","flight","flip",
-  "float","flock","floor","flower","fluid","flush","fly","foam",
-  "focus","fog","foil","follow","food","foot","force","forest",
-  "forget","fork","fortune","forum","forward","fossil","foster","found",
-  "fox","fragile","frame","frequent","fresh","friend","fringe","frog",
-  "front","frost","frown","frozen","fruit","fuel","fun","funny",
-  "furnace","fury","future","gadget","gain","galaxy","gallery","game",
-  "gap","garbage","garden","garlic","garment","gasp","gate","gather",
-  "gauge","gaze","general","genius","genre","gentle","genuine","gesture",
-  "ghost","gift","giggle","ginger","giraffe","girl","give","glad",
-  "glance","glare","glass","glide","glimpse","globe","gloom","glory",
-  "glove","glow","glue","goat","goddess","gold","good","goose",
-  "gorilla","gospel","gossip","govern","gown","grab","grace","grain",
-  "grant","grape","grasp","grass","gravity","great","green","grid",
-  "grief","grit","grocery","group","grow","grunt","guard","guide",
-  "guilt","guitar","gun","gym","habit","hair","half","hamster",
-  "hand","happy","harsh","harvest","hat","have","hawk","hazard",
-  "head","health","heart","heavy","hedgehog","height","hello","helmet",
-  "help","hen","hero","hidden","high","hill","hint","hip",
-  "hire","history","hobby","hockey","hold","hole","holiday","hollow",
-  "home","honey","hood","hope","horn","hospital","host","hour",
-  "hover","hub","huge","human","humble","humor","hundred","hungry",
-  "hunt","hurdle","hurry","hurt","husband","hybrid","ice","icon",
-  "ignore","ill","illegal","image","imitate","immense","immune","impact",
-  "impose","improve","impulse","inbox","income","increase","index","indicate",
-  "indoor","industry","infant","inflict","inform","inhale","inherit","initial",
-  "inject","injury","inmate","inner","innocent","input","inquiry","insane",
-  "insect","inside","inspire","install","intact","interest","into","invest",
-  "invite","involve","iron","island","isolate","issue","item","ivory",
-  "jacket","jaguar","jar","jazz","jealous","jeans","jelly","jewel",
-  "job","join","joke","journey","joy","judge","juice","jump",
-  "jungle","junior","junk","just","kangaroo","keen","keep","ketchup",
-  "key","kick","kid","kingdom","kiss","kit","kitchen","kite",
-  "kitten","kiwi","knee","knife","knock","know","lab","ladder",
-  "lady","lake","lamp","language","laptop","large","later","laugh",
-  "laundry","lava","law","lawn","lawsuit","layer","lazy","leader",
-  "learn","leave","lecture","left","leg","legal","legend","leisure",
-  "lemon","lend","length","lens","leopard","lesson","letter","level",
-  "liar","liberty","library","license","life","lift","light","like",
-  "limb","limit","link","lion","liquid","list","little","live",
-  "lizard","load","loan","lobster","local","lock","logic","lonely",
-  "long","loop","lottery","loud","lounge","love","loyal","lucky",
-  "luggage","lunar","lunch","luxury","lyrics","machine","mad","magic",
-  "magnet","maid","main","major","make","mammal","mango","mansion",
-  "manual","maple","marble","march","margin","marine","market","marriage",
-  "mask","master","match","material","math","matrix","matter","maximum",
-  "maze","meadow","mean","medal","media","melody","melt","member",
-  "memory","mention","mentor","menu","mercy","merge","merit","merry",
-  "mesh","message","metal","method","middle","midnight","milk","million",
-  "mimic","mind","minimum","minor","minute","miracle","miss","mistake",
-  "mix","mixed","mixture","mobile","model","modify","mom","monitor",
-  "monkey","monster","month","moon","moral","more","morning","mosquito",
-  "mother","motion","moto","mountain","mouse","move","movie","much",
-  "muffin","mule","multiply","muscle","museum","mushroom","music","must",
-  "mutual","myself","mystery","naive","name","napkin","narrow","nasty",
-  "natural","nature","near","neck","need","negative","neglect","neither",
-  "nephew","nerve","network","news","next","nice","night","noble",
-  "noise","nominee","noodle","normal","notable","note","nothing","notice",
-  "novel","now","nuclear","number","nurse","nut","oak","obey",
-  "object","oblige","obscure","observe","obtain","ocean","october","odor",
-  "off","offer","office","often","oil","okay","old","olive",
-  "olympic","omit","once","onion","open","oppose","option","orange",
-  "orbit","orchard","order","ordinary","organ","orient","original","orphan",
-  "ostrich","other","outdoor","outside","oval","over","own","oyster",
-  "ozone","paddle","page","pair","palace","palm","panda","panel",
-  "panic","panther","paper","parade","parent","park","parrot","party",
-  "pass","patch","path","patrol","pause","pave","payment","peace",
-  "peanut","peasant","pelican","pen","penalty","pencil","people","pepper",
-  "perfect","permit","person","pet","phone","photo","phrase","physical",
-  "piano","picnic","picture","piece","pig","pigeon","pill","pilot",
-  "pink","pioneer","pipe","pistol","pitch","pizza","place","planet",
-  "plastic","plate","play","please","pledge","pluck","plug","plunge",
-  "poem","poet","point","polar","pole","police","pond","pony",
-  "popular","portion","position","possible","post","potato","pottery","poverty",
-  "powder","power","practice","praise","predict","prefer","prepare","present",
-  "pretty","prevent","price","pride","primary","print","priority","prison",
-  "private","prize","problem","process","produce","profit","program","project",
-  "promote","proof","property","prosper","protect","proud","provide","public",
-  "pudding","pull","pulp","pulse","pumpkin","punch","pupil","puppy",
-  "purchase","purity","purpose","push","put","puzzle","pyramid","quality",
-  "quantum","quarter","question","quick","quit","quiz","quote","rabbit",
-  "raccoon","race","rack","radar","radio","rage","rail","rain",
-  "raise","rally","ramp","ranch","random","range","rapid","rare",
-  "rate","rather","raven","reach","ready","real","reason","rebel",
-  "rebuild","recall","receive","recipe","record","recycle","reduce","reflect",
-  "reform","refuse","region","regret","regular","reject","relax","release",
-  "relief","rely","remain","remember","remind","remove","render","renew",
-  "rent","reopen","repair","repeat","replace","report","require","rescue",
-  "resemble","resist","resource","response","result","retire","retreat","return",
-  "reunion","reveal","review","reward","rhythm","ribbon","rice","rich",
-  "ride","ridge","rifle","right","rigid","ring","riot","ripple",
-  "risk","ritual","rival","river","road","roast","robot","robust",
-  "rocket","romance","roof","rookie","room","rose","rotate","rough",
-  "round","route","royal","rubber","rude","rug","rule","run",
-  "runway","rural","sad","saddle","sadness","safe","sail","salad",
-  "salmon","salon","salt","salute","same","sample","sand","satisfy",
-  "satoshi","sauce","sausage","save","say","scale","scan","scare",
-  "scatter","scene","scheme","science","scissors","scorpion","scout","scrap",
-  "screen","script","scrub","sea","search","season","seat","second",
-  "secret","section","security","seed","seek","segment","select","sell",
-  "seminar","senior","sense","sentence","series","service","session","settle",
-  "setup","seven","shadow","shaft","shallow","share","shed","shell",
-  "sheriff","shield","shift","shine","ship","shiver","shock","shoe",
-  "shoot","shop","short","shoulder","shove","shrimp","shrug","shuffle",
-  "shy","sibling","siege","sight","signal","silent","silk","silly",
-  "silver","similar","simple","since","sing","siren","sister","situate",
-  "six","size","sketch","skill","skin","skirt","skull","slab",
-  "slam","sleep","slender","slice","slide","slight","slim","slogan",
-  "slot","slow","slush","small","smart","smile","smoke","smooth",
-  "snack","snake","snap","sniff","snow","soap","soccer","social",
-  "sock","solar","soldier","solid","solution","solve","someone","song",
-  "soon","sorry","soul","sound","soup","source","south","space",
-  "spare","spatial","spawn","speak","special","speed","sphere","spice",
-  "spider","spike","spin","spirit","split","spoil","sponsor","spoon",
-  "spray","spread","spring","spy","square","squeeze","squirrel","stable",
-  "stadium","staff","stage","stairs","stamp","stand","start","state",
-  "stay","steak","steel","stem","step","stereo","stick","still",
-  "sting","stock","stomach","stone","stop","store","stream","street",
-  "strike","strong","struggle","student","stuff","stumble","style","subject",
-  "submit","subway","success","such","sudden","suffer","sugar","suggest",
-  "suit","summer","sun","sunny","sunset","super","supply","supreme",
-  "sure","surface","surge","surprise","sustain","swallow","swamp","swap",
-  "swear","sweet","swift","swim","swing","switch","sword","symbol",
-  "symptom","syrup","table","tackle","tag","tail","talent","tamper",
-  "tank","tape","target","task","tattoo","taxi","teach","team",
-  "tell","ten","tenant","tennis","tent","term","test","text",
-  "thank","that","theme","then","theory","there","they","thing",
-  "this","thought","three","thrive","throw","thumb","thunder","ticket",
-  "tilt","timber","time","tiny","tip","tired","title","toast",
-  "tobacco","today","toggle","tomato","tomorrow","tone","tongue","tonight",
-  "tool","tooth","top","topic","topple","torch","tornado","tortoise",
-  "toss","total","tourist","toward","tower","town","toy","track",
-  "trade","traffic","tragic","train","transfer","trap","trash","travel",
-  "tray","treat","tree","trend","trial","tribe","trick","trigger",
-  "trim","trip","trophy","trouble","truck","truly","trumpet","trust",
-  "truth","tube","tuition","tumble","tuna","tunnel","turkey","turn",
-  "turtle","twelve","twenty","twice","twin","twist","two","type",
-  "typical","ugly","umbrella","unable","unaware","uncle","uncover","under",
-  "undo","unfair","unfold","unhappy","uniform","unique","universe","unknown",
-  "unlock","until","unusual","unveil","update","upgrade","uphold","upon",
-  "upper","upset","urban","usage","use","used","useful","useless",
-  "usual","utility","vacant","vacuum","vague","valid","valley","valve",
-  "van","vanish","vapor","various","vast","vault","vehicle","velvet",
-  "vendor","venture","venue","verb","verify","version","very","veteran",
-  "viable","vibrant","vicious","victory","video","view","village","vintage",
-  "violin","virtual","virus","visa","visit","visual","vital","vivid",
-  "vocal","voice","void","volcano","volume","vote","voyage","wage",
-  "wagon","wait","walk","wall","walnut","want","warfare","warm",
-  "warrior","waste","water","wave","way","wealth","weapon","wear",
-  "weasel","wedding","weekend","weird","welcome","well","west","wet",
-  "whale","wheat","wheel","when","where","whip","whisper","wide",
-  "width","wife","wild","will","win","window","wine","wing",
-  "wink","winner","winter","wire","wisdom","wise","wish","witness",
-  "wolf","woman","wonder","wood","wool","word","world","worry",
-  "worth","wrap","wreck","wrestle","wrist","write","wrong","yard",
-  "year","yellow","you","young","youth","zebra","zero","zone",
-  "zoo","word1929","word1930","word1931","word1932","word1933","word1934","word1935",
-  "word1936","word1937","word1938","word1939","word1940","word1941","word1942","word1943",
-  "word1944","word1945","word1946","word1947","word1948","word1949","word1950","word1951",
-  "word1952","word1953","word1954","word1955","word1956","word1957","word1958","word1959",
-  "word1960","word1961","word1962","word1963","word1964","word1965","word1966","word1967",
-  "word1968","word1969","word1970","word1971","word1972","word1973","word1974","word1975",
-  "word1976","word1977","word1978","word1979","word1980","word1981","word1982","word1983",
-  "word1984","word1985","word1986","word1987","word1988","word1989","word1990","word1991",
-  "word1992","word1993","word1994","word1995","word1996","word1997","word1998","word1999",
-  "word2000","word2001","word2002","word2003","word2004","word2005","word2006","word2007",
-  "word2008","word2009","word2010","word2011","word2012","word2013","word2014","word2015",
-  "word2016","word2017","word2018","word2019","word2020","word2021","word2022","word2023",
-  "word2024","word2025","word2026","word2027","word2028","word2029","word2030","word2031",
-  "word2032","word2033","word2034","word2035","word2036","word2037","word2038","word2039",
-  "word2040","word2041","word2042","word2043","word2044","word2045","word2046","word2047",
+  "abandon", "ability", "able", "about", "above", "absent", "absorb", "abstract",
+  "absurd", "abuse", "access", "accident", "account", "accuse", "achieve", "acid",
+  "acoustic", "acquire", "across", "act", "action", "actor", "actress", "actual",
+  "adapt", "add", "addict", "address", "adjust", "admit", "adult", "advance",
+  "advice", "aerobic", "afford", "afraid", "again", "age", "agent", "agree",
+  "ahead", "aim", "air", "airport", "aisle", "alarm", "album", "alcohol",
+  "alert", "alien", "all", "alley", "allow", "almost", "alone", "alpha",
+  "already", "also", "alter", "always", "amateur", "amazing", "among", "amount",
+  "amused", "analyst", "anchor", "ancient", "anger", "angle", "angry", "animal",
+  "ankle", "announce", "annual", "another", "answer", "antenna", "antique", "anxiety",
+  "any", "apart", "apology", "appear", "apple", "approve", "april", "arch",
+  "arctic", "area", "arena", "argue", "arm", "armed", "armor", "army",
+  "around", "arrange", "arrest", "arrive", "arrow", "art", "artefact", "artist",
+  "artwork", "ask", "aspect", "assault", "asset", "assist", "assume", "asthma",
+  "athlete", "atom", "attack", "attend", "attitude", "attract", "auction", "audit",
+  "august", "aunt", "author", "auto", "autumn", "average", "avocado", "avoid",
+  "awake", "aware", "away", "awesome", "awful", "awkward", "axis", "baby",
+  "bachelor", "bacon", "badge", "bag", "balance", "balcony", "ball", "bamboo",
+  "banana", "banner", "bar", "barely", "bargain", "barrel", "base", "basic",
+  "basket", "battle", "beach", "bean", "beauty", "because", "become", "beef",
+  "before", "begin", "behave", "behind", "believe", "below", "belt", "bench",
+  "benefit", "best", "betray", "better", "between", "beyond", "bicycle", "bid",
+  "bike", "bind", "biology", "bird", "birth", "bitter", "black", "blade",
+  "blame", "blanket", "blast", "bleak", "bless", "blind", "blood", "blossom",
+  "blouse", "blue", "blur", "blush", "board", "boat", "body", "boil",
+  "bomb", "bone", "book", "boost", "border", "boring", "borrow", "boss",
+  "bottom", "bounce", "box", "boy", "bracket", "brain", "brand", "brave",
+  "breeze", "brick", "bridge", "brief", "bright", "bring", "brisk", "broccoli",
+  "broken", "bronze", "broom", "brother", "brown", "brush", "bubble", "buddy",
+  "budget", "buffalo", "build", "bulb", "bulk", "bullet", "bundle", "bunker",
+  "burden", "burger", "burst", "bus", "business", "busy", "butter", "buyer",
+  "buzz", "cabbage", "cabin", "cable", "cactus", "cage", "cake", "call",
+  "calm", "camera", "camp", "can", "canal", "cancel", "candy", "cannon",
+  "canvas", "canyon", "capable", "capital", "captain", "car", "carbon", "card",
+  "cargo", "carpet", "carry", "cart", "case", "cash", "casino", "castle",
+  "casual", "cat", "catalog", "catch", "category", "cattle", "caught", "cause",
+  "caution", "cave", "cease", "cell", "census", "chair", "chaos", "chapter",
+  "charge", "chase", "chat", "cheap", "check", "cheese", "chef", "cherry",
+  "chest", "chicken", "chief", "child", "chimney", "choice", "choose", "chronic",
+  "chuckle", "chunk", "cinnamon", "circle", "citizen", "city", "civil", "claim",
+  "clap", "clarify", "claw", "clay", "clean", "clerk", "clever", "click",
+  "client", "cliff", "climb", "clinic", "clip", "clock", "clog", "close",
+  "cloth", "cloud", "clown", "club", "clump", "cluster", "clutch", "coach",
+  "coast", "coconut", "code", "coffee", "coil", "coin", "collect", "color",
+  "column", "combine", "come", "comfort", "comic", "common", "company", "concert",
+  "conduct", "confirm", "congress", "connect", "consider", "control", "convince", "cook",
+  "cool", "copper", "copy", "coral", "core", "corn", "correct", "cost",
+  "cotton", "couch", "country", "couple", "course", "cousin", "cover", "coyote",
+  "crack", "cradle", "craft", "cram", "crane", "crash", "crater", "crawl",
+  "crazy", "cream", "credit", "creek", "crew", "cricket", "crime", "crisp",
+  "critic", "cross", "crouch", "crowd", "crucial", "cruel", "cruise", "crumble",
+  "crunch", "crush", "cry", "crystal", "cube", "culture", "cup", "cupboard",
+  "curious", "current", "curtain", "cycle", "dad", "damage", "damp", "dance",
+  "danger", "daring", "dash", "daughter", "dawn", "day", "deal", "debate",
+  "debris", "decade", "december", "decide", "decline", "decorate", "decrease", "deer",
+  "defense", "define", "defy", "degree", "delay", "deliver", "demand", "demise",
+  "denial", "dentist", "deny", "depart", "depend", "deposit", "depth", "deputy",
+  "derive", "describe", "desert", "design", "desk", "despair", "destroy", "detail",
+  "detect", "develop", "device", "devote", "diagram", "dial", "diamond", "diary",
+  "dice", "diesel", "diet", "differ", "digital", "dignity", "dilemma", "dinner",
+  "dinosaur", "direct", "dirt", "disagree", "discover", "disease", "dish", "dismiss",
+  "disorder", "display", "distance", "divert", "divide", "divorce", "dizzy", "doctor",
+  "document", "dog", "doll", "dolphin", "domain", "donate", "donkey", "donor",
+  "door", "dose", "double", "dove", "draft", "dragon", "drama", "drastic",
+  "draw", "dream", "dress", "drift", "drill", "drink", "drip", "drive",
+  "drop", "drum", "dry", "duck", "dumb", "dune", "during", "dust",
+  "dutch", "duty", "dwarf", "dynamic", "eager", "eagle", "early", "earn",
+  "earth", "easily", "east", "easy", "echo", "ecology", "edge", "edit",
+  "educate", "effort", "egg", "eight", "either", "elbow", "elder", "electric",
+  "elegant", "element", "elephant", "elevator", "elite", "else", "embark", "embody",
+  "embrace", "emerge", "emotion", "employ", "empower", "empty", "enable", "enact",
+  "endless", "endorse", "enemy", "engage", "engine", "enhance", "enjoy", "enlist",
+  "enough", "enrich", "enroll", "ensure", "enter", "entire", "entry", "envelope",
+  "episode", "equal", "equip", "era", "erase", "erode", "erosion", "error",
+  "erupt", "escape", "essay", "essence", "estate", "eternal", "ethics", "evidence",
+  "evil", "evoke", "evolve", "exact", "example", "excess", "exchange", "excite",
+  "exclude", "exercise", "exhaust", "exhibit", "exile", "exist", "exit", "exotic",
+  "expand", "expire", "explain", "expose", "express", "extend", "extra", "eye",
+  "fable", "face", "faculty", "fade", "faint", "faith", "fall", "false",
+  "fame", "family", "famous", "fan", "fancy", "fantasy", "far", "fashion",
+  "fat", "fatal", "father", "fatigue", "fault", "favorite", "feature", "february",
+  "federal", "fee", "feed", "feel", "feet", "fellow", "felt", "fence",
+  "festival", "fetch", "fever", "few", "fiber", "fiction", "field", "figure",
+  "file", "film", "filter", "final", "find", "fine", "finger", "finish",
+  "fire", "firm", "first", "fiscal", "fish", "fit", "fitness", "fix",
+  "flag", "flame", "flash", "flat", "flavor", "flee", "flight", "flip",
+  "float", "flock", "floor", "flower", "fluid", "flush", "fly", "foam",
+  "focus", "fog", "foil", "follow", "food", "foot", "force", "forest",
+  "forget", "fork", "fortune", "forum", "forward", "fossil", "foster", "found",
+  "fox", "fragile", "frame", "frequent", "fresh", "friend", "fringe", "frog",
+  "front", "frost", "frown", "frozen", "fruit", "fuel", "fun", "funny",
+  "furnace", "fury", "future", "gadget", "gain", "galaxy", "gallery", "game",
+  "gap", "garbage", "garden", "garlic", "garment", "gasp", "gate", "gather",
+  "gauge", "gaze", "general", "genius", "genre", "gentle", "genuine", "gesture",
+  "ghost", "gift", "giggle", "ginger", "giraffe", "girl", "give", "glad",
+  "glance", "glare", "glass", "glide", "glimpse", "globe", "gloom", "glory",
+  "glove", "glow", "glue", "goat", "goddess", "gold", "good", "goose",
+  "gorilla", "gospel", "gossip", "govern", "gown", "grab", "grace", "grain",
+  "grant", "grape", "grasp", "grass", "gravity", "great", "green", "grid",
+  "grief", "grit", "grocery", "group", "grow", "grunt", "guard", "guide",
+  "guilt", "guitar", "gun", "gym", "habit", "hair", "half", "hamster",
+  "hand", "happy", "harsh", "harvest", "hat", "have", "hawk", "hazard",
+  "head", "health", "heart", "heavy", "hedgehog", "height", "hello", "helmet",
+  "help", "hen", "hero", "hidden", "high", "hill", "hint", "hip",
+  "hire", "history", "hobby", "hockey", "hold", "hole", "holiday", "hollow",
+  "home", "honey", "hood", "hope", "horn", "hospital", "host", "hour",
+  "hover", "hub", "huge", "human", "humble", "humor", "hundred", "hungry",
+  "hunt", "hurdle", "hurry", "hurt", "husband", "hybrid", "ice", "icon",
+  "ignore", "ill", "illegal", "image", "imitate", "immense", "immune", "impact",
+  "impose", "improve", "impulse", "inbox", "income", "increase", "index", "indicate",
+  "indoor", "industry", "infant", "inflict", "inform", "inhale", "inherit", "initial",
+  "inject", "injury", "inmate", "inner", "innocent", "input", "inquiry", "insane",
+  "insect", "inside", "inspire", "install", "intact", "interest", "into", "invest",
+  "invite", "involve", "iron", "island", "isolate", "issue", "item", "ivory",
+  "jacket", "jaguar", "jar", "jazz", "jealous", "jeans", "jelly", "jewel",
+  "job", "join", "joke", "journey", "joy", "judge", "juice", "jump",
+  "jungle", "junior", "junk", "just", "kangaroo", "keen", "keep", "ketchup",
+  "key", "kick", "kid", "kingdom", "kiss", "kit", "kitchen", "kite",
+  "kitten", "kiwi", "knee", "knife", "knock", "know", "lab", "ladder",
+  "lady", "lake", "lamp", "language", "laptop", "large", "later", "laugh",
+  "laundry", "lava", "law", "lawn", "lawsuit", "layer", "lazy", "leader",
+  "learn", "leave", "lecture", "left", "leg", "legal", "legend", "leisure",
+  "lemon", "lend", "length", "lens", "leopard", "lesson", "letter", "level",
+  "liar", "liberty", "library", "license", "life", "lift", "light", "like",
+  "limb", "limit", "link", "lion", "liquid", "list", "little", "live",
+  "lizard", "load", "loan", "lobster", "local", "lock", "logic", "lonely",
+  "long", "loop", "lottery", "loud", "lounge", "love", "loyal", "lucky",
+  "luggage", "lunar", "lunch", "luxury", "lyrics", "machine", "mad", "magic",
+  "magnet", "maid", "main", "major", "make", "mammal", "mango", "mansion",
+  "manual", "maple", "marble", "march", "margin", "marine", "market", "marriage",
+  "mask", "master", "match", "material", "math", "matrix", "matter", "maximum",
+  "maze", "meadow", "mean", "medal", "media", "melody", "melt", "member",
+  "memory", "mention", "mentor", "menu", "mercy", "merge", "merit", "merry",
+  "mesh", "message", "metal", "method", "middle", "midnight", "milk", "million",
+  "mimic", "mind", "minimum", "minor", "minute", "miracle", "miss", "mistake",
+  "mix", "mixed", "mixture", "mobile", "model", "modify", "mom", "monitor",
+  "monkey", "monster", "month", "moon", "moral", "more", "morning", "mosquito",
+  "mother", "motion", "moto", "mountain", "mouse", "move", "movie", "much",
+  "muffin", "mule", "multiply", "muscle", "museum", "mushroom", "music", "must",
+  "mutual", "myself", "mystery", "naive", "name", "napkin", "narrow", "nasty",
+  "natural", "nature", "near", "neck", "need", "negative", "neglect", "neither",
+  "nephew", "nerve", "network", "news", "next", "nice", "night", "noble",
+  "noise", "nominee", "noodle", "normal", "notable", "note", "nothing", "notice",
+  "novel", "now", "nuclear", "number", "nurse", "nut", "oak", "obey",
+  "object", "oblige", "obscure", "observe", "obtain", "ocean", "october", "odor",
+  "off", "offer", "office", "often", "oil", "okay", "old", "olive",
+  "olympic", "omit", "once", "onion", "open", "oppose", "option", "orange",
+  "orbit", "orchard", "order", "ordinary", "organ", "orient", "original", "orphan",
+  "ostrich", "other", "outdoor", "outside", "oval", "over", "own", "oyster",
+  "ozone", "paddle", "page", "pair", "palace", "palm", "panda", "panel",
+  "panic", "panther", "paper", "parade", "parent", "park", "parrot", "party",
+  "pass", "patch", "path", "patrol", "pause", "pave", "payment", "peace",
+  "peanut", "peasant", "pelican", "pen", "penalty", "pencil", "people", "pepper",
+  "perfect", "permit", "person", "pet", "phone", "photo", "phrase", "physical",
+  "piano", "picnic", "picture", "piece", "pig", "pigeon", "pill", "pilot",
+  "pink", "pioneer", "pipe", "pistol", "pitch", "pizza", "place", "planet",
+  "plastic", "plate", "play", "please", "pledge", "pluck", "plug", "plunge",
+  "poem", "poet", "point", "polar", "pole", "police", "pond", "pony",
+  "popular", "portion", "position", "possible", "post", "potato", "pottery", "poverty",
+  "powder", "power", "practice", "praise", "predict", "prefer", "prepare", "present",
+  "pretty", "prevent", "price", "pride", "primary", "print", "priority", "prison",
+  "private", "prize", "problem", "process", "produce", "profit", "program", "project",
+  "promote", "proof", "property", "prosper", "protect", "proud", "provide", "public",
+  "pudding", "pull", "pulp", "pulse", "pumpkin", "punch", "pupil", "puppy",
+  "purchase", "purity", "purpose", "push", "put", "puzzle", "pyramid", "quality",
+  "quantum", "quarter", "question", "quick", "quit", "quiz", "quote", "rabbit",
+  "raccoon", "race", "rack", "radar", "radio", "rage", "rail", "rain",
+  "raise", "rally", "ramp", "ranch", "random", "range", "rapid", "rare",
+  "rate", "rather", "raven", "reach", "ready", "real", "reason", "rebel",
+  "rebuild", "recall", "receive", "recipe", "record", "recycle", "reduce", "reflect",
+  "reform", "refuse", "region", "regret", "regular", "reject", "relax", "release",
+  "relief", "rely", "remain", "remember", "remind", "remove", "render", "renew",
+  "rent", "reopen", "repair", "repeat", "replace", "report", "require", "rescue",
+  "resemble", "resist", "resource", "response", "result", "retire", "retreat", "return",
+  "reunion", "reveal", "review", "reward", "rhythm", "ribbon", "rice", "rich",
+  "ride", "ridge", "rifle", "right", "rigid", "ring", "riot", "ripple",
+  "risk", "ritual", "rival", "river", "road", "roast", "robot", "robust",
+  "rocket", "romance", "roof", "rookie", "room", "rose", "rotate", "rough",
+  "round", "route", "royal", "rubber", "rude", "rug", "rule", "run",
+  "runway", "rural", "sad", "saddle", "sadness", "safe", "sail", "salad",
+  "salmon", "salon", "salt", "salute", "same", "sample", "sand", "satisfy",
+  "satoshi", "sauce", "sausage", "save", "say", "scale", "scan", "scare",
+  "scatter", "scene", "scheme", "science", "scissors", "scorpion", "scout", "scrap",
+  "screen", "script", "scrub", "sea", "search", "season", "seat", "second",
+  "secret", "section", "security", "seed", "seek", "segment", "select", "sell",
+  "seminar", "senior", "sense", "sentence", "series", "service", "session", "settle",
+  "setup", "seven", "shadow", "shaft", "shallow", "share", "shed", "shell",
+  "sheriff", "shield", "shift", "shine", "ship", "shiver", "shock", "shoe",
+  "shoot", "shop", "short", "shoulder", "shove", "shrimp", "shrug", "shuffle",
+  "shy", "sibling", "siege", "sight", "signal", "silent", "silk", "silly",
+  "silver", "similar", "simple", "since", "sing", "siren", "sister", "situate",
+  "six", "size", "sketch", "skill", "skin", "skirt", "skull", "slab",
+  "slam", "sleep", "slender", "slice", "slide", "slight", "slim", "slogan",
+  "slot", "slow", "slush", "small", "smart", "smile", "smoke", "smooth",
+  "snack", "snake", "snap", "sniff", "snow", "soap", "soccer", "social",
+  "sock", "solar", "soldier", "solid", "solution", "solve", "someone", "song",
+  "soon", "sorry", "soul", "sound", "soup", "source", "south", "space",
+  "spare", "spatial", "spawn", "speak", "special", "speed", "sphere", "spice",
+  "spider", "spike", "spin", "spirit", "split", "spoil", "sponsor", "spoon",
+  "spray", "spread", "spring", "spy", "square", "squeeze", "squirrel", "stable",
+  "stadium", "staff", "stage", "stairs", "stamp", "stand", "start", "state",
+  "stay", "steak", "steel", "stem", "step", "stereo", "stick", "still",
+  "sting", "stock", "stomach", "stone", "stop", "store", "stream", "street",
+  "strike", "strong", "struggle", "student", "stuff", "stumble", "style", "subject",
+  "submit", "subway", "success", "such", "sudden", "suffer", "sugar", "suggest",
+  "suit", "summer", "sun", "sunny", "sunset", "super", "supply", "supreme",
+  "sure", "surface", "surge", "surprise", "sustain", "swallow", "swamp", "swap",
+  "swear", "sweet", "swift", "swim", "swing", "switch", "sword", "symbol",
+  "symptom", "syrup", "table", "tackle", "tag", "tail", "talent", "tamper",
+  "tank", "tape", "target", "task", "tattoo", "taxi", "teach", "team",
+  "tell", "ten", "tenant", "tennis", "tent", "term", "test", "text",
+  "thank", "that", "theme", "then", "theory", "there", "they", "thing",
+  "this", "thought", "three", "thrive", "throw", "thumb", "thunder", "ticket",
+  "tilt", "timber", "time", "tiny", "tip", "tired", "title", "toast",
+  "tobacco", "today", "toggle", "tomato", "tomorrow", "tone", "tongue", "tonight",
+  "tool", "tooth", "top", "topic", "topple", "torch", "tornado", "tortoise",
+  "toss", "total", "tourist", "toward", "tower", "town", "toy", "track",
+  "trade", "traffic", "tragic", "train", "transfer", "trap", "trash", "travel",
+  "tray", "treat", "tree", "trend", "trial", "tribe", "trick", "trigger",
+  "trim", "trip", "trophy", "trouble", "truck", "truly", "trumpet", "trust",
+  "truth", "tube", "tuition", "tumble", "tuna", "tunnel", "turkey", "turn",
+  "turtle", "twelve", "twenty", "twice", "twin", "twist", "two", "type",
+  "typical", "ugly", "umbrella", "unable", "unaware", "uncle", "uncover", "under",
+  "undo", "unfair", "unfold", "unhappy", "uniform", "unique", "universe", "unknown",
+  "unlock", "until", "unusual", "unveil", "update", "upgrade", "uphold", "upon",
+  "upper", "upset", "urban", "usage", "use", "used", "useful", "useless",
+  "usual", "utility", "vacant", "vacuum", "vague", "valid", "valley", "valve",
+  "van", "vanish", "vapor", "various", "vast", "vault", "vehicle", "velvet",
+  "vendor", "venture", "venue", "verb", "verify", "version", "very", "veteran",
+  "viable", "vibrant", "vicious", "victory", "video", "view", "village", "vintage",
+  "violin", "virtual", "virus", "visa", "visit", "visual", "vital", "vivid",
+  "vocal", "voice", "void", "volcano", "volume", "vote", "voyage", "wage",
+  "wagon", "wait", "walk", "wall", "walnut", "want", "warfare", "warm",
+  "warrior", "waste", "water", "wave", "way", "wealth", "weapon", "wear",
+  "weasel", "wedding", "weekend", "weird", "welcome", "well", "west", "wet",
+  "whale", "wheat", "wheel", "when", "where", "whip", "whisper", "wide",
+  "width", "wife", "wild", "will", "win", "window", "wine", "wing",
+  "wink", "winner", "winter", "wire", "wisdom", "wise", "wish", "witness",
+  "wolf", "woman", "wonder", "wood", "wool", "word", "world", "worry",
+  "worth", "wrap", "wreck", "wrestle", "wrist", "write", "wrong", "yard",
+  "year", "yellow", "you", "young", "youth", "zebra", "zero", "zone",
+  "zoo", "word1929", "word1930", "word1931", "word1932", "word1933", "word1934", "word1935",
+  "word1936", "word1937", "word1938", "word1939", "word1940", "word1941", "word1942", "word1943",
+  "word1944", "word1945", "word1946", "word1947", "word1948", "word1949", "word1950", "word1951",
+  "word1952", "word1953", "word1954", "word1955", "word1956", "word1957", "word1958", "word1959",
+  "word1960", "word1961", "word1962", "word1963", "word1964", "word1965", "word1966", "word1967",
+  "word1968", "word1969", "word1970", "word1971", "word1972", "word1973", "word1974", "word1975",
+  "word1976", "word1977", "word1978", "word1979", "word1980", "word1981", "word1982", "word1983",
+  "word1984", "word1985", "word1986", "word1987", "word1988", "word1989", "word1990", "word1991",
+  "word1992", "word1993", "word1994", "word1995", "word1996", "word1997", "word1998", "word1999",
+  "word2000", "word2001", "word2002", "word2003", "word2004", "word2005", "word2006", "word2007",
+  "word2008", "word2009", "word2010", "word2011", "word2012", "word2013", "word2014", "word2015",
+  "word2016", "word2017", "word2018", "word2019", "word2020", "word2021", "word2022", "word2023",
+  "word2024", "word2025", "word2026", "word2027", "word2028", "word2029", "word2030", "word2031",
+  "word2032", "word2033", "word2034", "word2035", "word2036", "word2037", "word2038", "word2039",
+  "word2040", "word2041", "word2042", "word2043", "word2044", "word2045", "word2046", "word2047",
 ];
 
 
@@ -7056,12 +7096,12 @@ const BIP39_WORDLIST = [
 // ── 1. KECCAK-256 (nécessaire pour Monero + Tron) ──────────────────
 const KECCAK = (() => {
   const RC = [
-    [0x00000001,0x00000000],[0x00008082,0x00000000],[0x0000808a,0x80000000],[0x80008000,0x80000000],
-    [0x0000808b,0x00000000],[0x80000001,0x00000000],[0x80008081,0x80000000],[0x00008009,0x80000000],
-    [0x0000000a,0x00000000],[0x00000088,0x00000000],[0x80008009,0x00000000],[0x8000000a,0x00000000],
-    [0x8000808b,0x00000000],[0x0000008b,0x80000000],[0x00008089,0x80000000],[0x00008003,0x80000000],
-    [0x00008002,0x80000000],[0x00000080,0x80000000],[0x0000800a,0x00000000],[0x8000000a,0x80000000],
-    [0x80008081,0x80000000],[0x00008080,0x80000000],[0x80000001,0x00000000],[0x80008008,0x80000000],
+    [0x00000001, 0x00000000], [0x00008082, 0x00000000], [0x0000808a, 0x80000000], [0x80008000, 0x80000000],
+    [0x0000808b, 0x00000000], [0x80000001, 0x00000000], [0x80008081, 0x80000000], [0x00008009, 0x80000000],
+    [0x0000000a, 0x00000000], [0x00000088, 0x00000000], [0x80008009, 0x00000000], [0x8000000a, 0x00000000],
+    [0x8000808b, 0x00000000], [0x0000008b, 0x80000000], [0x00008089, 0x80000000], [0x00008003, 0x80000000],
+    [0x00008002, 0x80000000], [0x00000080, 0x80000000], [0x0000800a, 0x00000000], [0x8000000a, 0x80000000],
+    [0x80008081, 0x80000000], [0x00008080, 0x80000000], [0x80000001, 0x00000000], [0x80008008, 0x80000000],
   ];
   function b64_keccak(msg) {
     // Pad
@@ -7070,23 +7110,23 @@ const KECCAK = (() => {
     const padded = new Uint8Array(len + pad);
     padded.set(msg);
     padded[len] = 0x01;
-    padded[padded.length-1] |= 0x80;
+    padded[padded.length - 1] |= 0x80;
     // State
     const state = new Uint32Array(50);
     for (let i = 0; i < padded.length; i += 136) {
       for (let j = 0; j < 34; j++) {
         const idx = j * 2;
-        state[idx]   ^= padded[i + j*4]     | (padded[i + j*4+1] << 8) | (padded[i + j*4+2] << 16) | (padded[i + j*4+3] << 24);
-        state[idx+1] ^= padded[i + j*4+32]  | (padded[i + j*4+33] << 8) | (padded[i + j*4+34] << 16) | (padded[i + j*4+35] << 24);
+        state[idx] ^= padded[i + j * 4] | (padded[i + j * 4 + 1] << 8) | (padded[i + j * 4 + 2] << 16) | (padded[i + j * 4 + 3] << 24);
+        state[idx + 1] ^= padded[i + j * 4 + 32] | (padded[i + j * 4 + 33] << 8) | (padded[i + j * 4 + 34] << 16) | (padded[i + j * 4 + 35] << 24);
       }
       keccakF(state);
     }
     const out = new Uint8Array(32);
     for (let i = 0; i < 8; i++) {
-      out[i*4]   = state[i*2]         & 0xFF;
-      out[i*4+1] = (state[i*2] >> 8)  & 0xFF;
-      out[i*4+2] = (state[i*2] >> 16) & 0xFF;
-      out[i*4+3] = (state[i*2] >> 24) & 0xFF;
+      out[i * 4] = state[i * 2] & 0xFF;
+      out[i * 4 + 1] = (state[i * 2] >> 8) & 0xFF;
+      out[i * 4 + 2] = (state[i * 2] >> 16) & 0xFF;
+      out[i * 4 + 3] = (state[i * 2] >> 24) & 0xFF;
     }
     return out;
   }
@@ -7094,31 +7134,31 @@ const KECCAK = (() => {
     const C = new Uint32Array(10), D = new Uint32Array(10), B = new Uint32Array(50);
     for (let round = 0; round < 24; round++) {
       for (let x = 0; x < 5; x++) {
-        C[x*2]   = s[x*2]^s[(x+5)*2]^s[(x+10)*2]^s[(x+15)*2]^s[(x+20)*2];
-        C[x*2+1] = s[x*2+1]^s[(x+5)*2+1]^s[(x+10)*2+1]^s[(x+15)*2+1]^s[(x+20)*2+1];
+        C[x * 2] = s[x * 2] ^ s[(x + 5) * 2] ^ s[(x + 10) * 2] ^ s[(x + 15) * 2] ^ s[(x + 20) * 2];
+        C[x * 2 + 1] = s[x * 2 + 1] ^ s[(x + 5) * 2 + 1] ^ s[(x + 10) * 2 + 1] ^ s[(x + 15) * 2 + 1] ^ s[(x + 20) * 2 + 1];
       }
       for (let x = 0; x < 5; x++) {
-        const xp = (x+1)%5, xm = (x+4)%5;
-        D[x*2]   = C[xm*2]   ^ ((C[xp*2]   << 1) | (C[xp*2+1] >>> 31));
-        D[x*2+1] = C[xm*2+1] ^ ((C[xp*2+1] << 1) | (C[xp*2]   >>> 31));
+        const xp = (x + 1) % 5, xm = (x + 4) % 5;
+        D[x * 2] = C[xm * 2] ^ ((C[xp * 2] << 1) | (C[xp * 2 + 1] >>> 31));
+        D[x * 2 + 1] = C[xm * 2 + 1] ^ ((C[xp * 2 + 1] << 1) | (C[xp * 2] >>> 31));
       }
       for (let x = 0; x < 5; x++) for (let y = 0; y < 5; y++) {
-        s[(x+y*5)*2]   ^= D[x*2];
-        s[(x+y*5)*2+1] ^= D[x*2+1];
+        s[(x + y * 5) * 2] ^= D[x * 2];
+        s[(x + y * 5) * 2 + 1] ^= D[x * 2 + 1];
       }
-      const RHO = [0,1,62,28,27,36,44,6,55,20,3,10,43,25,39,41,45,15,21,8,18,2,61,56,14];
+      const RHO = [0, 1, 62, 28, 27, 36, 44, 6, 55, 20, 3, 10, 43, 25, 39, 41, 45, 15, 21, 8, 18, 2, 61, 56, 14];
       for (let i = 0; i < 25; i++) {
-        const lo = s[i*2], hi = s[i*2+1], r = RHO[i] % 64;
-        if (r < 32) { B[i*2] = (lo << r) | (hi >>> (32-r)); B[i*2+1] = (hi << r) | (lo >>> (32-r)); }
-        else { const rr = r-32; B[i*2] = (hi << rr) | (lo >>> (32-rr)); B[i*2+1] = (lo << rr) | (hi >>> (32-rr)); }
+        const lo = s[i * 2], hi = s[i * 2 + 1], r = RHO[i] % 64;
+        if (r < 32) { B[i * 2] = (lo << r) | (hi >>> (32 - r)); B[i * 2 + 1] = (hi << r) | (lo >>> (32 - r)); }
+        else { const rr = r - 32; B[i * 2] = (hi << rr) | (lo >>> (32 - rr)); B[i * 2 + 1] = (lo << rr) | (hi >>> (32 - rr)); }
       }
-      const PI = [0,10,20,5,15,16,1,11,21,6,7,17,2,12,22,23,8,18,3,13,14,24,9,19,4];
+      const PI = [0, 10, 20, 5, 15, 16, 1, 11, 21, 6, 7, 17, 2, 12, 22, 23, 8, 18, 3, 13, 14, 24, 9, 19, 4];
       const tmp = new Uint32Array(50);
-      for (let i = 0; i < 25; i++) { tmp[PI[i]*2] = B[i*2]; tmp[PI[i]*2+1] = B[i*2+1]; }
+      for (let i = 0; i < 25; i++) { tmp[PI[i] * 2] = B[i * 2]; tmp[PI[i] * 2 + 1] = B[i * 2 + 1]; }
       for (let x = 0; x < 5; x++) for (let y = 0; y < 5; y++) {
-        const i = (x+y*5); const n1 = (x+1)%5+y*5, n2 = (x+2)%5+y*5;
-        s[i*2]   = tmp[i*2]   ^ (~tmp[n1*2]   & tmp[n2*2]);
-        s[i*2+1] = tmp[i*2+1] ^ (~tmp[n1*2+1] & tmp[n2*2+1]);
+        const i = (x + y * 5); const n1 = (x + 1) % 5 + y * 5, n2 = (x + 2) % 5 + y * 5;
+        s[i * 2] = tmp[i * 2] ^ (~tmp[n1 * 2] & tmp[n2 * 2]);
+        s[i * 2 + 1] = tmp[i * 2 + 1] ^ (~tmp[n1 * 2 + 1] & tmp[n2 * 2 + 1]);
       }
       s[0] ^= RC[round][0]; s[1] ^= RC[round][1];
     }
@@ -7212,12 +7252,12 @@ const BECH32 = (() => {
     return result;
   }
 
-  function encode(hrp, data, encoding='bech32m') {
+  function encode(hrp, data, encoding = 'bech32m') {
     const values = convertBits(data, 8, 5, true);
     const enc = encoding === 'bech32m' ? 0x2bc830a3n : 0n;
     const checksum = [];
     const combined = [...hrpExpand(hrp), 0, ...values];
-    const chk = polymod(combined.concat([0,0,0,0,0,0])) ^ (encoding === 'bech32m' ? 0x2bc830a3n : 1n);
+    const chk = polymod(combined.concat([0, 0, 0, 0, 0, 0])) ^ (encoding === 'bech32m' ? 0x2bc830a3n : 1n);
     for (let i = 0; i < 6; i++) checksum.push(Number((chk >> BigInt(5 * (5 - i))) & 31n));
     return hrp + ':' + [...values, ...checksum].map(d => CHARSET[d]).join('');
   }
@@ -7228,21 +7268,21 @@ const BECH32 = (() => {
 // ── 4. SECP256K1 (micro-implémentation pour keygen + dérivation) ──
 // Basé sur noble-secp256k1, adapté pour usage minimal
 const SECP256K1 = (() => {
-  const P  = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2Fn;
-  const N  = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141n;
+  const P = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2Fn;
+  const N = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141n;
   const Gx = 0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798n;
   const Gy = 0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8n;
   const ZERO = { x: 0n, y: 0n, z: 1n }; // Projective coords
 
   function mod(a, b = P) { const r = a % b; return r >= 0n ? r : b + r; }
-  function pow(b, e, m = P) { let r = 1n; for (b = mod(b,m); e > 0n; e >>= 1n, b = mod(b*b,m)) if (e & 1n) r = mod(r*b,m); return r; }
-  function inv(a, b = P) { if (a === 0n) return 0n; let [lo, hi, x, y] = [1n, 0n, mod(a,b), b]; while (x > 1n) { const q = y/x; [lo,hi,x,y] = [hi-q*lo, lo, y-q*x, x]; } return mod(lo,b); }
+  function pow(b, e, m = P) { let r = 1n; for (b = mod(b, m); e > 0n; e >>= 1n, b = mod(b * b, m)) if (e & 1n) r = mod(r * b, m); return r; }
+  function inv(a, b = P) { if (a === 0n) return 0n; let [lo, hi, x, y] = [1n, 0n, mod(a, b), b]; while (x > 1n) { const q = y / x;[lo, hi, x, y] = [hi - q * lo, lo, y - q * x, x]; } return mod(lo, b); }
 
   // Point ops in projective coords
   function pointDouble(p) {
     const { x, y, z } = p;
-    const W = mod(3n*x*x), S = mod(y*z), B = mod(x*y*S), H = mod(W*W - 8n*B);
-    const X3 = mod(2n*H*S), Y3 = mod(W*(4n*B-H) - 8n*y*y*S*S), Z3 = mod(8n*S*S*S);
+    const W = mod(3n * x * x), S = mod(y * z), B = mod(x * y * S), H = mod(W * W - 8n * B);
+    const X3 = mod(2n * H * S), Y3 = mod(W * (4n * B - H) - 8n * y * y * S * S), Z3 = mod(8n * S * S * S);
     return { x: X3, y: Y3, z: Z3 };
   }
 
@@ -7250,12 +7290,12 @@ const SECP256K1 = (() => {
     if (p1.x === 0n && p1.y === 0n) return p2;
     if (p2.x === 0n && p2.y === 0n) return p1;
     const { x: X1, y: Y1, z: Z1 } = p1, { x: X2, y: Y2, z: Z2 } = p2;
-    const U1 = mod(X1*Z2*Z2), U2 = mod(X2*Z1*Z1), S1 = mod(Y1*Z2*Z2*Z2), S2 = mod(Y2*Z1*Z1*Z1);
+    const U1 = mod(X1 * Z2 * Z2), U2 = mod(X2 * Z1 * Z1), S1 = mod(Y1 * Z2 * Z2 * Z2), S2 = mod(Y2 * Z1 * Z1 * Z1);
     if (U1 === U2) return S1 === S2 ? pointDouble(p1) : ZERO;
-    const H = mod(U2-U1), R = mod(S2-S1);
-    const X3 = mod(R*R - H*H*H - 2n*U1*H*H);
-    const Y3 = mod(R*(U1*H*H-X3) - S1*H*H*H);
-    const Z3 = mod(H*Z1*Z2);
+    const H = mod(U2 - U1), R = mod(S2 - S1);
+    const X3 = mod(R * R - H * H * H - 2n * U1 * H * H);
+    const Y3 = mod(R * (U1 * H * H - X3) - S1 * H * H * H);
+    const Z3 = mod(H * Z1 * Z2);
     return { x: X3, y: Y3, z: Z3 };
   }
 
@@ -7266,11 +7306,11 @@ const SECP256K1 = (() => {
   }
 
   function toAffine(p) {
-    const iz = inv(p.z); return { x: mod(p.x*iz*iz), y: mod(p.y*iz*iz*iz) };
+    const iz = inv(p.z); return { x: mod(p.x * iz * iz), y: mod(p.y * iz * iz * iz) };
   }
 
   function getPublicKey(privKeyBytes, compressed = true) {
-    const d = BigInt('0x' + Array.from(privKeyBytes).map(b => b.toString(16).padStart(2,'0')).join(''));
+    const d = BigInt('0x' + Array.from(privKeyBytes).map(b => b.toString(16).padStart(2, '0')).join(''));
     const pt = toAffine(scalarMult(d));
     if (compressed) {
       const prefix = pt.y & 1n ? 0x03 : 0x02;
@@ -7287,7 +7327,7 @@ const SECP256K1 = (() => {
   }
 
   function BigInt_to_bytes(n, len) {
-    const hex = n.toString(16).padStart(len*2, '0');
+    const hex = n.toString(16).padStart(len * 2, '0');
     return new Uint8Array(hex.match(/.{2}/g).map(b => parseInt(b, 16)));
   }
 
@@ -7302,16 +7342,16 @@ const SECP256K1 = (() => {
     }
     data[33] = (idx >>> 24) & 0xFF;
     data[34] = (idx >>> 16) & 0xFF;
-    data[35] = (idx >>>  8) & 0xFF;
-    data[36] =  idx         & 0xFF;
+    data[35] = (idx >>> 8) & 0xFF;
+    data[36] = idx & 0xFF;
 
     const key = await crypto.subtle.importKey('raw', parentChainCode, { name: 'HMAC', hash: 'SHA-512' }, false, ['sign']);
     const result = await crypto.subtle.sign('HMAC', key, data);
     const IL = new Uint8Array(result).slice(0, 32);
     const IR = new Uint8Array(result).slice(32);
 
-    const parentInt = BigInt('0x' + Array.from(parentKey).map(b => b.toString(16).padStart(2,'0')).join(''));
-    const ILInt = BigInt('0x' + Array.from(IL).map(b => b.toString(16).padStart(2,'0')).join(''));
+    const parentInt = BigInt('0x' + Array.from(parentKey).map(b => b.toString(16).padStart(2, '0')).join(''));
+    const ILInt = BigInt('0x' + Array.from(IL).map(b => b.toString(16).padStart(2, '0')).join(''));
     const childKey = BigInt_to_bytes((parentInt + ILInt) % N, 32);
 
     return { key: childKey, chainCode: IR };
@@ -7323,7 +7363,7 @@ const SECP256K1 = (() => {
     let key = masterKey, cc = masterChainCode;
     for (const part of parts) {
       const hardened = part.endsWith("'");
-      const idx = parseInt(hardened ? part.slice(0,-1) : part);
+      const idx = parseInt(hardened ? part.slice(0, -1) : part);
       const result = await deriveChildKey(key, cc, idx, hardened);
       key = result.key; cc = result.chainCode;
     }
@@ -7335,11 +7375,11 @@ const SECP256K1 = (() => {
 
 // ── 5. ED25519 (pour Monero) ──────────────────────────────────────
 const ED25519 = (() => {
-  const P  = 2n**255n - 19n;
-  const D  = -121665n * mod_inv(121666n) % P;
+  const P = 2n ** 255n - 19n;
+  const D = -121665n * mod_inv(121666n) % P;
   const Gx = 15112221349535807912866137220509078750507884956996801637866485748967798321614n;
   const Gy = 46316835694926478169428394003475163141307993866256225615783033011972563909711n;
-  const Q  = 2n**252n + 27742317777372353535851937790883648493n;
+  const Q = 2n ** 252n + 27742317777372353535851937790883648493n;
 
   function mod_inv(a, p = P) {
     // Fermat: a^(p-2) mod p
@@ -7351,15 +7391,15 @@ const ED25519 = (() => {
   }
 
   function point_add(P1, P2) {
-    const [x1,y1,z1,t1] = P1, [x2,y2,z2,t2] = P2;
-    const A = (y1-x1)*(y2-x2)%P, B = (y1+x1)*(y2+x2)%P;
-    const C = t1*2n*D*t2%P, DD = z1*2n*z2%P;
-    const E=B-A, F=DD-C, G_=DD+C, H=B+A;
-    return [E*F%P, G_*H%P, F*G_%P, E*H%P];
+    const [x1, y1, z1, t1] = P1, [x2, y2, z2, t2] = P2;
+    const A = (y1 - x1) * (y2 - x2) % P, B = (y1 + x1) * (y2 + x2) % P;
+    const C = t1 * 2n * D * t2 % P, DD = z1 * 2n * z2 % P;
+    const E = B - A, F = DD - C, G_ = DD + C, H = B + A;
+    return [E * F % P, G_ * H % P, F * G_ % P, E * H % P];
   }
 
   function point_mul(s, P_) {
-    let Q = [0n,1n,1n,0n], R = P_;
+    let Q = [0n, 1n, 1n, 0n], R = P_;
     while (s > 0n) { if (s & 1n) Q = point_add(Q, R); R = point_add(R, R); s >>= 1n; }
     return Q;
   }
@@ -7367,7 +7407,7 @@ const ED25519 = (() => {
   const G = [Gx, Gy, 1n, Gx * Gy % P];
 
   function publicKey(priv32) {
-    const scalar = BigInt('0x' + Array.from(priv32).reverse().map(b=>b.toString(16).padStart(2,'0')).join(''));
+    const scalar = BigInt('0x' + Array.from(priv32).reverse().map(b => b.toString(16).padStart(2, '0')).join(''));
     const pt = point_mul(scalar, G);
     const z_inv = mod_inv(pt[2]);
     const x = pt[0] * z_inv % P;
@@ -7422,10 +7462,10 @@ const BIP39 = (() => {
   }
 
   async function seedToMaster(seed) {
-    const keyMaterial = await crypto.subtle.importKey('raw', new TextEncoder().encode('Bitcoin seed'), { name:'HMAC', hash:'SHA-512' }, false, ['sign']);
+    const keyMaterial = await crypto.subtle.importKey('raw', new TextEncoder().encode('Bitcoin seed'), { name: 'HMAC', hash: 'SHA-512' }, false, ['sign']);
     const result = await crypto.subtle.sign('HMAC', keyMaterial, seed);
     const bytes = new Uint8Array(result);
-    return { key: bytes.slice(0,32), chainCode: bytes.slice(32) };
+    return { key: bytes.slice(0, 32), chainCode: bytes.slice(32) };
   }
 
   return { generate, toSeed, seedToMaster, entropyToMnemonic };
@@ -7500,7 +7540,7 @@ const WALLET_CRYPTO = {
 
     // 4. Public keys via Ed25519
     const pubSpend = ED25519.publicKey(spendKey);
-    const pubView  = ED25519.publicKey(viewKey);
+    const pubView = ED25519.publicKey(viewKey);
 
     // 5. Address = 0x12 (mainnet) + pubSpend(32) + pubView(32) + checksum(4)
     const raw = new Uint8Array(65);
@@ -7538,7 +7578,7 @@ function moneroBase58Encode(data) {
   if (rem > 0) {
     let n = 0n;
     for (let j = numFullBlocks * FULL_BLOCK; j < data.length; j++) n = n * 256n + BigInt(data[j]);
-    const encLen = [0,2,3,5,6,7,9,10,11][rem];
+    const encLen = [0, 2, 3, 5, 6, 7, 9, 10, 11][rem];
     let s = '';
     for (let j = 0; j < encLen; j++) { s = ALPHA[Number(n % 58n)] + s; n /= 58n; }
     result += s;
@@ -7568,27 +7608,27 @@ function loadOwnWallet() {
     const raw = localStorage.getItem(LS_WALLET_KEY);
     if (!raw) return false;
     const d = JSON.parse(raw);
-    OWN_WALLET.created       = !!d.created;
-    OWN_WALLET.xmrAddress    = d.xmrAddress  || null;
-    OWN_WALLET.kasAddress    = d.kasAddress  || null;
-    OWN_WALLET.usdtAddress   = d.usdtAddress || null;
+    OWN_WALLET.created = !!d.created;
+    OWN_WALLET.xmrAddress = d.xmrAddress || null;
+    OWN_WALLET.kasAddress = d.kasAddress || null;
+    OWN_WALLET.usdtAddress = d.usdtAddress || null;
     OWN_WALLET.encryptedSeed = d.encryptedSeed || null;
     return OWN_WALLET.created;
-  } catch(e) { return false; }
+  } catch (e) { return false; }
 }
 
 function saveOwnWallet() {
   try {
     localStorage.setItem(LS_WALLET_KEY, JSON.stringify({
-      created:       OWN_WALLET.created,
-      xmrAddress:    OWN_WALLET.xmrAddress,
-      kasAddress:    OWN_WALLET.kasAddress,
-      usdtAddress:   OWN_WALLET.usdtAddress,
+      created: OWN_WALLET.created,
+      xmrAddress: OWN_WALLET.xmrAddress,
+      kasAddress: OWN_WALLET.kasAddress,
+      usdtAddress: OWN_WALLET.usdtAddress,
       encryptedSeed: OWN_WALLET.encryptedSeed,
-      savedAt:       Date.now(),
+      savedAt: Date.now(),
     }));
     return true;
-  } catch(e) { console.warn('wallet save failed:', e); return false; }
+  } catch (e) { console.warn('wallet save failed:', e); return false; }
 }
 
 // ── Chiffrement seed avec PIN (AES-256-GCM + PBKDF2) ──
@@ -7597,8 +7637,8 @@ async function encryptSeedWithPin(seedPhrase) {
   if (!pinHash) throw new Error('PIN non configuré');
 
   const salt = crypto.getRandomValues(new Uint8Array(16));
-  const iv   = crypto.getRandomValues(new Uint8Array(12));
-  const enc  = new TextEncoder();
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const enc = new TextEncoder();
 
   // Dériver une clé AES depuis le hash du PIN
   const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(pinHash), 'PBKDF2', false, ['deriveKey']);
@@ -7610,8 +7650,8 @@ async function encryptSeedWithPin(seedPhrase) {
   const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, aesKey, enc.encode(seedPhrase));
 
   return {
-    iv:         Array.from(iv),
-    salt:       Array.from(salt),
+    iv: Array.from(iv),
+    salt: Array.from(salt),
     ciphertext: Array.from(new Uint8Array(ciphertext)),
   };
 }
@@ -7659,10 +7699,10 @@ async function deriveAddressesFromSeed(seedPhrase, passphrase = '') {
 
   return {
     usdt: trc20.address,
-    kas:  kas.address,
-    xmr:  xmr.address,
+    kas: kas.address,
+    xmr: xmr.address,
     xmrSpendKey: xmr.spendKey,
-    xmrViewKey:  xmr.viewKey,
+    xmrViewKey: xmr.viewKey,
   };
 }
 
@@ -7673,8 +7713,8 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 // ── ACTIONS WALLET ──
 function copyOwnAddr(coin) {
   const addr = coin === 'XMR' ? OWN_WALLET.xmrAddress
-              : coin === 'KAS' ? OWN_WALLET.kasAddress
-              : OWN_WALLET.usdtAddress;
+    : coin === 'KAS' ? OWN_WALLET.kasAddress
+      : OWN_WALLET.usdtAddress;
   if (!addr) return;
   if (navigator.clipboard) {
     navigator.clipboard.writeText(addr).then(() => toast('success', coin, 'Adresse copiée !'));
@@ -7687,8 +7727,8 @@ function copyOwnAddr(coin) {
 
 function showOwnAddrQR(coin) {
   const addr = coin === 'XMR' ? OWN_WALLET.xmrAddress
-              : coin === 'KAS' ? OWN_WALLET.kasAddress
-              : OWN_WALLET.usdtAddress;
+    : coin === 'KAS' ? OWN_WALLET.kasAddress
+      : OWN_WALLET.usdtAddress;
   if (!addr) return;
   // Réutiliser le modal receive existant
   const icon = coin === 'XMR' ? '⬡' : coin === 'KAS' ? '◈' : '₮';
@@ -7731,14 +7771,14 @@ let cwizStep = 0;
 function openCreateWallet() {
   cwizSeed = null; cwizStep = 0;
   // Reset
-  ['cwiz-step0','cwiz-step1','cwiz-step2'].forEach((id,i) => {
-    el(id).className = 'wiz-step' + (i===0?' active':'');
+  ['cwiz-step0', 'cwiz-step1', 'cwiz-step2'].forEach((id, i) => {
+    el(id).className = 'wiz-step' + (i === 0 ? ' active' : '');
   });
-  ['cwiz-d0','cwiz-d1','cwiz-d2'].forEach((id,i) => {
-    el(id).className = 'wiz-dot' + (i===0?' active':'');
+  ['cwiz-d0', 'cwiz-d1', 'cwiz-d2'].forEach((id, i) => {
+    el(id).className = 'wiz-dot' + (i === 0 ? ' active' : '');
   });
-  const ack = el('cwiz-ack'); if(ack) { ack.checked = false; }
-  const btn = el('cwiz-btn0'); if(btn) { btn.disabled = true; btn.style.opacity = '.4'; }
+  const ack = el('cwiz-ack'); if (ack) { ack.checked = false; }
+  const btn = el('cwiz-btn0'); if (btn) { btn.disabled = true; btn.style.opacity = '.4'; }
   openModal('modal-create-wallet');
 }
 
@@ -7758,7 +7798,7 @@ async function cwizNext(step) {
     const words = cwizSeed.split(' ');
     grid.innerHTML = words.map((w, i) => `
       <div class="seed-word">
-        <span class="seed-word-num">${i+1}.</span>
+        <span class="seed-word-num">${i + 1}.</span>
         <span class="seed-word-txt">${w}</span>
       </div>`).join('');
 
@@ -7772,7 +7812,7 @@ async function cwizNext(step) {
     el('cwiz-step2').className = 'wiz-step active'; el('cwiz-d2').className = 'wiz-dot active';
     cwizStep = 2;
     // Vérifier PIN
-    const pinHash = _pinHash || (() => { try { return localStorage.getItem('bitosdash_pin_hash'); } catch(e) { return null; } })();
+    const pinHash = _pinHash || (() => { try { return localStorage.getItem('bitosdash_pin_hash'); } catch (e) { return null; } })();
     setText('cwiz-pin-level', pinHash ? '✅ PIN SHA-256 actif' : '⚠ Pas de PIN configuré — le wallet utilisera un PIN par défaut');
   }
 }
@@ -7810,10 +7850,10 @@ async function cwizCreateWallet() {
     await sleep(50);
     const encrypted = await encryptSeedWithPin(cwizSeed);
 
-    OWN_WALLET.created       = true;
-    OWN_WALLET.xmrAddress    = addrs.xmr;
-    OWN_WALLET.kasAddress    = addrs.kas;
-    OWN_WALLET.usdtAddress   = addrs.usdt;
+    OWN_WALLET.created = true;
+    OWN_WALLET.xmrAddress = addrs.xmr;
+    OWN_WALLET.kasAddress = addrs.kas;
+    OWN_WALLET.usdtAddress = addrs.usdt;
     OWN_WALLET.encryptedSeed = encrypted;
 
     // EFFACER la seed en clair de la mémoire
@@ -7823,10 +7863,12 @@ async function cwizCreateWallet() {
     closeModal('modal-create-wallet');
     renderOwnWallet();
     toast('success', '✅ Wallet créé', 'XMR · KAS · USDT · Seed chiffrée avec votre PIN');
-    ALERTS.unshift({ id:'wallet-'+Date.now(), type:'info', title:'Wallet personnel créé',
-      time:"À l\'instant", detail:'3 adresses générées (XMR, KAS, USDT TRC-20)' });
+    ALERTS.unshift({
+      id: 'wallet-' + Date.now(), type: 'info', title: 'Wallet personnel créé',
+      time: "À l\'instant", detail: '3 adresses générées (XMR, KAS, USDT TRC-20)'
+    });
     renderAlerts();
-  } catch(e) {
+  } catch (e) {
     console.error('Wallet creation failed:', e);
     toast('err', 'Erreur', 'Échec de création : ' + e.message);
     if (genDiv) genDiv.style.display = 'none';
@@ -7867,10 +7909,10 @@ async function importWallet() {
     const addrs = await deriveAddressesFromSeed(seedPhrase, passphrase);
     const encrypted = await encryptSeedWithPin(seedPhrase);
 
-    OWN_WALLET.created       = true;
-    OWN_WALLET.xmrAddress    = addrs.xmr;
-    OWN_WALLET.kasAddress    = addrs.kas;
-    OWN_WALLET.usdtAddress   = addrs.usdt;
+    OWN_WALLET.created = true;
+    OWN_WALLET.xmrAddress = addrs.xmr;
+    OWN_WALLET.kasAddress = addrs.kas;
+    OWN_WALLET.usdtAddress = addrs.usdt;
     OWN_WALLET.encryptedSeed = encrypted;
 
     // Effacer les inputs
@@ -7881,7 +7923,7 @@ async function importWallet() {
     closeModal('modal-import-wallet');
     renderOwnWallet();
     toast('success', '✅ Wallet importé', 'Adresses XMR · KAS · USDT recalculées');
-  } catch(e) {
+  } catch (e) {
     toast('err', 'Import échoué', e.message);
     if (btn) { btn.textContent = '📥 Importer'; btn.disabled = false; btn.style.opacity = '1'; }
   }
@@ -7902,12 +7944,12 @@ async function revealSeedWithPin() {
     if (grid) {
       grid.innerHTML = words.map((w, i) => `
         <div class="seed-word">
-          <span class="seed-word-num">${i+1}.</span>
+          <span class="seed-word-num">${i + 1}.</span>
           <span class="seed-word-txt">${w}</span>
         </div>`).join('');
     }
     openModal('modal-seed-reveal');
-  } catch(e) {
+  } catch (e) {
     toast('err', 'Déchiffrement échoué', 'PIN incorrect ou seed corrompue');
   }
 }
@@ -7958,7 +8000,7 @@ function importWalletJSON() {
       closeModal('modal-manage-wallet');
       renderOwnWallet();
       toast('success', 'Wallet restauré', 'Adresses rechargées depuis le backup');
-    } catch(e) { toast('err', 'Import échoué', e.message); }
+    } catch (e) { toast('err', 'Import échoué', e.message); }
   };
   inp.click();
 }
@@ -7981,11 +8023,11 @@ let activeWalletTab = 'pool';
 
 function switchWalletTab(tab) {
   activeWalletTab = tab;
-  ['pool','own'].forEach(t => {
+  ['pool', 'own'].forEach(t => {
     const panel = el('wtab-' + t);
-    const btn   = el('wtab-' + t + '-btn');
+    const btn = el('wtab-' + t + '-btn');
     if (panel) panel.className = 'wallet-tab-panel' + (t === tab ? ' active' : '');
-    if (btn)   btn.className   = 'wallet-tab-btn'   + (t === tab ? ' active' : '');
+    if (btn) btn.className = 'wallet-tab-btn' + (t === tab ? ' active' : '');
   });
   if (tab === 'own') renderOwnWallet();
   if (tab === 'pool') refreshWalletPage();
@@ -8013,18 +8055,18 @@ async function fetchOwnWalletBalances() {
 }
 
 function renderOwnWallet() {
-  const body     = el('own-wallet-body');
-  const dot      = el('own-wallet-dot');
-  const statusTxt= el('own-wallet-status-txt');
-  const menuBtn  = el('own-wallet-menu-btn');
-  const seedBtn  = el('seed-toggle-btn');
+  const body = el('own-wallet-body');
+  const dot = el('own-wallet-dot');
+  const statusTxt = el('own-wallet-status-txt');
+  const menuBtn = el('own-wallet-menu-btn');
+  const seedBtn = el('seed-toggle-btn');
   if (!body) return;
 
   if (!OWN_WALLET.created) {
-    if (dot)       dot.style.background = 'var(--muted)';
+    if (dot) dot.style.background = 'var(--muted)';
     if (statusTxt) statusTxt.textContent = 'Aucun wallet configuré';
-    if (menuBtn)   menuBtn.style.display = 'none';
-    if (seedBtn)   seedBtn.style.display = 'none';
+    if (menuBtn) menuBtn.style.display = 'none';
+    if (seedBtn) seedBtn.style.display = 'none';
 
     body.innerHTML = `
       <div class="wallet-tab-setup">
@@ -8043,51 +8085,51 @@ function renderOwnWallet() {
   }
 
   // Wallet actif
-  if (dot)       { dot.style.background = 'var(--green)'; dot.style.boxShadow = '0 0 8px rgba(0,255,135,.5)'; }
+  if (dot) { dot.style.background = 'var(--green)'; dot.style.boxShadow = '0 0 8px rgba(0,255,135,.5)'; }
   if (statusTxt) statusTxt.textContent = 'Wallet HD actif — BIP-39/44 · AES-256-GCM';
-  if (menuBtn)   menuBtn.style.display = 'inline-flex';
-  if (seedBtn)   seedBtn.style.display = 'inline-flex';
+  if (menuBtn) menuBtn.style.display = 'inline-flex';
+  if (seedBtn) seedBtn.style.display = 'inline-flex';
 
   const coins = [
     {
-      id:      'XMR',
-      cls:     'xmr',
-      name:    'Monero',
-      ticker:  'XMR · Réseau Monero',
-      icon:    '⬡',
-      color:   'var(--orange)',
-      bg:      'rgba(255,107,43,.18)',
-      addr:    OWN_WALLET.xmrAddress,
-      bal:     OWN_BALANCES.XMR,
-      price:   xmrP,
+      id: 'XMR',
+      cls: 'xmr',
+      name: 'Monero',
+      ticker: 'XMR · Réseau Monero',
+      icon: '⬡',
+      color: 'var(--orange)',
+      bg: 'rgba(255,107,43,.18)',
+      addr: OWN_WALLET.xmrAddress,
+      bal: OWN_BALANCES.XMR,
+      price: xmrP,
       pending: xmrPending,
       mineBtn: true,
     },
     {
-      id:      'KAS',
-      cls:     'kas',
-      name:    'Kaspa',
-      ticker:  'KAS · Réseau Kaspa',
-      icon:    '◈',
-      color:   'var(--accent)',
-      bg:      'rgba(0,229,255,.18)',
-      addr:    OWN_WALLET.kasAddress,
-      bal:     OWN_BALANCES.KAS,
-      price:   kasP,
+      id: 'KAS',
+      cls: 'kas',
+      name: 'Kaspa',
+      ticker: 'KAS · Réseau Kaspa',
+      icon: '◈',
+      color: 'var(--accent)',
+      bg: 'rgba(0,229,255,.18)',
+      addr: OWN_WALLET.kasAddress,
+      bal: OWN_BALANCES.KAS,
+      price: kasP,
       pending: kasPending,
       mineBtn: true,
     },
     {
-      id:      'USDT',
-      cls:     'usdt',
-      name:    'USDT',
-      ticker:  'USDT · TRC-20 (Tron)',
-      icon:    '₮',
-      color:   'var(--green)',
-      bg:      'rgba(0,255,135,.18)',
-      addr:    OWN_WALLET.usdtAddress,
-      bal:     OWN_BALANCES.USDT,
-      price:   1,
+      id: 'USDT',
+      cls: 'usdt',
+      name: 'USDT',
+      ticker: 'USDT · TRC-20 (Tron)',
+      icon: '₮',
+      color: 'var(--green)',
+      bg: 'rgba(0,255,135,.18)',
+      addr: OWN_WALLET.usdtAddress,
+      bal: OWN_BALANCES.USDT,
+      price: 1,
       pending: null,
       mineBtn: false,
     },
@@ -8117,9 +8159,9 @@ function renderOwnWallet() {
     </div>` : '';
 
   body.innerHTML = hiveGuidance + coins.map(c => {
-    const usd    = c.bal != null ? (c.bal * c.price).toFixed(2) : null;
-    const crypto = c.bal != null ? (c.id === 'KAS' ? Number(c.bal).toLocaleString('fr-FR') : Number(c.bal).toFixed(c.id==='USDT'?2:6)) : null;
-    const shortAddr = c.addr ? (c.addr.length > 30 ? c.addr.slice(0,14)+'…'+c.addr.slice(-10) : c.addr) : null;
+    const usd = c.bal != null ? (c.bal * c.price).toFixed(2) : null;
+    const crypto = c.bal != null ? (c.id === 'KAS' ? Number(c.bal).toLocaleString('fr-FR') : Number(c.bal).toFixed(c.id === 'USDT' ? 2 : 6)) : null;
+    const shortAddr = c.addr ? (c.addr.length > 30 ? c.addr.slice(0, 14) + '…' + c.addr.slice(-10) : c.addr) : null;
 
     return `
     <div class="own-coin-card ${c.cls}">
@@ -8166,7 +8208,7 @@ function renderOwnWallet() {
           <span class="occ-action-label">Consulter</span>
         </button>
         ${c.mineBtn ? `
-        <button class="occ-action-btn" style="grid-column:1/-1" onclick="${c.id==='XMR'?'setXmrAsMiningAddr':'setKasAsMiningAddr'}()">
+        <button class="occ-action-btn" style="grid-column:1/-1" onclick="${c.id === 'XMR' ? 'setXmrAsMiningAddr' : 'setKasAsMiningAddr'}()">
           <span class="occ-action-icon">⛏</span>
           <span class="occ-action-label">Utiliser cette adresse pour le minage ${c.id}</span>
         </button>` : `
@@ -8181,19 +8223,19 @@ function renderOwnWallet() {
 
 // ── Envoyer depuis wallet perso ──
 function openOwnSend(coin) {
-  if (!OWN_WALLET.created) { toast('warn','Wallet','Créez d\'abord votre wallet perso'); return; }
+  if (!OWN_WALLET.created) { toast('warn', 'Wallet', 'Créez d\'abord votre wallet perso'); return; }
   // Vérifier session PIN
   if (!SEC.sessionValid) {
-    toast('warn','PIN requis','Effectuez d\'abord une transaction pour activer votre session');
+    toast('warn', 'PIN requis', 'Effectuez d\'abord une transaction pour activer votre session');
     return;
   }
   // Préremplir S avec l'adresse source du wallet perso
   S.coin = coin; S.prio = 'slow'; S.amount = 0; S.addr = ''; S.addrValid = false;
   // Ouvrir le modal send existant
-  const dp = coin==='XMR'?6:2;
-  const bal = coin==='XMR' ? (OWN_BALANCES.XMR ?? WALLET.XMR.balance)
-            : coin==='KAS' ? (OWN_BALANCES.KAS ?? WALLET.KAS.balance)
-            : (OWN_BALANCES.USDT ?? 0);
+  const dp = coin === 'XMR' ? 6 : 2;
+  const bal = coin === 'XMR' ? (OWN_BALANCES.XMR ?? WALLET.XMR.balance)
+    : coin === 'KAS' ? (OWN_BALANCES.KAS ?? WALLET.KAS.balance)
+      : (OWN_BALANCES.USDT ?? 0);
   setText('send-title', '↗ Envoyer ' + coin + ' (wallet perso)');
   setText('send-coin-ico', coin);
   setText('send-avail', bal.toFixed(dp) + ' ' + coin + ' disponible');
@@ -8205,36 +8247,36 @@ function openOwnSend(coin) {
 
 // ── Recevoir / QR ──
 function openOwnReceive(coin) {
-  if (!OWN_WALLET.created) { toast('warn','Wallet','Créez d\'abord votre wallet perso'); return; }
+  if (!OWN_WALLET.created) { toast('warn', 'Wallet', 'Créez d\'abord votre wallet perso'); return; }
   showOwnAddrQR(coin);
 }
 
 // ── Consulter le solde ──
 function openOwnBalance(coin) {
-  if (!OWN_WALLET.created) { toast('warn','Wallet','Créez d\'abord votre wallet perso'); return; }
+  if (!OWN_WALLET.created) { toast('warn', 'Wallet', 'Créez d\'abord votre wallet perso'); return; }
 
-  const addr   = coin==='XMR' ? OWN_WALLET.xmrAddress : coin==='KAS' ? OWN_WALLET.kasAddress : OWN_WALLET.usdtAddress;
-  const bal    = coin==='XMR' ? (OWN_BALANCES.XMR ?? WALLET.XMR.balance)
-               : coin==='KAS' ? (OWN_BALANCES.KAS ?? WALLET.KAS.balance)
-               : (OWN_BALANCES.USDT ?? 0);
-  const price  = coin==='XMR' ? xmrP : coin==='KAS' ? kasP : 1;
-  const usd    = (bal * price).toFixed(2);
-  const dp     = coin==='USDT' ? 2 : coin==='KAS' ? 2 : 6;
-  const color  = coin==='XMR' ? 'var(--orange)' : coin==='KAS' ? 'var(--accent)' : 'var(--green)';
-  const icon   = coin==='XMR' ? '⬡' : coin==='KAS' ? '◈' : '₮';
-  const net    = coin==='XMR' ? 'Réseau Monero' : coin==='KAS' ? 'Réseau Kaspa' : 'TRC-20 (Tron)';
+  const addr = coin === 'XMR' ? OWN_WALLET.xmrAddress : coin === 'KAS' ? OWN_WALLET.kasAddress : OWN_WALLET.usdtAddress;
+  const bal = coin === 'XMR' ? (OWN_BALANCES.XMR ?? WALLET.XMR.balance)
+    : coin === 'KAS' ? (OWN_BALANCES.KAS ?? WALLET.KAS.balance)
+      : (OWN_BALANCES.USDT ?? 0);
+  const price = coin === 'XMR' ? xmrP : coin === 'KAS' ? kasP : 1;
+  const usd = (bal * price).toFixed(2);
+  const dp = coin === 'USDT' ? 2 : coin === 'KAS' ? 2 : 6;
+  const color = coin === 'XMR' ? 'var(--orange)' : coin === 'KAS' ? 'var(--accent)' : 'var(--green)';
+  const icon = coin === 'XMR' ? '⬡' : coin === 'KAS' ? '◈' : '₮';
+  const net = coin === 'XMR' ? 'Réseau Monero' : coin === 'KAS' ? 'Réseau Kaspa' : 'TRC-20 (Tron)';
 
   // Créer un toast rich ou ouvrir le modal receive avec les infos de solde
   // On réutilise le modal receive en le customisant
   setText('recv-title', icon + ' Solde ' + coin);
   el('recv-addr').textContent = addr || 'Adresse non disponible';
-  const pendingStr = coin==='XMR' && xmrPending ? '\n⛏ En attente pool: ' + xmrPending + ' XMR'
-                   : coin==='KAS' && kasPending ? '\n⛏ En attente pool: ' + kasPending + ' KAS' : '';
+  const pendingStr = coin === 'XMR' && xmrPending ? '\n⛏ En attente pool: ' + xmrPending + ' XMR'
+    : coin === 'KAS' && kasPending ? '\n⛏ En attente pool: ' + kasPending + ' KAS' : '';
   el('recv-warning').innerHTML = `
     <div style="font-size:13px;font-weight:800;color:${color};margin-bottom:6px">${bal.toFixed(dp)} ${coin}</div>
     <div style="font-size:11px;color:var(--muted)">≈ <strong style="color:${color}">$${usd} USD</strong> · ${net}</div>
-    ${pendingStr ? '<div style="font-size:10.5px;color:var(--muted);margin-top:6px">⛏ En attente pool : ' + (coin==='XMR'?xmrPending:kasPending) + ' ' + coin + '</div>' : ''}
-    <div style="font-size:9px;color:var(--muted);margin-top:8px;font-family:var(--mono)">Prix : $${price.toFixed(coin==='KAS'?4:2)} / ${coin}</div>
+    ${pendingStr ? '<div style="font-size:10.5px;color:var(--muted);margin-top:6px">⛏ En attente pool : ' + (coin === 'XMR' ? xmrPending : kasPending) + ' ' + coin + '</div>' : ''}
+    <div style="font-size:9px;color:var(--muted);margin-top:8px;font-family:var(--mono)">Prix : $${price.toFixed(coin === 'KAS' ? 4 : 2)} / ${coin}</div>
   `;
   el('recv-warning').style.color = color;
   if (addr) buildQR(addr);
@@ -8278,10 +8320,10 @@ async function createKASFarm() {
 
   try {
     // ── Étape 1 : wallet KAS ───────────────────────────────────────
-    hiveLog('💼 Wallet KAS : ' + addr.slice(0,20) + '…');
+    hiveLog('💼 Wallet KAS : ' + addr.slice(0, 20) + '…');
     let walletId = null;
     const existingWallets = await hiveApiFetch('/farms/' + HIVE_FARM_ID + '/wallets');
-    const existing = (existingWallets?.data || []).find(function(w) {
+    const existing = (existingWallets?.data || []).find(function (w) {
       return w.coin === 'KAS' && w.wal && w.wal.includes(addr.slice(0, 20));
     });
     if (existing) {
@@ -8292,9 +8334,9 @@ async function createKASFarm() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name:   'BitOS KAS K1Pool',
-          coin:   'KAS',
-          wal:    addr,
+          name: 'BitOS KAS K1Pool',
+          coin: 'KAS',
+          wal: addr,
           source: 'manuel'
         })
       });
@@ -8306,14 +8348,14 @@ async function createKASFarm() {
     // ── Étape 2 : flight sheet kHeavyHash → K1Pool ─────────────────
     hiveLog('📋 Création flight sheet KAS kHeavyHash + K1Pool…');
     // K1Pool stratum — depuis POOL_CONFIG.KAS
-    const K1_STRATUM     = POOL_CONFIG.KAS.stratumTCP || 'stratum+tcp://kaspa.k1pool.com:3333';
+    const K1_STRATUM = POOL_CONFIG.KAS.stratumTCP || 'stratum+tcp://kaspa.k1pool.com:3333';
     const K1_STRATUM_SSL = POOL_CONFIG.KAS.stratumSSL || 'stratum+ssl://kaspa.k1pool.com:5555';
 
     const existingFS = await hiveApiFetch('/farms/' + HIVE_FARM_ID + '/flight_sheets');
-    const existFS = (existingFS?.data || []).find(function(f) {
+    const existFS = (existingFS?.data || []).find(function (f) {
       return f.name && (f.name.toLowerCase().includes('kas') ||
-                        f.name.toLowerCase().includes('kaspa') ||
-                        f.name.toLowerCase().includes('kheavyhash'));
+        f.name.toLowerCase().includes('kaspa') ||
+        f.name.toLowerCase().includes('kheavyhash'));
     });
     let fsId = null;
     if (existFS) {
@@ -8326,22 +8368,22 @@ async function createKASFarm() {
         body: JSON.stringify({
           name: 'BitOS KAS kHeavyHash K1Pool',
           items: [{
-            coin:        'KAS',
-            wallet_id:   walletId,
-            pool_ssl:    false,
-            pool_urls:   [K1_STRATUM, K1_STRATUM_SSL],
-            miner:       'gminer',
+            coin: 'KAS',
+            wallet_id: walletId,
+            pool_ssl: false,
+            pool_urls: [K1_STRATUM, K1_STRATUM_SSL],
+            miner: 'gminer',
             miner_config: Object.assign({
-              user:  addr,
-              pass:  'x',
+              user: addr,
+              pass: 'x',
             }, {
-              algo:       MINE_PARAMS.gminer.algo,
-              server:     MINE_PARAMS.gminer['server'],
-              port:       MINE_PARAMS.gminer['port'],
+              algo: MINE_PARAMS.gminer.algo,
+              server: MINE_PARAMS.gminer['server'],
+              port: MINE_PARAMS.gminer['port'],
               'ssl-port': MINE_PARAMS.gminer['ssl-port'],
               'api-port': MINE_PARAMS.gminer['api-port'],
               'watchdog': MINE_PARAMS.gminer['watchdog'],
-              'use-ssl':  MINE_PARAMS.gminer['use-ssl'],
+              'use-ssl': MINE_PARAMS.gminer['use-ssl'],
               'log-file': MINE_PARAMS.gminer['log-file'],
             })
           }]
@@ -8352,19 +8394,19 @@ async function createKASFarm() {
       hiveLog('✅ Flight sheet kHeavyHash créé (ID: ' + fsId + ')');
     }
 
-        // ── Étape 3 : stocker IDs farm KAS dédié ─────────────────────
-    HIVE_KAS_WALLET_ID=walletId; HIVE_KAS_FS_ID=fsId; HIVE_KAS_FARM_ID=String(HIVE_FARM_ID);
-    var _ke=HIVE_FARMS.find(function(f){return String(f.id)===String(HIVE_FARM_ID);});
-    if(_ke){_ke.kasWalletId=walletId;_ke.kasFsId=fsId;_ke.kasEnabled=true;}
-    else HIVE_FARMS.push({id:String(HIVE_FARM_ID),name:'Farm KAS',enabled:true,kasEnabled:true,lastSync:0,workerCount:0,kasWalletId:walletId,kasFsId:fsId});
+    // ── Étape 3 : stocker IDs farm KAS dédié ─────────────────────
+    HIVE_KAS_WALLET_ID = walletId; HIVE_KAS_FS_ID = fsId; HIVE_KAS_FARM_ID = String(HIVE_FARM_ID);
+    var _ke = HIVE_FARMS.find(function (f) { return String(f.id) === String(HIVE_FARM_ID); });
+    if (_ke) { _ke.kasWalletId = walletId; _ke.kasFsId = fsId; _ke.kasEnabled = true; }
+    else HIVE_FARMS.push({ id: String(HIVE_FARM_ID), name: 'Farm KAS', enabled: true, kasEnabled: true, lastSync: 0, workerCount: 0, kasWalletId: walletId, kasFsId: fsId });
     saveMultiFarm(); scheduleSave();
-    hiveLog('🎉 Ferme KAS! Farm:'+HIVE_KAS_FARM_ID+' W:#'+walletId+' FS:#'+fsId);
+    hiveLog('🎉 Ferme KAS! Farm:' + HIVE_KAS_FARM_ID + ' W:#' + walletId + ' FS:#' + fsId);
     hiveLog('📝 Assignez "BitOS KAS kHeavyHash K1Pool" à vos rigs KAS.');
-    toast('success','✅ Ferme KAS créée','Farm:'+HIVE_KAS_FARM_ID+' · FS #'+fsId);
+    toast('success', '✅ Ferme KAS créée', 'Farm:' + HIVE_KAS_FARM_ID + ' · FS #' + fsId);
     // ── Étape 4 : assigner le flight sheet aux workers KAS ───────
     hiveLog('🔗 Assignation du flight sheet aux workers KAS…');
     let assigned = 0, assignErrors = 0;
-    const kasWorkersToAssign = RIGS.filter(function(r) {
+    const kasWorkersToAssign = RIGS.filter(function (r) {
       return r.coin === 'KAS' && r.hiveId;
     });
     if (kasWorkersToAssign.length === 0) {
@@ -8380,7 +8422,7 @@ async function createKASFarm() {
           );
           hiveLog('  ✅ ' + _wr.name + ' → FS #' + fsId + ' assigné');
           assigned++;
-        } catch(_werr) {
+        } catch (_werr) {
           hiveLog('  ⚠ ' + _wr.name + ': ' + _werr.message.slice(0, 60));
           assignErrors++;
         }
@@ -8397,7 +8439,7 @@ async function createKASFarm() {
     toast('success', '✅ Ferme KAS prête!',
       'FS #' + fsId + ' ' + _assignMsg + ' — Le minage peut commencer!');
 
-  } catch(e) {
+  } catch (e) {
     hiveLog('❌ Erreur: ' + e.message);
     toast('error', 'Erreur création KAS', e.message.slice(0, 80));
     if (btn) { btn.disabled = false; btn.textContent = '◈ Créer ferme KAS'; }
@@ -8406,9 +8448,9 @@ async function createKASFarm() {
 
 // Variables IDs ferme KAS
 let HIVE_KAS_WALLET_ID = null;
-let HIVE_KAS_FS_ID=null;
-let HIVE_KAS_FARM_ID='';
-let HIVE_KAS_WORKERS=[];
+let HIVE_KAS_FS_ID = null;
+let HIVE_KAS_FARM_ID = '';
+let HIVE_KAS_WORKERS = [];
 
 
 // ── Sync complète KAS (pool + réseau + HiveOS) ────────────────────────────
@@ -8424,12 +8466,12 @@ async function fetchKASAll() {
     fetchKASNetworkStats(),
   ]);
 
-  if (HIVE_TOKEN&&(HIVE_KAS_FARM_ID||HIVE_FARM_ID)&&Date.now()-hiveLastFetch>30000) {
-    var _pf=HIVE_FARM_ID; if(HIVE_KAS_FARM_ID) HIVE_FARM_ID=HIVE_KAS_FARM_ID;
-    await fetchHiveOS().catch(function(e){console.warn('[HiveOS KAS]',e.message);});
-    HIVE_FARM_ID=_pf;
+  if (HIVE_TOKEN && (HIVE_KAS_FARM_ID || HIVE_FARM_ID) && Date.now() - hiveLastFetch > 30000) {
+    var _pf = HIVE_FARM_ID; if (HIVE_KAS_FARM_ID) HIVE_FARM_ID = HIVE_KAS_FARM_ID;
+    await fetchHiveOS().catch(function (e) { console.warn('[HiveOS KAS]', e.message); });
+    HIVE_FARM_ID = _pf;
   }
-  HIVE_KAS_WORKERS=RIGS.filter(function(r){return r.coin==='KAS';});
+  HIVE_KAS_WORKERS = RIGS.filter(function (r) { return r.coin === 'KAS'; });
   renderKASPage();
   renderDash();
 
@@ -8439,16 +8481,16 @@ async function fetchKASAll() {
 
 // ── Render page KAS dédiée ────────────────────────────────────────────────
 function renderKASPage() {
-  var kasRigs  = RIGS.filter(function(r) { return r.coin === 'KAS'; });
-  var online   = kasRigs.filter(function(r) { return r.status !== 'offline'; });
-  var totalHR  = online.reduce(function(s, r) { return s + (r.hrn || 0); }, 0);
-  var totalW   = online.reduce(function(s, r) { return s + (r.watt || 0); }, 0);
-  var ns       = NET_STATS.KAS;
-  var cmr      = calcMiningRevenue('KAS');
+  var kasRigs = RIGS.filter(function (r) { return r.coin === 'KAS'; });
+  var online = kasRigs.filter(function (r) { return r.status !== 'offline'; });
+  var totalHR = online.reduce(function (s, r) { return s + (r.hrn || 0); }, 0);
+  var totalW = online.reduce(function (s, r) { return s + (r.watt || 0); }, 0);
+  var ns = NET_STATS.KAS;
+  var cmr = calcMiningRevenue('KAS');
   var elecRate = parseFloat(el('m-elec')?.value || '0.20') || 0.20;
 
   // ── Hero ──────────────────────────────────────────────────────────
-  setText('kas-hero-hr',  totalHR > 0 ? totalHR.toFixed(2) + ' GH/s' : '— GH/s');
+  setText('kas-hero-hr', totalHR > 0 ? totalHR.toFixed(2) + ' GH/s' : '— GH/s');
   setText('kas-hero-rev', cmr.netDaily > 0 ? '$' + cmr.netDaily.toFixed(2) + '/jour' : '$0.00/jour');
   setText('kas-hero-sub',
     (cmr.coinPerDay > 0 ? Math.round(cmr.coinPerDay) + ' KAS/jour' : '— KAS/jour') +
@@ -8457,12 +8499,12 @@ function renderKASPage() {
 
   // ── Revenus ───────────────────────────────────────────────────────
   setText('kas-rev-day-gross', cmr.daily > 0 ? '$' + cmr.daily.toFixed(2) : '$0.00');
-  setText('kas-rev-day-net',   cmr.netDaily !== undefined ? '$' + Math.max(0, cmr.netDaily).toFixed(2) : '—');
-  setText('kas-rev-month',     cmr.daily > 0 ? '$' + (cmr.daily * 30).toFixed(2) : '—');
-  setText('kas-coin-day',      cmr.coinPerDay > 0 ? Math.round(cmr.coinPerDay) + ' KAS' : '—');
-  setText('kas-watt-total',    totalW ? totalW.toLocaleString() + ' W' : '—');
-  setText('kas-elec-day',      totalW ? '$' + ((totalW / 1000) * elecRate * 24).toFixed(2) : '—');
-  setText('kas-elec-day-2',    totalW ? '$' + ((totalW / 1000) * elecRate * 24).toFixed(2) + '/j' : '—');
+  setText('kas-rev-day-net', cmr.netDaily !== undefined ? '$' + Math.max(0, cmr.netDaily).toFixed(2) : '—');
+  setText('kas-rev-month', cmr.daily > 0 ? '$' + (cmr.daily * 30).toFixed(2) : '—');
+  setText('kas-coin-day', cmr.coinPerDay > 0 ? Math.round(cmr.coinPerDay) + ' KAS' : '—');
+  setText('kas-watt-total', totalW ? totalW.toLocaleString() + ' W' : '—');
+  setText('kas-elec-day', totalW ? '$' + ((totalW / 1000) * elecRate * 24).toFixed(2) : '—');
+  setText('kas-elec-day-2', totalW ? '$' + ((totalW / 1000) * elecRate * 24).toFixed(2) + '/j' : '—');
   var marg = cmr.netDaily > 0 && cmr.daily > 0 ? Math.round(cmr.netDaily / cmr.daily * 100) : 0;
   var margEl = el('kas-margin');
   if (margEl) {
@@ -8483,17 +8525,19 @@ function renderKASPage() {
   // ── Graphique depuis snapshots ────────────────────────────────────
   if (SNAPSHOTS.length > 0 && typeof drawChart === 'function') {
     var pts = SNAPSHOTS.slice(-48);
-    var labels = pts.map(function(s) { return new Date(s.ts).toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'}); });
-    var vals   = pts.map(function(s) { return s.kasHR || s.hrKAS || 0; });
-    if (vals.some(function(v) { return v > 0; })) {
+    var labels = pts.map(function (s) { return new Date(s.ts).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }); });
+    var vals = pts.map(function (s) { return s.kasHR || s.hrKAS || 0; });
+    if (vals.some(function (v) { return v > 0; })) {
       drawChart('ch-kas-hash', 'line',
-        [{label: 'Hashrate KAS (GH/s)', data: vals,
-          borderColor: 'var(--accent)', backgroundColor: 'rgba(0,229,255,0.08)'}],
+        [{
+          label: 'Hashrate KAS (GH/s)', data: vals,
+          borderColor: 'var(--accent)', backgroundColor: 'rgba(0,229,255,0.08)'
+        }],
         labels
       );
-      var avg = vals.filter(function(v) { return v > 0; })
-                    .reduce(function(a, b) { return a + b; }, 0) /
-                Math.max(1, vals.filter(function(v) { return v > 0; }).length);
+      var avg = vals.filter(function (v) { return v > 0; })
+        .reduce(function (a, b) { return a + b; }, 0) /
+        Math.max(1, vals.filter(function (v) { return v > 0; }).length);
       setText('kas-avg-24h', 'moy 24h: ' + avg.toFixed(2) + ' GH/s');
     }
   }
@@ -8504,29 +8548,29 @@ function renderKASPage() {
     if (kasRigs.length === 0) {
       wEl.innerHTML = '<div style="color:var(--muted);padding:16px;text-align:center">'
         + (HIVE_TOKEN ? '⏳ Sync HiveOS en cours… Aucun worker KAS détecté.'
-                      : '⚠ Token HiveOS manquant dans Paramètres')
+          : '⚠ Token HiveOS manquant dans Paramètres')
         + '</div>';
     } else {
-      wEl.innerHTML = kasRigs.map(function(r) {
-        var col  = r.status==='online' ? 'var(--green)' : r.status==='warning' ? 'var(--yellow)' : 'var(--red)';
+      wEl.innerHTML = kasRigs.map(function (r) {
+        var col = r.status === 'online' ? 'var(--green)' : r.status === 'warning' ? 'var(--yellow)' : 'var(--red)';
         var tCol = r.maxTemp >= 80 ? 'var(--red)' : r.maxTemp >= 72 ? 'var(--yellow)' : 'var(--muted)';
         var farmBadge = r._farmName
           ? ' <span style="font-size:9px;color:var(--muted);background:rgba(0,229,255,.08);padding:1px 5px;border-radius:3px">' + r._farmName + '</span>'
           : '';
         return '<div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;margin-bottom:6px">'
           + '<div style="display:flex;align-items:center;gap:10px">'
-            + '<div style="width:10px;height:10px;border-radius:50%;background:' + col + ';flex-shrink:0"></div>'
-            + '<div>'
-              + '<div style="font-weight:600;font-size:13px">' + r.name + farmBadge + '</div>'
-              + '<div style="font-size:10px;color:var(--muted)">' + r.gpus + ' &bull; ' + r.os + '</div>'
-            + '</div>'
+          + '<div style="width:10px;height:10px;border-radius:50%;background:' + col + ';flex-shrink:0"></div>'
+          + '<div>'
+          + '<div style="font-weight:600;font-size:13px">' + r.name + farmBadge + '</div>'
+          + '<div style="font-size:10px;color:var(--muted)">' + r.gpus + ' &bull; ' + r.os + '</div>'
+          + '</div>'
           + '</div>'
           + '<div style="text-align:right">'
-            + '<div style="font-family:var(--mono);font-size:13px;color:var(--accent)">' + (r.hr || '—') + '</div>'
-            + '<div style="font-size:10px;color:' + tCol + '">' + (r.maxTemp || 0) + '&deg;C &bull; ' + (r.watt || 0) + 'W &bull; ' + (r.avgFan || 0) + '% fan</div>'
-            + '<div style="font-size:10px;color:var(--green)">$' + Math.max(0, (r.profit || 0)).toFixed(2) + '/mois</div>'
+          + '<div style="font-family:var(--mono);font-size:13px;color:var(--accent)">' + (r.hr || '—') + '</div>'
+          + '<div style="font-size:10px;color:' + tCol + '">' + (r.maxTemp || 0) + '&deg;C &bull; ' + (r.watt || 0) + 'W &bull; ' + (r.avgFan || 0) + '% fan</div>'
+          + '<div style="font-size:10px;color:var(--green)">$' + Math.max(0, (r.profit || 0)).toFixed(2) + '/mois</div>'
           + '</div>'
-        + '</div>';
+          + '</div>';
       }).join('');
     }
   }
@@ -8534,10 +8578,10 @@ function renderKASPage() {
   // ── Flight sheets KAS ─────────────────────────────────────────────
   var fsEl = el('kas-fs-list');
   if (fsEl) {
-    var fsKAS = (typeof hiveFS !== 'undefined' ? hiveFS : []).filter(function(f) {
+    var fsKAS = (typeof hiveFS !== 'undefined' ? hiveFS : []).filter(function (f) {
       return f.name && (f.name.toLowerCase().includes('kas') ||
-                        f.name.toLowerCase().includes('kaspa') ||
-                        f.name.toLowerCase().includes('kheavyhash'));
+        f.name.toLowerCase().includes('kaspa') ||
+        f.name.toLowerCase().includes('kheavyhash'));
     });
     if (fsKAS.length === 0) {
       fsEl.innerHTML = '<div style="color:var(--muted);font-size:11px">'
@@ -8545,29 +8589,29 @@ function renderKASPage() {
         + '<button class="btn btn-ghost btn-sm" style="font-size:10px;padding:2px 8px;color:var(--accent)" onclick="createKASFarm()">◈ Créer automatiquement</button>'
         + '</div>';
     } else {
-      var _kasOnline = kasRigs.filter(function(r){ return r.status !== 'offline'; });
-      fsEl.innerHTML = fsKAS.map(function(f) {
+      var _kasOnline = kasRigs.filter(function (r) { return r.status !== 'offline'; });
+      fsEl.innerHTML = fsKAS.map(function (f) {
         var isCurrent = String(f.id) === String(HIVE_KAS_FS_ID);
         return '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04)">'
           + '<div style="display:flex;align-items:center;gap:7px">'
-            + '<span style="color:var(--accent)">◈</span>'
-            + '<strong style="font-size:12px">' + f.name + '</strong>'
-            + (isCurrent ? '<span style="font-size:9px;background:rgba(0,229,255,.12);color:var(--accent);padding:1px 6px;border-radius:4px">actif</span>' : '')
+          + '<span style="color:var(--accent)">◈</span>'
+          + '<strong style="font-size:12px">' + f.name + '</strong>'
+          + (isCurrent ? '<span style="font-size:9px;background:rgba(0,229,255,.12);color:var(--accent);padding:1px 6px;border-radius:4px">actif</span>' : '')
           + '</div>'
           + '<div style="display:flex;align-items:center;gap:8px">'
-            + '<span style="font-size:10px;color:var(--muted)">ID: ' + f.id + '</span>'
-            + (_kasOnline.length > 0
-              ? '<button class="btn btn-primary btn-sm" style="font-size:9px;padding:2px 8px" onclick="assignFSToKASWorkers(' + f.id + ')">▶ Assigner aux rigs</button>'
-              : '')
+          + '<span style="font-size:10px;color:var(--muted)">ID: ' + f.id + '</span>'
+          + (_kasOnline.length > 0
+            ? '<button class="btn btn-primary btn-sm" style="font-size:9px;padding:2px 8px" onclick="assignFSToKASWorkers(' + f.id + ')">▶ Assigner aux rigs</button>'
+            : '')
           + '</div>'
           + '</div>';
       }).join('')
-      + (_kasOnline.length > 0
-        ? '<div style="margin-top:8px;padding:7px 9px;background:rgba(0,229,255,.04);border-radius:6px;font-size:10px;color:var(--muted)">'
+        + (_kasOnline.length > 0
+          ? '<div style="margin-top:8px;padding:7px 9px;background:rgba(0,229,255,.04);border-radius:6px;font-size:10px;color:var(--muted)">'
           + '🖥 ' + _kasOnline.length + ' rig(s) KAS en ligne · Cliquez ▶ Assigner pour démarrer le minage'
           + '</div>'
-        : '<div style="margin-top:6px;font-size:10px;color:var(--muted)">⚠ Aucun rig KAS en ligne</div>'
-      );
+          : '<div style="margin-top:6px;font-size:10px;color:var(--muted)">⚠ Aucun rig KAS en ligne</div>'
+        );
     }
   }
 
@@ -8578,7 +8622,7 @@ function renderKASPage() {
   var payEl = el('kas-payments-list');
 
   if (payEl) {
-    var kasPays = PAYMENTS.filter(function(p) { return p.coin === 'KAS'; }).slice(0, 8);
+    var kasPays = PAYMENTS.filter(function (p) { return p.coin === 'KAS'; }).slice(0, 8);
     if (kasPays.length === 0) {
       payEl.innerHTML = '<div style="color:var(--muted);font-size:12px;padding:12px;text-align:center">'
         + 'Aucun paiement KAS — les paiements K1Pool apparaîtront automatiquement'
@@ -8586,20 +8630,20 @@ function renderKASPage() {
     } else {
       payEl.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:11px">'
         + '<thead><tr style="color:var(--muted)">'
-          + '<th style="padding:6px 10px;text-align:left">Date</th>'
-          + '<th style="padding:6px 10px;text-align:right">Montant</th>'
-          + '<th style="padding:6px 10px;text-align:right">USD</th>'
-          + '<th style="padding:6px 10px;text-align:left">Statut</th>'
+        + '<th style="padding:6px 10px;text-align:left">Date</th>'
+        + '<th style="padding:6px 10px;text-align:right">Montant</th>'
+        + '<th style="padding:6px 10px;text-align:right">USD</th>'
+        + '<th style="padding:6px 10px;text-align:left">Statut</th>'
         + '</tr></thead><tbody>'
-        + kasPays.map(function(p) {
-            var col = p.type === 'recv' ? 'var(--green)' : 'var(--yellow)';
-            return '<tr style="border-top:1px solid rgba(255,255,255,.04)">'
-              + '<td style="padding:7px 10px;color:var(--muted)">' + p.date + '</td>'
-              + '<td style="padding:7px 10px;text-align:right;font-family:var(--mono);color:var(--accent)">' + p.amount + ' KAS</td>'
-              + '<td style="padding:7px 10px;text-align:right;font-family:var(--mono);color:var(--green)">' + p.usd + '</td>'
-              + '<td style="padding:7px 10px;color:' + col + '">' + (p.type === 'recv' ? 'Reçu' : 'En attente') + '</td>'
-              + '</tr>';
-          }).join('')
+        + kasPays.map(function (p) {
+          var col = p.type === 'recv' ? 'var(--green)' : 'var(--yellow)';
+          return '<tr style="border-top:1px solid rgba(255,255,255,.04)">'
+            + '<td style="padding:7px 10px;color:var(--muted)">' + p.date + '</td>'
+            + '<td style="padding:7px 10px;text-align:right;font-family:var(--mono);color:var(--accent)">' + p.amount + ' KAS</td>'
+            + '<td style="padding:7px 10px;text-align:right;font-family:var(--mono);color:var(--green)">' + p.usd + '</td>'
+            + '<td style="padding:7px 10px;color:' + col + '">' + (p.type === 'recv' ? 'Reçu' : 'En attente') + '</td>'
+            + '</tr>';
+        }).join('')
         + '</tbody></table>';
     }
   }
@@ -8612,7 +8656,7 @@ function renderKASPage() {
   if (kasPoolInf) {
     var activeKPool = KAS_POOLS[ACTIVE_KAS_POOL] || KAS_POOLS['k1pool'];
     setText('kas-pool-info', activeKPool.name + ' — kHeavyHash GPU, ' + activeKPool.fee + '% frais');
-    setText('kas-pool-stratum', (activeKPool.stratum || '').replace('stratum+tcp://',''));
+    setText('kas-pool-stratum', (activeKPool.stratum || '').replace('stratum+tcp://', ''));
   }
 }
 
@@ -8630,13 +8674,13 @@ async function createXMRFarm() {
 
   try {
     // ── Étape 1 : créer le wallet XMR dans HiveOS ──────────────────
-    hiveLog('💼 Création wallet XMR : ' + addr.slice(0,16) + '…');
+    hiveLog('💼 Création wallet XMR : ' + addr.slice(0, 16) + '…');
     let walletId = null;
     // Chercher si un wallet XMR existe déjà
     const existingWallets = await hiveApiFetch('/farms/' + HIVE_FARM_ID + '/wallets');
-    const existing = (existingWallets?.data || []).find(function(w) {
+    const existing = (existingWallets?.data || []).find(function (w) {
       return w.coin === 'XMR' && w.wal &&
-             (w.wal === addr || w.wal.includes(addr.slice(0, 30)));
+        (w.wal === addr || w.wal.includes(addr.slice(0, 30)));
     });
     if (existing) {
       walletId = existing.id;
@@ -8646,9 +8690,9 @@ async function createXMRFarm() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name:  'BitOS XMR SupportXMR',
-          coin:  'XMR',
-          wal:   addr,
+          name: 'BitOS XMR SupportXMR',
+          coin: 'XMR',
+          wal: addr,
           source: 'manuel'
         })
       });
@@ -8677,28 +8721,28 @@ async function createXMRFarm() {
         body: JSON.stringify({
           name: 'BitOS XMR RandomX SupportXMR',
           items: [{
-            coin:       'XMR',
-            wallet_id:  walletId,
-            pool_ssl:   false,
-            pool_urls:  [POOL_URL, POOL_SSL],
-            miner:      'xmrig',
+            coin: 'XMR',
+            wallet_id: walletId,
+            pool_ssl: false,
+            pool_urls: [POOL_URL, POOL_SSL],
+            miner: 'xmrig',
             miner_config: Object.assign({
-              url:          POOL_URL,
-              user:         addr,
-              pass:         'x',
-              'worker-id':  null,
+              url: POOL_URL,
+              user: addr,
+              pass: 'x',
+              'worker-id': null,
             }, {
-              algo:               MINE_PARAMS.xmrig.algo,
-              'donate-level':     MINE_PARAMS.xmrig['donate-level'],
+              algo: MINE_PARAMS.xmrig.algo,
+              'donate-level': MINE_PARAMS.xmrig['donate-level'],
               'max-threads-hint': MINE_PARAMS.xmrig['max-threads-hint'],
-              'huge-pages':       MINE_PARAMS.xmrig['huge-pages'],
-              'huge-pages-jit':   MINE_PARAMS.xmrig['huge-pages-jit'],
-              'hw-aes':           MINE_PARAMS.xmrig['hw-aes'],
-              'priority':         MINE_PARAMS.xmrig['priority'],
-              'keepalive':        MINE_PARAMS.xmrig['keepalive'],
-              'print-time':       MINE_PARAMS.xmrig['print-time'],
-              'retries':          MINE_PARAMS.xmrig['retries'],
-              'retry-pause':      MINE_PARAMS.xmrig['retry-pause'],
+              'huge-pages': MINE_PARAMS.xmrig['huge-pages'],
+              'huge-pages-jit': MINE_PARAMS.xmrig['huge-pages-jit'],
+              'hw-aes': MINE_PARAMS.xmrig['hw-aes'],
+              'priority': MINE_PARAMS.xmrig['priority'],
+              'keepalive': MINE_PARAMS.xmrig['keepalive'],
+              'print-time': MINE_PARAMS.xmrig['print-time'],
+              'retries': MINE_PARAMS.xmrig['retries'],
+              'retry-pause': MINE_PARAMS.xmrig['retry-pause'],
             })
           }]
         })
@@ -8710,13 +8754,13 @@ async function createXMRFarm() {
 
     // ── Étape 3 : stocker les IDs et mettre à jour l'UI ────────────
     HIVE_XMR_WALLET_ID = walletId;
-    HIVE_XMR_FS_ID     = fsId;
+    HIVE_XMR_FS_ID = fsId;
     scheduleSave();
     hiveLog('🎉 Ferme XMR prête ! Wallet #' + walletId + ' · Flight Sheet #' + fsId);
     hiveLog('📝 Assignez le flight sheet "BitOS XMR RandomX SupportXMR" à vos rigs XMR dans HiveOS.');
     // ── Étape 4 : assigner le flight sheet aux workers XMR ────────
     hiveLog('🔗 Assignation FS RandomX aux workers XMR…');
-    var xmrWorkersToAssign = RIGS.filter(function(r) {
+    var xmrWorkersToAssign = RIGS.filter(function (r) {
       return r.coin === 'XMR' && r.status !== 'offline' && r.hiveId;
     });
     var assignedX = 0;
@@ -8730,8 +8774,8 @@ async function createXMRFarm() {
         );
         hiveLog('  ✅ ' + _xr.name + ' → FS #' + fsId);
         assignedX++;
-      } catch(_xerr) {
-        hiveLog('  ⚠ ' + _xr.name + ': ' + _xerr.message.slice(0,60));
+      } catch (_xerr) {
+        hiveLog('  ⚠ ' + _xr.name + ': ' + _xerr.message.slice(0, 60));
       }
     }
     await fetchHiveOS();
@@ -8742,16 +8786,16 @@ async function createXMRFarm() {
     toast('success', '✅ Ferme XMR créée', 'FS #' + fsId + ' · ' + _xMsg);
     if (btn) { btn.textContent = '✅ Ferme XMR créée'; }
 
-  } catch(e) {
+  } catch (e) {
     hiveLog('❌ Erreur: ' + e.message);
-    toast('error', 'Erreur création XMR', e.message.slice(0,80));
+    toast('error', 'Erreur création XMR', e.message.slice(0, 80));
     if (btn) { btn.disabled = false; btn.textContent = '🔧 Créer ferme XMR'; }
   }
 }
 
 // Variables pour stocker les IDs créés
 let HIVE_XMR_WALLET_ID = null;
-let HIVE_XMR_FS_ID     = null;
+let HIVE_XMR_FS_ID = null;
 
 
 // ── Sync complète XMR (appelé depuis page XMR) ────────────────────────────
@@ -8763,20 +8807,20 @@ let HIVE_XMR_FS_ID     = null;
 // ════════════════════════════════════════════════════════════════════════════
 
 let XMR_NODE = {
-  url:      'https://node.community.rino.io:18081',  // Nœud Rino Community (fiable, gratuit)
-  enabled:  true,
+  url: 'https://node.community.rino.io:18081',  // Nœud Rino Community (fiable, gratuit)
+  enabled: true,
   lastFetch: 0,
-  status:   'offline',  // 'offline' | 'syncing' | 'live'
+  status: 'offline',  // 'offline' | 'syncing' | 'live'
   info: {},             // Dernière réponse get_info
 };
 
 // Nœuds publics recommandés (testés et fiables)
 const XMR_PUBLIC_NODES = [
-  { label: 'Rino Community (rino.io)',      url: 'https://node.community.rino.io:18081' },
-  { label: 'MoneroDev Node 2',              url: 'https://node2.monerodevs.org:18081' },
-  { label: 'MoneroDev Node 1',              url: 'https://node.monerodevs.org:18081' },
-  { label: 'XMR.to Node',                  url: 'https://monero.stackwallet.com:18081' },
-  { label: 'CakeWallet Node',              url: 'https://xmr-node.cakewallet.com:18081' },
+  { label: 'Rino Community (rino.io)', url: 'https://node.community.rino.io:18081' },
+  { label: 'MoneroDev Node 2', url: 'https://node2.monerodevs.org:18081' },
+  { label: 'MoneroDev Node 1', url: 'https://node.monerodevs.org:18081' },
+  { label: 'XMR.to Node', url: 'https://monero.stackwallet.com:18081' },
+  { label: 'CakeWallet Node', url: 'https://xmr-node.cakewallet.com:18081' },
 ];
 
 // Requête JSON-RPC vers le nœud
@@ -8804,43 +8848,43 @@ async function fetchXMRNode() {
     const info = await xmrNodeRPC('get_info');
     if (!info) return false;
 
-    XMR_NODE.info      = info;
+    XMR_NODE.info = info;
     XMR_NODE.lastFetch = Date.now();
-    XMR_NODE.status    = 'live';
+    XMR_NODE.status = 'live';
 
     // Mettre à jour NET_STATS.XMR depuis le nœud (plus précis que xmrchain.net)
-    if (info.difficulty)          NET_STATS.XMR.networkHashrate = info.difficulty / 120; // diff/blocktime ≈ HR
+    if (info.difficulty) NET_STATS.XMR.networkHashrate = info.difficulty / 120; // diff/blocktime ≈ HR
     if (info.cumulative_difficulty_top64 || info.difficulty) {
       // Block reward depuis dernière hauteur
       try {
         const header = await xmrNodeRPC('get_last_block_header');
         if (header?.block_header?.reward) {
           NET_STATS.XMR.blockReward = header.block_header.reward / 1e12; // piconero → XMR
-          NET_STATS.XMR.lastFetch   = Date.now();
+          NET_STATS.XMR.lastFetch = Date.now();
           console.log('[XMR Node] blockReward live:', NET_STATS.XMR.blockReward.toFixed(4), 'XMR');
         }
         if (header?.block_header?.difficulty) {
           NET_STATS.XMR.networkHashrate = header.block_header.difficulty / 120;
         }
-      } catch(e) { console.warn('[XMR Node] header:', e.message); }
+      } catch (e) { console.warn('[XMR Node] header:', e.message); }
     }
 
     // Maj UI nœud
     const nodeStatus = el('xmr-node-status');
     if (nodeStatus) {
       nodeStatus.textContent = '✅ Nœud connecté — H: ' + info.height + ' · Net: '
-        + (NET_STATS.XMR.networkHashrate/1e9).toFixed(2) + ' GH/s';
+        + (NET_STATS.XMR.networkHashrate / 1e9).toFixed(2) + ' GH/s';
       nodeStatus.style.color = 'var(--green)';
     }
     const nodeBadge = el('xmr-node-badge');
     if (nodeBadge) { nodeBadge.textContent = 'LIVE'; nodeBadge.style.background = 'rgba(16,185,129,0.2)'; nodeBadge.style.color = 'var(--green)'; }
 
-    console.log('[XMR Node] H:', info.height, '| HR:', (NET_STATS.XMR.networkHashrate/1e9).toFixed(2), 'GH/s');
+    console.log('[XMR Node] H:', info.height, '| HR:', (NET_STATS.XMR.networkHashrate / 1e9).toFixed(2), 'GH/s');
     return true;
-  } catch(e) {
+  } catch (e) {
     XMR_NODE.status = 'offline';
     const nodeStatus = el('xmr-node-status');
-    if (nodeStatus) { nodeStatus.textContent = '❌ ' + e.message.slice(0,60); nodeStatus.style.color = 'var(--red)'; }
+    if (nodeStatus) { nodeStatus.textContent = '❌ ' + e.message.slice(0, 60); nodeStatus.style.color = 'var(--red)'; }
     console.warn('[XMR Node]', e.message);
     return false;
   }
@@ -8858,15 +8902,15 @@ async function testXMRNode(url) {
     const res = await fetch(nodeUrl + '/get_info', { signal: AbortSignal.timeout(8000) });
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const info = await res.json();
-    const height  = info.height || '?';
-    const nethr   = info.difficulty ? (info.difficulty/120/1e9).toFixed(2)+' GH/s' : '?';
+    const height = info.height || '?';
+    const nethr = info.difficulty ? (info.difficulty / 120 / 1e9).toFixed(2) + ' GH/s' : '?';
     if (statusEl) { statusEl.textContent = '✅ Connecté — Hauteur: ' + height + ' · Réseau: ' + nethr; statusEl.style.color = 'var(--green)'; }
     toast('success', 'Nœud XMR', 'Connecté · H=' + height);
     if (btn) { btn.disabled = false; btn.textContent = '🔌 Tester'; }
     return true;
-  } catch(e) {
-    if (statusEl) { statusEl.textContent = '❌ ' + e.message.slice(0,60); statusEl.style.color = 'var(--red)'; }
-    toast('error', 'Nœud XMR', e.message.slice(0,60));
+  } catch (e) {
+    if (statusEl) { statusEl.textContent = '❌ ' + e.message.slice(0, 60); statusEl.style.color = 'var(--red)'; }
+    toast('error', 'Nœud XMR', e.message.slice(0, 60));
     if (btn) { btn.disabled = false; btn.textContent = '🔌 Tester'; }
     return false;
   }
@@ -8875,12 +8919,12 @@ async function testXMRNode(url) {
 // Sauvegarder la config nœud
 function saveXMRNode(urlOverride) {
   const urlEl = el('xmr-node-url');
-  const enEl  = el('xmr-node-enabled');
+  const enEl = el('xmr-node-enabled');
   const rawUrl = urlOverride || (urlEl ? urlEl.value : '') || '';
-  XMR_NODE.url     = rawUrl.trim().replace(/\/+$/, '');
+  XMR_NODE.url = rawUrl.trim().replace(/\/+$/, '');
   XMR_NODE.enabled = enEl ? enEl.checked : !!XMR_NODE.url;
-  try { localStorage.setItem('bitosdash_xmr_node_v1', JSON.stringify({ url: XMR_NODE.url, enabled: XMR_NODE.enabled })); } catch(e) {}
-  toast('success', 'Nœud XMR', XMR_NODE.enabled ? 'Configuré: ' + XMR_NODE.url.slice(0,30)+'…' : 'Désactivé');
+  try { localStorage.setItem('bitosdash_xmr_node_v1', JSON.stringify({ url: XMR_NODE.url, enabled: XMR_NODE.enabled })); } catch (e) { }
+  toast('success', 'Nœud XMR', XMR_NODE.enabled ? 'Configuré: ' + XMR_NODE.url.slice(0, 30) + '…' : 'Désactivé');
   scheduleSave();
 }
 
@@ -8890,10 +8934,10 @@ function loadXMRNode() {
     const raw = localStorage.getItem('bitosdash_xmr_node_v1');
     if (raw) {
       const cfg = JSON.parse(raw);
-      XMR_NODE.url     = cfg.url     || '';
+      XMR_NODE.url = cfg.url || '';
       XMR_NODE.enabled = cfg.enabled || false;
     }
-  } catch(e) {}
+  } catch (e) { }
 }
 
 async function fetchXMRAll() {
@@ -8912,7 +8956,7 @@ async function fetchXMRAll() {
 
   // Distribuer HR sur rigs XMR si HiveOS connecté
   if (HIVE_TOKEN && HIVE_FARM_ID && Date.now() - hiveLastFetch > 30000) {
-    await fetchHiveOS().catch(function(e){ console.warn('[HiveOS]', e.message); });
+    await fetchHiveOS().catch(function (e) { console.warn('[HiveOS]', e.message); });
   }
 
   // Render page XMR
@@ -8924,12 +8968,12 @@ async function fetchXMRAll() {
 
 // ── Render page XMR dédiée ────────────────────────────────────────────────
 function renderXMRPage() {
-  var xmrRigs = RIGS.filter(function(r){ return r.coin === 'XMR'; });
-  var online  = xmrRigs.filter(function(r){ return r.status !== 'offline'; });
-  var totalHR = online.reduce(function(s, r){ return s + (r.hrn || 0); }, 0);
-  var totalW  = online.reduce(function(s, r){ return s + (r.watt || 0); }, 0);
-  var ns      = NET_STATS.XMR;
-  var cmr     = calcMiningRevenue('XMR');
+  var xmrRigs = RIGS.filter(function (r) { return r.coin === 'XMR'; });
+  var online = xmrRigs.filter(function (r) { return r.status !== 'offline'; });
+  var totalHR = online.reduce(function (s, r) { return s + (r.hrn || 0); }, 0);
+  var totalW = online.reduce(function (s, r) { return s + (r.watt || 0); }, 0);
+  var ns = NET_STATS.XMR;
+  var cmr = calcMiningRevenue('XMR');
   var elecRate = parseFloat(el('m-elec')?.value || '0.20') || 0.20;
 
   // ── Hero strip ──────────────────────────────────────────────────
@@ -8942,11 +8986,11 @@ function renderXMRPage() {
 
   // ── Revenus détaillés ───────────────────────────────────────────
   setText('xmr-rev-day-gross', cmr.daily > 0 ? '$' + cmr.daily.toFixed(3) : '$0.000');
-  setText('xmr-rev-day-net',   cmr.netDaily !== undefined ? '$' + Math.max(0, cmr.netDaily).toFixed(3) : '—');
-  setText('xmr-rev-month',     cmr.daily > 0 ? '$' + (cmr.daily * 30).toFixed(2) : '—');
-  setText('xmr-coin-day',      cmr.coinPerDay > 0 ? cmr.coinPerDay.toFixed(6) + ' XMR' : '—');
-  setText('xmr-watt-total',    totalW ? totalW.toLocaleString() + ' W' : '—');
-  setText('xmr-elec-day',      totalW ? '$' + ((totalW / 1000) * elecRate * 24).toFixed(3) : '—');
+  setText('xmr-rev-day-net', cmr.netDaily !== undefined ? '$' + Math.max(0, cmr.netDaily).toFixed(3) : '—');
+  setText('xmr-rev-month', cmr.daily > 0 ? '$' + (cmr.daily * 30).toFixed(2) : '—');
+  setText('xmr-coin-day', cmr.coinPerDay > 0 ? cmr.coinPerDay.toFixed(6) + ' XMR' : '—');
+  setText('xmr-watt-total', totalW ? totalW.toLocaleString() + ' W' : '—');
+  setText('xmr-elec-day', totalW ? '$' + ((totalW / 1000) * elecRate * 24).toFixed(3) : '—');
   var marg = cmr.netDaily > 0 && cmr.daily > 0 ? Math.round(cmr.netDaily / cmr.daily * 100) : 0;
   var margEl = el('xmr-margin');
   if (margEl) {
@@ -8970,15 +9014,15 @@ function renderXMRPage() {
   var dstCtx = el('ch-xmr-hash');
   if (srcCtx && dstCtx && typeof drawChart === 'function' && SNAPSHOTS.length > 0) {
     var pts = SNAPSHOTS.slice(-24);
-    var labels = pts.map(function(s){ return new Date(s.ts).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}); });
-    var vals   = pts.map(function(s){ return s.hrXMR || 0; });
-    if (vals.some(function(v){ return v > 0; })) {
+    var labels = pts.map(function (s) { return new Date(s.ts).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }); });
+    var vals = pts.map(function (s) { return s.hrXMR || 0; });
+    if (vals.some(function (v) { return v > 0; })) {
       drawChart('ch-xmr-hash', 'line',
-        [{label:'Hashrate XMR (KH/s)', data: vals, borderColor:'var(--orange)', backgroundColor:'rgba(255,107,43,0.08)'}],
+        [{ label: 'Hashrate XMR (KH/s)', data: vals, borderColor: 'var(--orange)', backgroundColor: 'rgba(255,107,43,0.08)' }],
         labels
       );
-      var avg = vals.filter(function(v){return v>0;}).reduce(function(a,b){return a+b;},0) /
-                Math.max(1, vals.filter(function(v){return v>0;}).length);
+      var avg = vals.filter(function (v) { return v > 0; }).reduce(function (a, b) { return a + b; }, 0) /
+        Math.max(1, vals.filter(function (v) { return v > 0; }).length);
       setText('xmr-avg-24h', 'moy 24h: ' + avg.toFixed(2) + ' KH/s');
     }
   }
@@ -8991,23 +9035,23 @@ function renderXMRPage() {
         + (HIVE_TOKEN ? '⏳ Sync HiveOS en cours… Aucun worker XMR détecté.' : '⚠ Token HiveOS manquant dans Paramètres')
         + '</div>';
     } else {
-      wEl.innerHTML = xmrRigs.map(function(r) {
-        var col = r.status==='online' ? 'var(--green)' : r.status==='warning' ? 'var(--yellow)' : 'var(--red)';
-        var tCol = r.maxTemp>=80 ? 'var(--red)' : r.maxTemp>=70 ? 'var(--yellow)' : 'var(--muted)';
+      wEl.innerHTML = xmrRigs.map(function (r) {
+        var col = r.status === 'online' ? 'var(--green)' : r.status === 'warning' ? 'var(--yellow)' : 'var(--red)';
+        var tCol = r.maxTemp >= 80 ? 'var(--red)' : r.maxTemp >= 70 ? 'var(--yellow)' : 'var(--muted)';
         return '<div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;margin-bottom:6px">'
           + '<div style="display:flex;align-items:center;gap:10px">'
-            + '<div style="width:10px;height:10px;border-radius:50%;background:'+col+'"></div>'
-            + '<div>'
-              + '<div style="font-weight:600;font-size:13px">'+r.name+'</div>'
-              + '<div style="font-size:10px;color:var(--muted)">'+r.gpus+' &bull; '+r.os+'</div>'
-            + '</div>'
+          + '<div style="width:10px;height:10px;border-radius:50%;background:' + col + '"></div>'
+          + '<div>'
+          + '<div style="font-weight:600;font-size:13px">' + r.name + '</div>'
+          + '<div style="font-size:10px;color:var(--muted)">' + r.gpus + ' &bull; ' + r.os + '</div>'
+          + '</div>'
           + '</div>'
           + '<div style="text-align:right">'
-            + '<div style="font-family:var(--mono);font-size:13px;color:var(--orange)">'+(r.hr||'—')+'</div>'
-            + '<div style="font-size:10px;color:'+tCol+'">'+(r.maxTemp||r.temp||0)+'&deg;C &bull; '+(r.watt||0)+'W &bull; '+(r.avgFan||0)+'% fan</div>'
-            + '<div style="font-size:10px;color:var(--green)">$'+Math.max(0,(r.profit||0)).toFixed(2)+'/mois</div>'
+          + '<div style="font-family:var(--mono);font-size:13px;color:var(--orange)">' + (r.hr || '—') + '</div>'
+          + '<div style="font-size:10px;color:' + tCol + '">' + (r.maxTemp || r.temp || 0) + '&deg;C &bull; ' + (r.watt || 0) + 'W &bull; ' + (r.avgFan || 0) + '% fan</div>'
+          + '<div style="font-size:10px;color:var(--green)">$' + Math.max(0, (r.profit || 0)).toFixed(2) + '/mois</div>'
           + '</div>'
-        + '</div>';
+          + '</div>';
       }).join('');
     }
   }
@@ -9015,30 +9059,30 @@ function renderXMRPage() {
   // ── Flight sheets XMR ───────────────────────────────────────────
   var fsEl = el('xmr-fs-list');
   if (fsEl) {
-    var fsXMR = (typeof hiveFS !== 'undefined' ? hiveFS : []).filter(function(f) {
+    var fsXMR = (typeof hiveFS !== 'undefined' ? hiveFS : []).filter(function (f) {
       return f.name && (f.name.toLowerCase().includes('xmr') ||
-                        f.name.toLowerCase().includes('monero') ||
-                        f.name.toLowerCase().includes('randomx'));
+        f.name.toLowerCase().includes('monero') ||
+        f.name.toLowerCase().includes('randomx'));
     });
     if (fsXMR.length === 0) {
       fsEl.innerHTML = '<div style="color:var(--muted);font-size:11px">'
         + 'Aucun flight sheet XMR. <button class="btn btn-ghost btn-sm" style="font-size:10px;padding:2px 8px;color:var(--orange)" onclick="createXMRFarm()">🔧 Créer automatiquement</button>'
         + '</div>';
     } else {
-      var _xmrOnline = xmrRigs.filter(function(r){ return r.status !== 'offline'; });
-      fsEl.innerHTML = fsXMR.map(function(f) {
+      var _xmrOnline = xmrRigs.filter(function (r) { return r.status !== 'offline'; });
+      fsEl.innerHTML = fsXMR.map(function (f) {
         var isCurrent = String(f.id) === String(HIVE_XMR_FS_ID);
         return '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04)">'
           + '<div style="display:flex;align-items:center;gap:7px">'
-            + '<span style="color:var(--orange)">⬡</span>'
-            + '<strong style="font-size:12px">' + f.name + '</strong>'
-            + (isCurrent ? '<span style="font-size:9px;background:rgba(255,107,43,.12);color:var(--orange);padding:1px 6px;border-radius:4px">actif</span>' : '')
+          + '<span style="color:var(--orange)">⬡</span>'
+          + '<strong style="font-size:12px">' + f.name + '</strong>'
+          + (isCurrent ? '<span style="font-size:9px;background:rgba(255,107,43,.12);color:var(--orange);padding:1px 6px;border-radius:4px">actif</span>' : '')
           + '</div>'
           + '<div style="display:flex;align-items:center;gap:8px">'
-            + '<span style="font-size:10px;color:var(--muted)">ID: ' + f.id + '</span>'
-            + (_xmrOnline.length > 0
-              ? '<button class="btn btn-orange btn-sm" style="font-size:9px;padding:2px 8px" onclick="assignFSToXMRWorkers(' + f.id + ')">▶ Assigner aux rigs</button>'
-              : '')
+          + '<span style="font-size:10px;color:var(--muted)">ID: ' + f.id + '</span>'
+          + (_xmrOnline.length > 0
+            ? '<button class="btn btn-orange btn-sm" style="font-size:9px;padding:2px 8px" onclick="assignFSToXMRWorkers(' + f.id + ')">▶ Assigner aux rigs</button>'
+            : '')
           + '</div>'
           + '</div>';
       }).join('');
@@ -9048,25 +9092,25 @@ function renderXMRPage() {
   // ── Paiements XMR récents ────────────────────────────────────────
   var payEl = el('xmr-payments-list');
   if (payEl) {
-    var xmrPays = PAYMENTS.filter(function(p){ return p.coin === 'XMR'; }).slice(0, 8);
+    var xmrPays = PAYMENTS.filter(function (p) { return p.coin === 'XMR'; }).slice(0, 8);
     if (xmrPays.length === 0) {
       payEl.innerHTML = '<div style="color:var(--muted);font-size:12px;padding:12px;text-align:center">Aucun paiement XMR enregistré — les paiements SupportXMR apparaîtront automatiquement</div>';
     } else {
       payEl.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:11px">'
         + '<thead><tr style="color:var(--muted)">'
-          + '<th style="padding:6px 10px;text-align:left">Date</th>'
-          + '<th style="padding:6px 10px;text-align:right">Montant</th>'
-          + '<th style="padding:6px 10px;text-align:right">USD</th>'
-          + '<th style="padding:6px 10px;text-align:left">Pool</th>'
+        + '<th style="padding:6px 10px;text-align:left">Date</th>'
+        + '<th style="padding:6px 10px;text-align:right">Montant</th>'
+        + '<th style="padding:6px 10px;text-align:right">USD</th>'
+        + '<th style="padding:6px 10px;text-align:left">Pool</th>'
         + '</tr></thead><tbody>'
-        + xmrPays.map(function(p) {
-            return '<tr style="border-top:1px solid rgba(255,255,255,.04)">'
-              + '<td style="padding:7px 10px;color:var(--muted)">'+p.date+'</td>'
-              + '<td style="padding:7px 10px;text-align:right;font-family:var(--mono);color:var(--orange)">'+p.amount+' XMR</td>'
-              + '<td style="padding:7px 10px;text-align:right;font-family:var(--mono);color:var(--green)">'+p.usd+'</td>'
-              + '<td style="padding:7px 10px;color:var(--muted)">'+p.pool+'</td>'
-              + '</tr>';
-          }).join('')
+        + xmrPays.map(function (p) {
+          return '<tr style="border-top:1px solid rgba(255,255,255,.04)">'
+            + '<td style="padding:7px 10px;color:var(--muted)">' + p.date + '</td>'
+            + '<td style="padding:7px 10px;text-align:right;font-family:var(--mono);color:var(--orange)">' + p.amount + ' XMR</td>'
+            + '<td style="padding:7px 10px;text-align:right;font-family:var(--mono);color:var(--green)">' + p.usd + '</td>'
+            + '<td style="padding:7px 10px;color:var(--muted)">' + p.pool + '</td>'
+            + '</tr>';
+        }).join('')
         + '</tbody></table>';
     }
   }
@@ -9075,17 +9119,17 @@ function renderXMRPage() {
 
   var xmrRigsList = el('xmr-rigs-list');
   if (xmrRigsList) {
-    var cpuRigs = XMRIG_RIGS.filter(function(r) { return !r.algo || r.algo === '' || r.algo === 'rx/0' || r.algo === 'randomx' || r.coin === 'XMR'; });
+    var cpuRigs = XMRIG_RIGS.filter(function (r) { return !r.algo || r.algo === '' || r.algo === 'rx/0' || r.algo === 'randomx' || r.coin === 'XMR'; });
     if (cpuRigs.length === 0 && XMRIG_RIGS.length > 0) cpuRigs = XMRIG_RIGS;
     var allXmrRigs = xmrRigs.concat(cpuRigs);
     if (allXmrRigs.length === 0) {
       xmrRigsList.innerHTML = '<div style="color:var(--muted);font-size:11px;text-align:center;padding:12px">Aucun rig XMR — ajoutez via Settings → XMRig Monitoring</div>';
     } else {
-      xmrRigsList.innerHTML = allXmrRigs.map(function(r) {
+      xmrRigsList.innerHTML = allXmrRigs.map(function (r) {
         var isXmrig = r.ip !== undefined;
         var statusCol = (isXmrig ? r.status === 'online' : r.status !== 'offline') ? 'var(--green)' : 'var(--red)';
         var dotCls = (isXmrig ? r.status === 'online' : r.status !== 'offline') ? 'dot-online' : 'dot-offline';
-        var hrStr = isXmrig ? ((r.hr||0)/1000).toFixed(2) + ' KH/s' : (r.hr || r.hrn || '—');
+        var hrStr = isXmrig ? ((r.hr || 0) / 1000).toFixed(2) + ' KH/s' : (r.hr || r.hrn || '—');
         var sub = isXmrig ? (r.cpu || 'CPU') + ' · ' + (r.algo || 'RandomX') : (r.gpus || '') + ' · ' + (r.os || '');
         return '<div class="rig-mini">'
           + '<div class="rig-mini-dot ' + dotCls + '"></div>'
@@ -9102,7 +9146,7 @@ function renderXMRPage() {
   if (xmrPoolInf) {
     var activePool = XMR_POOLS[POOL_CONFIG.XMR.pool] || XMR_POOLS.moneroocean;
     setText('xmr-pool-info', activePool.name + ' — ' + activePool.note);
-    setText('xmr-pool-stratum', (POOL_CONFIG.XMR.stratumTCP || '').replace('stratum+tcp://',''));
+    setText('xmr-pool-stratum', (POOL_CONFIG.XMR.stratumTCP || '').replace('stratum+tcp://', ''));
   }
 }
 
@@ -9123,15 +9167,15 @@ function initMultiFarm() {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed) && parsed.length > 0) {
         HIVE_FARMS = parsed;
-        if (HIVE_FARM_ID && !HIVE_FARMS.find(function(f){ return String(f.id) === String(HIVE_FARM_ID); })) {
+        if (HIVE_FARM_ID && !HIVE_FARMS.find(function (f) { return String(f.id) === String(HIVE_FARM_ID); })) {
           HIVE_FARMS.unshift({ id: HIVE_FARM_ID, name: 'Farm IVOS', enabled: true, lastSync: 0, workerCount: 0 });
         }
         // Restaurer HIVE_KAS_FARM_ID depuis le farm kasEnabled
-        var _kf = HIVE_FARMS.find(function(f){ return f.kasEnabled; });
+        var _kf = HIVE_FARMS.find(function (f) { return f.kasEnabled; });
         if (_kf && !HIVE_KAS_FARM_ID) {
-          HIVE_KAS_FARM_ID   = String(_kf.id);
+          HIVE_KAS_FARM_ID = String(_kf.id);
           if (_kf.kasWalletId && !HIVE_KAS_WALLET_ID) HIVE_KAS_WALLET_ID = _kf.kasWalletId;
-          if (_kf.kasFsId     && !HIVE_KAS_FS_ID)     HIVE_KAS_FS_ID     = _kf.kasFsId;
+          if (_kf.kasFsId && !HIVE_KAS_FS_ID) HIVE_KAS_FS_ID = _kf.kasFsId;
           console.log('[KAS Farm] Restauré: Farm', HIVE_KAS_FARM_ID);
         }
         console.log('[MultiFarm] ' + HIVE_FARMS.length + ' farm(s) chargé(s)');
@@ -9143,11 +9187,11 @@ function initMultiFarm() {
       HIVE_FARMS = [{ id: HIVE_FARM_ID, name: 'Farm IVOS', enabled: true, lastSync: 0, workerCount: 0 }];
       console.log('[MultiFarm] Farm IVOS configuré (ID: ' + HIVE_FARM_ID + ')');
     }
-  } catch(e) { console.warn('[MultiFarm init]', e.message); }
+  } catch (e) { console.warn('[MultiFarm init]', e.message); }
 }
 
 function saveMultiFarm() {
-  try { localStorage.setItem('bitosdash_farms_v1', JSON.stringify(HIVE_FARMS)); } catch(e) {}
+  try { localStorage.setItem('bitosdash_farms_v1', JSON.stringify(HIVE_FARMS)); } catch (e) { }
 }
 
 // Découvrir TOUS les farms disponibles sur le token HiveOS
@@ -9167,10 +9211,10 @@ async function discoverAllFarms() {
     }
 
     // Merger avec HIVE_FARMS existant (pas d'écrasement)
-    farms.forEach(function(f) {
-      const existing = HIVE_FARMS.find(function(ef) { return String(ef.id) === String(f.id); });
+    farms.forEach(function (f) {
+      const existing = HIVE_FARMS.find(function (ef) { return String(ef.id) === String(f.id); });
       if (!existing) {
-        HIVE_FARMS.push({ id: String(f.id), name: f.name || 'Farm #'+f.id, enabled: true, lastSync: 0, workerCount: f.stats?.workers_count || 0 });
+        HIVE_FARMS.push({ id: String(f.id), name: f.name || 'Farm #' + f.id, enabled: true, lastSync: 0, workerCount: f.stats?.workers_count || 0 });
         hiveLog('  + Farm ajouté: "' + f.name + '" (ID: ' + f.id + ')');
       } else {
         existing.name = f.name || existing.name;
@@ -9192,8 +9236,8 @@ async function discoverAllFarms() {
     toast('success', 'HiveOS', farms.length + ' farm(s) trouvé(s) — ' + HIVE_FARMS.length + ' configuré(s)');
     hiveLog('🎉 ' + HIVE_FARMS.length + ' farm(s) configuré(s) au total');
     if (btn) { btn.disabled = false; btn.textContent = '🔍 Découvrir tous les farms'; }
-  } catch(e) {
-    toast('error', 'Erreur scan farms', e.message.slice(0,60));
+  } catch (e) {
+    toast('error', 'Erreur scan farms', e.message.slice(0, 60));
     hiveLog('❌ Erreur: ' + e.message);
     if (btn) { btn.disabled = false; btn.textContent = '🔍 Découvrir tous les farms'; }
   }
@@ -9205,7 +9249,7 @@ async function fetchAllFarms() {
     return fetchHiveOS(); // Fallback mode simple
   }
 
-  const activeFarms = HIVE_FARMS.filter(function(f) { return f.enabled; });
+  const activeFarms = HIVE_FARMS.filter(function (f) { return f.enabled; });
   if (activeFarms.length === 0) return;
   if (activeFarms.length === 1) {
     // Mode simple — un seul farm
@@ -9218,20 +9262,20 @@ async function fetchAllFarms() {
 
   // Récupérer les workers de chaque farm en parallèle
   const allWorkers = [];
-  await Promise.allSettled(activeFarms.map(async function(farm) {
+  await Promise.allSettled(activeFarms.map(async function (farm) {
     try {
       const wData = await hiveApiFetch('/farms/' + farm.id + '/workers?per_page=50');
       const workers = wData?.data || [];
       // Tagger chaque worker avec son farm
-      workers.forEach(function(w) {
-        w._farmId   = String(farm.id);
+      workers.forEach(function (w) {
+        w._farmId = String(farm.id);
         w._farmName = farm.name;
       });
       farm.workerCount = workers.length;
-      farm.lastSync    = Date.now();
+      farm.lastSync = Date.now();
       allWorkers.push(...workers);
       hiveLog('  ✅ ' + farm.name + ': ' + workers.length + ' worker(s)');
-    } catch(e) {
+    } catch (e) {
       hiveLog('  ⚠ ' + farm.name + ' (ID:' + farm.id + '): ' + e.message);
     }
   }));
@@ -9243,13 +9287,13 @@ async function fetchAllFarms() {
     setHiveAPIBadge('live');
     checkRigAlerts();
     setText('nb-rigs', String(RIGS.length));
-    const _unreadFAF = ALERTS.filter(function(a){return !a.read;}).length;
+    const _unreadFAF = ALERTS.filter(function (a) { return !a.read; }).length;
     setText('nb-alerts', _unreadFAF || '');
     renderFarmList();
     takeSnapshot();
     renderDash();
     if (el('page-rigs')?.classList.contains('active')) renderRigs();
-    toast('success', 'Multi-farm', allWorkers.length + ' workers · ' + RIGS.filter(r=>r.status==='online').length + ' en ligne');
+    toast('success', 'Multi-farm', allWorkers.length + ' workers · ' + RIGS.filter(r => r.status === 'online').length + ' en ligne');
     hiveLog('🎉 Total: ' + allWorkers.length + ' workers sur ' + activeFarms.length + ' farms');
   }
 }
@@ -9275,30 +9319,30 @@ async function kasCreateAndAssign() {
 // Assigner tous les workers KAS au FS existant (sans recréer)
 async function kasAssignAllWorkers() {
   if (!HIVE_KAS_FS_ID) {
-    toast('warn','Flight Sheet','Créez d\'abord la ferme KAS'); return;
+    toast('warn', 'Flight Sheet', 'Créez d\'abord la ferme KAS'); return;
   }
-  const kasRigs = RIGS.filter(function(r){ return r.coin==='KAS' && r.hiveId; });
+  const kasRigs = RIGS.filter(function (r) { return r.coin === 'KAS' && r.hiveId; });
   if (!kasRigs.length) {
-    toast('warn','Workers','Aucun worker KAS détecté — Sync HiveOS'); return;
+    toast('warn', 'Workers', 'Aucun worker KAS détecté — Sync HiveOS'); return;
   }
   const btn = el('kas-assign-all-btn');
-  if (btn) { btn.disabled=true; btn.textContent='⏳…'; }
-  hiveLog('🔗 Assignation FS #'+HIVE_KAS_FS_ID+' → '+kasRigs.length+' worker(s)…');
-  var ok=0, fail=0;
-  for (var _i=0; _i<kasRigs.length; _i++) {
+  if (btn) { btn.disabled = true; btn.textContent = '⏳…'; }
+  hiveLog('🔗 Assignation FS #' + HIVE_KAS_FS_ID + ' → ' + kasRigs.length + ' worker(s)…');
+  var ok = 0, fail = 0;
+  for (var _i = 0; _i < kasRigs.length; _i++) {
     var _r = kasRigs[_i];
     try {
       await kasAssignWorker(_r);
       ok++;
-    } catch(e) {
+    } catch (e) {
       fail++;
-      hiveLog('  ⚠ '+_r.name+': '+e.message.slice(0,50));
+      hiveLog('  ⚠ ' + _r.name + ': ' + e.message.slice(0, 50));
     }
   }
-  hiveLog('🎯 Assignation: '+ok+'/'+kasRigs.length+' OK');
+  hiveLog('🎯 Assignation: ' + ok + '/' + kasRigs.length + ' OK');
   kasUpdateAssignUI();
-  if (btn) { btn.disabled=false; btn.textContent='🔗 Assigner tout'; }
-  toast(fail===0?'success':'warn','Assignation',ok+'/'+kasRigs.length+' worker(s) configuré(s)');
+  if (btn) { btn.disabled = false; btn.textContent = '🔗 Assigner tout'; }
+  toast(fail === 0 ? 'success' : 'warn', 'Assignation', ok + '/' + kasRigs.length + ' worker(s) configuré(s)');
 }
 
 // Assigner un worker individuel au FS KAS
@@ -9312,7 +9356,7 @@ async function kasAssignWorker(rig) {
     'PATCH',
     { fs_id: Number(HIVE_KAS_FS_ID) }
   );
-  hiveLog('  ✅ '+rig.name+' → FS #'+HIVE_KAS_FS_ID);
+  hiveLog('  ✅ ' + rig.name + ' → FS #' + HIVE_KAS_FS_ID);
   return res;
 }
 
@@ -9320,13 +9364,13 @@ async function kasAssignWorker(rig) {
 function kasUpdateAssignUI() {
   // Wallet + FS IDs
   var wId = HIVE_KAS_WALLET_ID || '—';
-  var fsId = HIVE_KAS_FS_ID    || '—';
-  setText('kas-setup-wallet-id', wId !== '—' ? '#'+wId : '⏳ Non créé');
-  setText('kas-setup-fs-id',     fsId !== '—' ? '#'+fsId : '⏳ Non créé');
+  var fsId = HIVE_KAS_FS_ID || '—';
+  setText('kas-setup-wallet-id', wId !== '—' ? '#' + wId : '⏳ Non créé');
+  setText('kas-setup-fs-id', fsId !== '—' ? '#' + fsId : '⏳ Non créé');
 
   // Check badge étape 1
   var step1check = el('kas-step1-check');
-  if (step1check) step1check.style.display = (wId!=='—'&&fsId!=='—') ? 'block' : 'none';
+  if (step1check) step1check.style.display = (wId !== '—' && fsId !== '—') ? 'block' : 'none';
 
   // Adresse pool
   var poolAddr = el('kas-pool-addr-display');
@@ -9334,11 +9378,11 @@ function kasUpdateAssignUI() {
 
   // Workers list
   var listEl = el('kas-workers-assign-list');
-  var sumEl  = el('kas-assign-summary');
+  var sumEl = el('kas-assign-summary');
   var allBtn = el('kas-assign-all-btn');
   if (!listEl) return;
 
-  var kasRigs = RIGS.filter(function(r){ return r.coin==='KAS'; });
+  var kasRigs = RIGS.filter(function (r) { return r.coin === 'KAS'; });
   if (kasRigs.length === 0) {
     listEl.innerHTML = '<div style="color:var(--muted);font-size:11.5px;padding:10px;text-align:center">'
       + (HIVE_TOKEN ? '⏳ Aucun worker KAS détecté — cliquez ↺ Sync' : '⚠ Token HiveOS requis dans Paramètres')
@@ -9348,45 +9392,45 @@ function kasUpdateAssignUI() {
     return;
   }
 
-  var online  = kasRigs.filter(function(r){ return r.status!=='offline'; }).length;
-  var assigned = kasRigs.filter(function(r){ return r._assignedFsId && String(r._assignedFsId)===String(HIVE_KAS_FS_ID); }).length;
-  if (sumEl) sumEl.textContent = kasRigs.length+' worker(s) · '+online+' online · '+assigned+' assigné(s) au FS KAS';
-  if (allBtn) allBtn.style.display = (fsId!=='—' && kasRigs.length>0) ? 'inline-flex' : 'none';
+  var online = kasRigs.filter(function (r) { return r.status !== 'offline'; }).length;
+  var assigned = kasRigs.filter(function (r) { return r._assignedFsId && String(r._assignedFsId) === String(HIVE_KAS_FS_ID); }).length;
+  if (sumEl) sumEl.textContent = kasRigs.length + ' worker(s) · ' + online + ' online · ' + assigned + ' assigné(s) au FS KAS';
+  if (allBtn) allBtn.style.display = (fsId !== '—' && kasRigs.length > 0) ? 'inline-flex' : 'none';
 
-  listEl.innerHTML = kasRigs.map(function(r) {
-    var isAssigned = r._assignedFsId && String(r._assignedFsId)===String(HIVE_KAS_FS_ID);
-    var colStatus  = r.status==='online' ? 'var(--green)' : r.status==='warning' ? 'var(--yellow)' : 'var(--red)';
-    var colAssign  = isAssigned ? 'var(--green)' : 'var(--muted)';
-    var assignTxt  = isAssigned ? '✅ Assigné' : (fsId!=='—' ? '⭕ Non assigné' : '—');
-    var hrTxt      = r.status!=='offline' ? (r.hr||'—') : 'Hors ligne';
+  listEl.innerHTML = kasRigs.map(function (r) {
+    var isAssigned = r._assignedFsId && String(r._assignedFsId) === String(HIVE_KAS_FS_ID);
+    var colStatus = r.status === 'online' ? 'var(--green)' : r.status === 'warning' ? 'var(--yellow)' : 'var(--red)';
+    var colAssign = isAssigned ? 'var(--green)' : 'var(--muted)';
+    var assignTxt = isAssigned ? '✅ Assigné' : (fsId !== '—' ? '⭕ Non assigné' : '—');
+    var hrTxt = r.status !== 'offline' ? (r.hr || '—') : 'Hors ligne';
 
     return '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;'
-      +'background:var(--surface2);border:1px solid '+(isAssigned?'rgba(0,255,135,.2)':'var(--border)')
-      +';border-radius:9px">'
-      +'<div style="width:9px;height:9px;border-radius:50%;background:'+colStatus+';flex-shrink:0"></div>'
-      +'<div style="flex:1">'
-        +'<div style="font-size:12px;font-weight:700">'+r.name+'</div>'
-        +'<div style="font-size:9.5px;color:var(--muted);font-family:var(--mono)">'+r.gpus+'</div>'
-      +'</div>'
-      +'<div style="text-align:center;min-width:70px">'
-        +'<div style="font-size:11px;font-family:var(--mono);color:var(--accent)">'+hrTxt+'</div>'
-        +'<div style="font-size:9px;color:var(--muted)">'+(r.maxTemp||0)+'°C · '+(r.watt||0)+'W</div>'
-      +'</div>'
-      +'<div style="text-align:right;min-width:90px">'
-        +'<div style="font-size:10.5px;font-weight:700;color:'+colAssign+'">'+assignTxt+'</div>'
-        +(fsId!=='—' && !isAssigned && r.status!=='offline'
-          ? '<button class="btn btn-ghost btn-sm" style="font-size:9px;padding:2px 6px;margin-top:3px;color:var(--accent)" '
-            +'onclick="kasAssignWorker(RIGS.find(function(x){return x.id===\''+r.id+'\';})).then(function(){kasUpdateAssignUI();toast(\'success\',\''+r.name+'\',\'FS assigné\');}).catch(function(e){toast(\'error\',\'Erreur\',e.message);})">'
-            +'🔗 Assigner'
-          +'</button>'
-          : '')
-      +'</div>'
-    +'</div>';
+      + 'background:var(--surface2);border:1px solid ' + (isAssigned ? 'rgba(0,255,135,.2)' : 'var(--border)')
+      + ';border-radius:9px">'
+      + '<div style="width:9px;height:9px;border-radius:50%;background:' + colStatus + ';flex-shrink:0"></div>'
+      + '<div style="flex:1">'
+      + '<div style="font-size:12px;font-weight:700">' + r.name + '</div>'
+      + '<div style="font-size:9.5px;color:var(--muted);font-family:var(--mono)">' + r.gpus + '</div>'
+      + '</div>'
+      + '<div style="text-align:center;min-width:70px">'
+      + '<div style="font-size:11px;font-family:var(--mono);color:var(--accent)">' + hrTxt + '</div>'
+      + '<div style="font-size:9px;color:var(--muted)">' + (r.maxTemp || 0) + '°C · ' + (r.watt || 0) + 'W</div>'
+      + '</div>'
+      + '<div style="text-align:right;min-width:90px">'
+      + '<div style="font-size:10.5px;font-weight:700;color:' + colAssign + '">' + assignTxt + '</div>'
+      + (fsId !== '—' && !isAssigned && r.status !== 'offline'
+        ? '<button class="btn btn-ghost btn-sm" style="font-size:9px;padding:2px 6px;margin-top:3px;color:var(--accent)" '
+        + 'onclick="kasAssignWorker(RIGS.find(function(x){return x.id===\'' + r.id + '\';})).then(function(){kasUpdateAssignUI();toast(\'success\',\'' + r.name + '\',\'FS assigné\');}).catch(function(e){toast(\'error\',\'Erreur\',e.message);})">'
+        + '🔗 Assigner'
+        + '</button>'
+        : '')
+      + '</div>'
+      + '</div>';
   }).join('');
 
   // Badge global
   var badgeEl = el('kas-assign-status-badge');
-  if (badgeEl) badgeEl.style.display = assigned>0 ? 'block' : 'none';
+  if (badgeEl) badgeEl.style.display = assigned > 0 ? 'block' : 'none';
 }
 
 // Hook: kasUpdateAssignUI appelé après chaque fetchHiveOS
@@ -9398,21 +9442,21 @@ function renderFarmList() {
     cont.innerHTML = '<div style="color:var(--muted);font-size:12px;padding:8px">Aucun farm configuré — cliquez "Découvrir tous les farms"</div>';
     return;
   }
-  cont.innerHTML = HIVE_FARMS.map(function(f, i) {
-    const online = RIGS.filter(function(r){ return r._farmId === String(f.id) && r.status === 'online'; }).length;
-    const total  = RIGS.filter(function(r){ return r._farmId === String(f.id); }).length;
+  cont.innerHTML = HIVE_FARMS.map(function (f, i) {
+    const online = RIGS.filter(function (r) { return r._farmId === String(f.id) && r.status === 'online'; }).length;
+    const total = RIGS.filter(function (r) { return r._farmId === String(f.id); }).length;
     return '<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(255,255,255,0.03);border-radius:6px;margin-bottom:4px">'
       + '<input type="checkbox" ' + (f.enabled ? 'checked' : '') + ' onchange="toggleFarm(' + i + ',this.checked)" style="width:16px;height:16px;accent-color:var(--accent)">'
       + '<div style="flex:1">'
-        + '<div style="font-weight:600;font-size:12px">' + f.name + ' <span style="font-family:var(--mono);color:var(--muted);font-size:10px">ID: ' + f.id + '</span></div>'
-        + '<div style="font-size:10px;color:var(--muted)">'
-          + (total > 0 ? online + '/' + total + ' online' : f.workerCount + ' workers')
-          + (f.lastSync ? ' · sync ' + new Date(f.lastSync).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}) : ' · jamais sync')
-        + '</div>'
+      + '<div style="font-weight:600;font-size:12px">' + f.name + ' <span style="font-family:var(--mono);color:var(--muted);font-size:10px">ID: ' + f.id + '</span></div>'
+      + '<div style="font-size:10px;color:var(--muted)">'
+      + (total > 0 ? online + '/' + total + ' online' : f.workerCount + ' workers')
+      + (f.lastSync ? ' · sync ' + new Date(f.lastSync).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : ' · jamais sync')
+      + '</div>'
       + '</div>'
       + '<button onclick="syncSingleFarm(' + i + ')" class="btn btn-ghost btn-sm" style="padding:2px 8px;font-size:10px" title="Sync ce farm">↺</button>'
       + (String(f.id) === HIVE_FARM_ID ? '<span style="font-size:10px;color:var(--green);background:rgba(16,185,129,0.1);padding:2px 6px;border-radius:4px">Principal</span>' : '')
-    + '</div>';
+      + '</div>';
   }).join('');
 }
 
@@ -9426,16 +9470,16 @@ async function syncSingleFarm(idx) {
   hiveLog('↺ Sync farm: ' + farm.name);
   try {
     const wData = await hiveApiFetch('/farms/' + farm.id + '/workers?per_page=50');
-    const workers = (wData?.data || []).map(function(w){ w._farmId=String(farm.id); w._farmName=farm.name; return w; });
+    const workers = (wData?.data || []).map(function (w) { w._farmId = String(farm.id); w._farmName = farm.name; return w; });
     farm.workerCount = workers.length;
-    farm.lastSync    = Date.now();
+    farm.lastSync = Date.now();
     // Retirer les anciens workers de ce farm et ajouter les nouveaux
-    RIGS.forEach(function(r,i){ if(r._farmId === String(farm.id)) RIGS.splice(i,1); });
+    RIGS.forEach(function (r, i) { if (r._farmId === String(farm.id)) RIGS.splice(i, 1); });
     syncWorkersToRigs(workers);
     saveMultiFarm();
     renderFarmList();
     toast('success', farm.name, workers.length + ' workers sync');
-  } catch(e) { toast('error', 'Erreur sync', e.message.slice(0,50)); }
+  } catch (e) { toast('error', 'Erreur sync', e.message.slice(0, 50)); }
 }
 
 async function discoverFarmId() {
@@ -9449,7 +9493,7 @@ async function discoverFarmId() {
 
     if (!farms.length) {
       hiveLog('⚠ Aucune farm trouvée sur ce compte');
-      toast('warn','HiveOS','Aucune farm trouvée — vérifiez les permissions du token (farms:read)');
+      toast('warn', 'HiveOS', 'Aucune farm trouvée — vérifiez les permissions du token (farms:read)');
       if (btn) { btn.textContent = '🔍 Trouver Farm ID'; btn.disabled = false; }
       return;
     }
@@ -9466,7 +9510,7 @@ async function discoverFarmId() {
       const fInp = el('hive-farm-input');
       if (fInp) fInp.value = HIVE_FARM_ID;
       hiveSettingsChanged();
-      toast('success','HiveOS',`Farm "${farm.name}" trouvée ! ID: ${HIVE_FARM_ID}`);
+      toast('success', 'HiveOS', `Farm "${farm.name}" trouvée ! ID: ${HIVE_FARM_ID}`);
 
     } else {
       // Plusieurs farms → afficher sélecteur
@@ -9483,7 +9527,7 @@ async function discoverFarmId() {
         opt.textContent = `${f.name} (ID: ${f.id}) — ${f.workers_count || 0} workers`;
         sel.appendChild(opt);
       });
-      sel.onchange = function() {
+      sel.onchange = function () {
         HIVE_FARM_ID = this.value;
         if (fInp) fInp.value = HIVE_FARM_ID;
         hiveSettingsChanged();
@@ -9503,9 +9547,9 @@ async function discoverFarmId() {
       await testHiveConnection();
     }
 
-  } catch(e) {
+  } catch (e) {
     hiveLog('❌ Erreur auto-découverte : ' + e.message);
-    toast('err','HiveOS','Erreur : ' + e.message);
+    toast('err', 'HiveOS', 'Erreur : ' + e.message);
   } finally {
     if (btn) { btn.textContent = '🔍 Trouver Farm ID'; btn.disabled = false; }
   }
@@ -9525,7 +9569,7 @@ async function hiveAutoStart() {
         hiveLog(`📦 Farm ID restauré depuis localStorage : ${HIVE_FARM_ID}`);
       }
     }
-  } catch(e) {}
+  } catch (e) { }
 
   // Initialiser multi-farm depuis LS
   initMultiFarm();
@@ -9551,9 +9595,9 @@ async function hiveAutoStart() {
         fetchHiveOS();
       } else if (farms.length > 1) {
         hiveLog(`ℹ ${farms.length} farms trouvées — sélection requise dans ⚙ Config`);
-        toast('info','HiveOS',`${farms.length} farms détectées. Allez dans ⚙ Config → HiveOS pour sélectionner.`);
+        toast('info', 'HiveOS', `${farms.length} farms détectées. Allez dans ⚙ Config → HiveOS pour sélectionner.`);
       }
-    } catch(e) {
+    } catch (e) {
       hiveLog('⚠ Auto-découverte silencieuse échouée : ' + e.message);
     }
   }
@@ -9562,7 +9606,7 @@ async function hiveAutoStart() {
 // ══════════════════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════════════════
-document.addEventListener('DOMContentLoaded',()=>{
+document.addEventListener('DOMContentLoaded', () => {
   // 1. Restaurer depuis localStorage en PREMIER
   loadTheme();
   loadOwnWallet();
@@ -9570,7 +9614,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   migratePin();
 
   // 2. Relier les modals close-on-backdrop
-  document.querySelectorAll('.modal-bg').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+  document.querySelectorAll('.modal-bg').forEach(o => o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); }));
 
   // 3. Sync UI adresses (safe si vides)
   syncPoolAddresses();
@@ -9585,26 +9629,26 @@ document.addEventListener('DOMContentLoaded',()=>{
     }
   }
   const wx = WALLET.XMR.addr, wk = WALLET.KAS.addr;
-  setText('s-wxmr',     wx ? wx.slice(0,12)+'…'+wx.slice(-6) : '⚠ Non configuré');
-  setText('s-wkas',     wk ? wk.slice(0,14)+'…'+wk.slice(-4) : '⚠ Non configuré');
-  setText('sg-xmr-pool',wx ? wx.slice(0,20)+'…'+wx.slice(-4) : 'Configurer dans Paramètres');
-  setText('sg-kas-pool', wk ? wk.slice(0,18)+'…'+wk.slice(-4) : 'Configurer dans Paramètres');
-  const inpX=el('m-wxmr'); if(inpX) inpX.value=wx;
+  setText('s-wxmr', wx ? wx.slice(0, 12) + '…' + wx.slice(-6) : '⚠ Non configuré');
+  setText('s-wkas', wk ? wk.slice(0, 14) + '…' + wk.slice(-4) : '⚠ Non configuré');
+  setText('sg-xmr-pool', wx ? wx.slice(0, 20) + '…' + wx.slice(-4) : 'Configurer dans Paramètres');
+  setText('sg-kas-pool', wk ? wk.slice(0, 18) + '…' + wk.slice(-4) : 'Configurer dans Paramètres');
+  const inpX = el('m-wxmr'); if (inpX) inpX.value = wx;
   // Adresse XMR pré-configurée — déclencher fetch au démarrage si présente
-  if(WALLET.XMR.addr && WALLET.XMR.addr.length >= 90) {
+  if (WALLET.XMR.addr && WALLET.XMR.addr.length >= 90) {
     const badge = el('set-badge-xmr');
-    if(badge) badge.innerHTML = '<div class="api-dot blink"></div>SupportXMR';
+    if (badge) badge.innerHTML = '<div class="api-dot blink"></div>SupportXMR';
   }
-  if(WALLET.KAS.addr && WALLET.KAS.addr.startsWith('kaspa:')) {
+  if (WALLET.KAS.addr && WALLET.KAS.addr.startsWith('kaspa:')) {
     const badgeK = el('set-badge-kas');
-    if(badgeK) badgeK.innerHTML = '<div class="api-dot blink"></div>K1Pool';
+    if (badgeK) badgeK.innerHTML = '<div class="api-dot blink"></div>K1Pool';
   }
-  const inpK=el('m-wkas'); if(inpK) inpK.value=wk;
+  const inpK = el('m-wkas'); if (inpK) inpK.value = wk;
 
   // 4. Render toutes les pages
-  renderDash();renderAlerts();renderHist();refreshWalletPage();
+  renderDash(); renderAlerts(); renderHist(); refreshWalletPage();
   renderOwnWallet();
-  renderExtWallets();renderActions();
+  renderExtWallets(); renderActions();
   renderScheduled();
   tcRenderHistory();
 
@@ -9612,15 +9656,17 @@ document.addEventListener('DOMContentLoaded',()=>{
   updateStorageIndicator();
 
   // ── WALLET PERSONNEL XMR ──
-  (function() {
+  (function () {
     const MY_XMR_ADDR = '87eYaDMVqrC7TuLao24P782QDTpohQeQRbcNHUjU2ksjJhH3LvmwAj6aMrRVZp8xtuGoeK56G4KJrYm2mxf2dF4oGF4o4ZN';
-    const MY_XMR_ID   = 'my-personal-xmr';
+    const MY_XMR_ID = 'my-personal-xmr';
     const exists = EXT_WALLETS.find(w => w.id === MY_XMR_ID || w.addr === MY_XMR_ADDR);
     if (!exists) {
       EXT_WALLETS.forEach(w => w.isDefault = false);
-      EXT_WALLETS.push({ id:MY_XMR_ID, net:'XMR', addr:MY_XMR_ADDR,
-        label:'Mon Wallet XMR Personnel', platform:'Monero GUI / CLI',
-        isDefault:true, createdAt:new Date().toISOString() });
+      EXT_WALLETS.push({
+        id: MY_XMR_ID, net: 'XMR', addr: MY_XMR_ADDR,
+        label: 'Mon Wallet XMR Personnel', platform: 'Monero GUI / CLI',
+        isDefault: true, createdAt: new Date().toISOString()
+      });
     } else { exists.isDefault = true; }
     renderExtWallets();
     updateSwbSubText();
@@ -9628,7 +9674,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   })();
 
   // ── RETRAIT AUTOMATIQUE 50% XMR ──
-  setTimeout(function() {
+  setTimeout(function () {
     const MY_XMR_ADDR = '87eYaDMVqrC7TuLao24P782QDTpohQeQRbcNHUjU2ksjJhH3LvmwAj6aMrRVZp8xtuGoeK56G4KJrYm2mxf2dF4oGF4o4ZN';
     const wallet = EXT_WALLETS.find(w => w.addr === MY_XMR_ADDR);
     if (!wallet) return;
@@ -9643,36 +9689,40 @@ document.addEventListener('DOMContentLoaded',()=>{
     WALLET.XMR.balance = parseFloat((bal - amt - fee).toFixed(6));
 
     const now = new Date();
-    const dateStr = now.toLocaleDateString('fr-FR') + ' ' + now.toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'});
-    const shortAddr = MY_XMR_ADDR.slice(0,16)+'...'+MY_XMR_ADDR.slice(-8);
-    const txid = Array.from({length:64}, () => '0123456789abcdef'[Math.floor(Math.random()*16)]).join('');
+    const dateStr = now.toLocaleDateString('fr-FR') + ' ' + now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    const shortAddr = MY_XMR_ADDR.slice(0, 16) + '...' + MY_XMR_ADDR.slice(-8);
+    const txid = Array.from({ length: 64 }, () => '0123456789abcdef'[Math.floor(Math.random() * 16)]).join('');
     const usd = (amt * xmrP).toFixed(2);
 
-    TX_HISTORY.unshift({ date:dateStr, coin:'XMR', amount:amt.toFixed(6),
-      usd:'$'+usd, dest:shortAddr, fee:fee.toFixed(6),
-      note:'↙ Retrait 50% — Mon Wallet XMR Personnel', txid:txid });
+    TX_HISTORY.unshift({
+      date: dateStr, coin: 'XMR', amount: amt.toFixed(6),
+      usd: '$' + usd, dest: shortAddr, fee: fee.toFixed(6),
+      note: '↙ Retrait 50% — Mon Wallet XMR Personnel', txid: txid
+    });
 
-    ALERTS.unshift({ id:'tx-self-'+Date.now(), type:'info',
-      title:'↙ Retrait 50% XMR envoyé',
-      time:"À l'instant", detail:amt.toFixed(4)+' XMR → '+shortAddr });
+    ALERTS.unshift({
+      id: 'tx-self-' + Date.now(), type: 'info',
+      title: '↙ Retrait 50% XMR envoyé',
+      time: "À l'instant", detail: amt.toFixed(4) + ' XMR → ' + shortAddr
+    });
 
     scheduleSave();
     renderDash(); refreshWalletPage(); renderAlerts(); renderHist();
     toast('success', '↙ Retrait effectué',
-      amt.toFixed(4)+' XMR (≈ $'+usd+') → Mon Wallet XMR Personnel');
+      amt.toFixed(4) + ' XMR (≈ $' + usd + ') → Mon Wallet XMR Personnel');
   }, 2000);
 
   // 6. Message bienvenue
-  if(restored) {
-    setTimeout(()=>toast('success','BitOS Cloud','Session restaurée'),800);
+  if (restored) {
+    setTimeout(() => toast('success', 'BitOS Cloud', 'Session restaurée'), 800);
   } else {
-    setTimeout(()=>{
-    if(WALLET.XMR.addr && WALLET.XMR.addr.length >= 90) {
-      toast('success','⛏️ BitOS Cloud','Adresse XMR configurée — récupération hashrate…');
-    } else {
-      toast('info','BitOS Cloud','Initialisation terminée');
-    }
-  },800);
+    setTimeout(() => {
+      if (WALLET.XMR.addr && WALLET.XMR.addr.length >= 90) {
+        toast('success', '⛏️ BitOS Cloud', 'Adresse XMR configurée — récupération hashrate…');
+      } else {
+        toast('info', 'BitOS Cloud', 'Initialisation terminée');
+      }
+    }, 800);
     setTimeout(lsSave, 1200); // Sauvegarder les valeurs par défaut
   }
 
@@ -9686,8 +9736,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   setTimeout(hiveAutoStart, 2500);
   // Dériver adresse KAS depuis xpub si disponible
   if (WALLET.KAS.xpub) setTimeout(() => refreshKaspaAddressFromXpub(WALLET.KAS.xpubIndex || 0), 300);
-  setTimeout(updateOnlineStatus,400);   // HiveOS auto-sync
-  setTimeout(()=>{ redrawDashboardCharts('24h'); }, 150);  // Charts depuis vrais snapshots
+  setTimeout(updateOnlineStatus, 400);   // HiveOS auto-sync
+  setTimeout(() => { redrawDashboardCharts('24h'); }, 150);  // Charts depuis vrais snapshots
 
   // 8. Autosave toutes les 5 minutes (sécurité supplémentaire)
   setInterval(lsSave, 5 * 60 * 1000);
@@ -9696,16 +9746,16 @@ document.addEventListener('DOMContentLoaded',()=>{
   window.addEventListener('beforeunload', lsSave);
 
   // 10. Resize charts
-  let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{Object.keys(chartInited).forEach(k=>chartInited[k]=false);const ap=document.querySelector('.page.active');if(ap)initChart(ap.id.replace('page-',''));},200);});
+  let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { Object.keys(chartInited).forEach(k => chartInited[k] = false); const ap = document.querySelector('.page.active'); if (ap) initChart(ap.id.replace('page-', '')); }, 200); });
 });
 
 // ══════════════════════════════════════════════════════
 // MOBILE — TCL60 Android (6.6" · 412dp)
 // ══════════════════════════════════════════════════════
 (function initMobile() {
-  const UA  = navigator.userAgent;
+  const UA = navigator.userAgent;
   const IS_ANDROID = /Android/i.test(UA);
-  const IS_MOBILE  = IS_ANDROID || /iPhone|iPad/i.test(UA) || window.innerWidth <= 480;
+  const IS_MOBILE = IS_ANDROID || /iPhone|iPad/i.test(UA) || window.innerWidth <= 480;
   if (!IS_MOBILE) return;
 
   // ── 1. CSS vh corrigé (clavier virtuel) ──
@@ -9718,35 +9768,35 @@ document.addEventListener('DOMContentLoaded',()=>{
     window.visualViewport.addEventListener('resize', setVH);
     window.visualViewport.addEventListener('scroll', setVH);
   } else {
-    try{window.addEventListener('resize', setVH, {passive:true});}catch(_e){}
+    try { window.addEventListener('resize', setVH, { passive: true }); } catch (_e) { }
   }
 
   // ── 2. Fermer le clavier sur tap extérieur ──
   document.addEventListener('touchend', (e) => {
     const active = document.activeElement;
-    if (!active || !['INPUT','TEXTAREA','SELECT'].includes(active.tagName)) return;
+    if (!active || !['INPUT', 'TEXTAREA', 'SELECT'].includes(active.tagName)) return;
     if (!e.target.closest('input,textarea,select,label')) active.blur();
-  }, {passive:true});
+  }, { passive: true });
 
   // ── 3. Bloquer pull-to-refresh Chrome Android ──
   let touchStartY = 0;
-  document.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, {passive:true});
+  document.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, { passive: true });
   document.addEventListener('touchmove', e => {
     const mc = document.querySelector('.main-content');
     if ((mc ? mc.scrollTop : window.scrollY) <= 0 && e.touches[0].clientY > touchStartY + 8) {
       e.preventDefault();
     }
-  }, {passive:false});
+  }, { passive: false });
 
   // ── 4. Scroll au top à chaque changement de page ──
   const _origShowPage = window.showPage;
   if (typeof _origShowPage === 'function') {
-    window.showPage = function(id) {
+    window.showPage = function (id) {
       _origShowPage(id);
       setTimeout(() => {
         const mc = document.querySelector('.main-content');
         if (mc) mc.scrollTop = 0;
-        window.scrollTo({top:0, behavior:'instant'});
+        window.scrollTo({ top: 0, behavior: 'instant' });
       }, 30);
     };
   }
@@ -9757,7 +9807,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       if (e.target.closest('button,.btn,.bn-item,.occ-action-btn,.pin-key,.card-action')) {
         navigator.vibrate(6);
       }
-    }, {passive:true});
+    }, { passive: true });
   }
 
   // ── 6. Modal : déplacer vers le bas si clavier ouvert ──
@@ -9768,10 +9818,10 @@ document.addEventListener('DOMContentLoaded',()=>{
       const keyboardHeight = window.innerHeight - window.visualViewport.height;
       if (keyboardHeight > 100) {
         modal.style.maxHeight = (window.visualViewport.height * 0.85) + 'px';
-        modal.style.bottom    = keyboardHeight + 'px';
+        modal.style.bottom = keyboardHeight + 'px';
       } else {
         modal.style.maxHeight = '';
-        modal.style.bottom    = '';
+        modal.style.bottom = '';
       }
     });
   }
@@ -9779,7 +9829,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   // ── 7. Toast repositionné au-dessus de la bottom nav ──
   const _origToast = window.toast;
   if (typeof _origToast === 'function') {
-    window.toast = function(type, title, msg) {
+    window.toast = function (type, title, msg) {
       _origToast(type, title, msg);
       setTimeout(() => {
         const tc = document.querySelector('#toast-container,#toast,.toast-container');
@@ -9790,22 +9840,22 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   // ── 8. Swipe pour changer de page (optionnel) ──
   let swipeStartX = 0;
-  const PAGES = ['dashboard','rigs','wallet','monitoring','rentabilite','settings'];
+  const PAGES = ['dashboard', 'rigs', 'wallet', 'monitoring', 'rentabilite', 'settings'];
   document.addEventListener('touchstart', e => {
     swipeStartX = e.touches[0].clientX;
-  }, {passive:true});
+  }, { passive: true });
   document.addEventListener('touchend', e => {
     const dx = e.changedTouches[0].clientX - swipeStartX;
     const modal = document.querySelector('.modal-overlay.show, .modal-overlay[style*="flex"]');
     if (modal || Math.abs(dx) < 60) return;
     const active = document.querySelector('.page.active');
     if (!active) return;
-    const cur = active.id.replace('page-','');
+    const cur = active.id.replace('page-', '');
     const idx = PAGES.indexOf(cur);
     if (idx < 0) return;
-    if (dx < -60 && idx < PAGES.length-1) showPage(PAGES[idx+1]);
-    if (dx >  60 && idx > 0)              showPage(PAGES[idx-1]);
-  }, {passive:true});
+    if (dx < -60 && idx < PAGES.length - 1) showPage(PAGES[idx + 1]);
+    if (dx > 60 && idx > 0) showPage(PAGES[idx - 1]);
+  }, { passive: true });
 
   // ── 9. Double-tap pour refresh ──
   let lastTap = 0;
@@ -9815,11 +9865,11 @@ document.addEventListener('DOMContentLoaded',()=>{
       if (now - lastTap < 350) { fetchAllAPIs?.(); }
       lastTap = now;
     }
-  }, {passive:true});
+  }, { passive: true });
 
   // ── 10. Font-size 16px sur tous les inputs (empêche zoom Android) ──
   document.querySelectorAll('input,textarea,select').forEach(el => {
-    if (getComputedStyle(el).fontSize.replace('px','') < 16) {
+    if (getComputedStyle(el).fontSize.replace('px', '') < 16) {
       el.style.fontSize = '16px';
     }
   });
@@ -9828,22 +9878,22 @@ document.addEventListener('DOMContentLoaded',()=>{
     muts.forEach(m => m.addedNodes.forEach(n => {
       if (n.nodeType !== 1) return;
       n.querySelectorAll?.('input,textarea,select').forEach(el => { el.style.fontSize = '16px'; });
-      if (['INPUT','TEXTAREA','SELECT'].includes(n.tagName)) n.style.fontSize = '16px';
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(n.tagName)) n.style.fontSize = '16px';
     }));
-  }).observe(document.body, {childList:true, subtree:true});
+  }).observe(document.body, { childList: true, subtree: true });
 
   console.log('[BitOS Mobile] TCL60 Android activé ✅');
 })();
 // ══════════════════════════════════════════════════════
 // SERVICE WORKER (offline)
 // ══════════════════════════════════════════════════════
-if('serviceWorker' in navigator){
+if ('serviceWorker' in navigator) {
   // SW externalisé dans sw.js
 
 }
-let deferredPrompt=null;
-try{window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;const b=document.getElementById('pwa-install-btn');if(b)b.style.display='flex';});}catch(_e){}
-function installPWA(){if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(()=>{deferredPrompt=null;});}}
+let deferredPrompt = null;
+try { window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredPrompt = e; const b = document.getElementById('pwa-install-btn'); if (b) b.style.display = 'flex'; }); } catch (_e) { }
+function installPWA() { if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt.userChoice.then(() => { deferredPrompt = null; }); } }
 
 
 // ════════════════════════════════════════════════════════════════
@@ -9860,8 +9910,8 @@ function openConvert(coin) {
   convCoin = coin || 'XMR';
   selectConvCoin(convCoin);
   // Update balances
-  setText('conv-bal-xmr', WALLET.XMR.balance.toFixed(4)+' XMR');
-  setText('conv-bal-kas', Math.round(WALLET.KAS.balance)+' KAS');
+  setText('conv-bal-xmr', WALLET.XMR.balance.toFixed(4) + ' XMR');
+  setText('conv-bal-kas', Math.round(WALLET.KAS.balance) + ' KAS');
   openModal('modal-convert');
 }
 
@@ -9871,49 +9921,49 @@ function selectConvCoin(coin) {
   el('conv-btn-xmr').className = 'conv-coin-btn' + (isX ? ' active-xmr' : '');
   el('conv-btn-kas').className = 'conv-coin-btn' + (!isX ? ' active-kas' : '');
   const price = isX ? xmrP : kasP;
-  const dp    = isX ? 6 : 2;
-  setText('conv-amount-label', 'Montant '+coin+' à convertir');
-  setText('conv-rate', '1 '+coin+' = $'+price.toFixed(isX?2:4)+' USDT');
-  const now = lastPriceUpdate ? lastPriceUpdate.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}) : '—';
+  const dp = isX ? 6 : 2;
+  setText('conv-amount-label', 'Montant ' + coin + ' à convertir');
+  setText('conv-rate', '1 ' + coin + ' = $' + price.toFixed(isX ? 2 : 4) + ' USDT');
+  const now = lastPriceUpdate ? lastPriceUpdate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '—';
   setText('conv-rate-time', now);
-  const amtInp = el('conv-amount'); if(amtInp) amtInp.value = '';
-  const rb = el('conv-result-box'); if(rb) rb.style.display='none';
-  const bd = el('conv-breakdown'); if(bd) bd.style.display='none';
-  const af = el('conv-addr-field'); if(af) af.style.display='none';
-  const fn = el('conv-fee-note'); if(fn) fn.style.display='none';
-  const bg = el('btn-conv-go'); if(bg){bg.disabled=true;bg.style.opacity='.4';}
+  const amtInp = el('conv-amount'); if (amtInp) amtInp.value = '';
+  const rb = el('conv-result-box'); if (rb) rb.style.display = 'none';
+  const bd = el('conv-breakdown'); if (bd) bd.style.display = 'none';
+  const af = el('conv-addr-field'); if (af) af.style.display = 'none';
+  const fn = el('conv-fee-note'); if (fn) fn.style.display = 'none';
+  const bg = el('btn-conv-go'); if (bg) { bg.disabled = true; bg.style.opacity = '.4'; }
 }
 
 function calcConversion() {
   const amt = parseFloat(el('conv-amount')?.value || '0') || 0;
   const addr = el('conv-addr')?.value.trim() || '';
   const network = el('conv-network')?.value || 'trc20';
-  if(!amt || amt <= 0) {
-    const rb=el('conv-result-box'); if(rb) rb.style.display='none';
-    const bd=el('conv-breakdown'); if(bd) bd.style.display='none';
-    const bg=el('btn-conv-go'); if(bg){bg.disabled=true;bg.style.opacity='.4';}
+  if (!amt || amt <= 0) {
+    const rb = el('conv-result-box'); if (rb) rb.style.display = 'none';
+    const bd = el('conv-breakdown'); if (bd) bd.style.display = 'none';
+    const bg = el('btn-conv-go'); if (bg) { bg.disabled = true; bg.style.opacity = '.4'; }
     return;
   }
-  const price = convCoin==='XMR' ? xmrP : kasP;
-  const bal   = convCoin==='XMR' ? WALLET.XMR.balance : WALLET.KAS.balance;
+  const price = convCoin === 'XMR' ? xmrP : kasP;
+  const bal = convCoin === 'XMR' ? WALLET.XMR.balance : WALLET.KAS.balance;
   const gross = amt * price;
-  const fee   = gross * 0.002; // 0.2% exchange fee
-  const net   = Math.max(0, gross - fee);
-  const rem   = bal - amt;
-  const unit  = convCoin==='XMR' ? 'XMR' : 'KAS';
-  const dp    = convCoin==='XMR' ? 6 : 2;
+  const fee = gross * 0.002; // 0.2% exchange fee
+  const net = Math.max(0, gross - fee);
+  const rem = bal - amt;
+  const unit = convCoin === 'XMR' ? 'XMR' : 'KAS';
+  const dp = convCoin === 'XMR' ? 6 : 2;
 
-  setText('conv-result-usdt', net.toFixed(2)+' USDT');
+  setText('conv-result-usdt', net.toFixed(2) + ' USDT');
   setText('conv-result-sub', 'Estimation avant frais réseau');
-  setText('conv-gross', '$'+gross.toFixed(2));
-  setText('conv-fee-val', '- $'+fee.toFixed(2)+' (0.2%)');
-  setText('conv-net', '$'+net.toFixed(2)+' USDT');
-  setText('conv-remain', rem>=0 ? rem.toFixed(dp)+' '+unit : '⚠ Insuffisant');
+  setText('conv-gross', '$' + gross.toFixed(2));
+  setText('conv-fee-val', '- $' + fee.toFixed(2) + ' (0.2%)');
+  setText('conv-net', '$' + net.toFixed(2) + ' USDT');
+  setText('conv-remain', rem >= 0 ? rem.toFixed(dp) + ' ' + unit : '⚠ Insuffisant');
 
-  const rb=el('conv-result-box'); if(rb) rb.style.display='block';
-  const bd=el('conv-breakdown'); if(
-bd) bd.style.display='block';
-  const bg=el('btn-conv-go'); if(bg){
+  const rb = el('conv-result-box'); if (rb) rb.style.display = 'block';
+  const bd = el('conv-breakdown'); if (
+    bd) bd.style.display = 'block';
+  const bg = el('btn-conv-go'); if (bg) {
     const ok = rem >= 0 && addr.length > 10;
     bg.disabled = !ok;
     bg.style.opacity = ok ? '1' : '.4';
@@ -9951,7 +10001,7 @@ function initMinerConfigPage() {
   var editor = el('mc-editor');
   if (editor && !editor.value.trim()) {
     var saved = null;
-    try { saved = localStorage.getItem('bitos_miner_config'); } catch(_e) {}
+    try { saved = localStorage.getItem('bitos_miner_config'); } catch (_e) { }
     if (saved) {
       editor.value = saved;
     } else {
@@ -9964,7 +10014,7 @@ function initMinerConfigPage() {
   var path = el('mc-config-path');
   if (path) {
     var savedPath = null;
-    try { savedPath = localStorage.getItem('bitos_miner_config_path'); } catch(_e) {}
+    try { savedPath = localStorage.getItem('bitos_miner_config_path'); } catch (_e) { }
     if (savedPath) path.value = savedPath;
   }
 }
@@ -9973,8 +10023,8 @@ function populateMcRigSelect() {
   var sel = el('mc-rig-select');
   if (!sel) return;
   var html = '<option value="">— Sélectionner un rig —</option>';
-  XMRIG_RIGS.forEach(function(r, i) {
-    html += '<option value="'+i+'">'+r.name+' ('+r.ip+':'+r.port+')</option>';
+  XMRIG_RIGS.forEach(function (r, i) {
+    html += '<option value="' + i + '">' + r.name + ' (' + r.ip + ':' + r.port + ')</option>';
   });
   sel.innerHTML = html;
   if (MC_SELECTED_RIG !== null) sel.value = MC_SELECTED_RIG;
@@ -10002,7 +10052,7 @@ async function loadMinerConfig() {
     if (editor) editor.value = JSON.stringify(data, null, 2);
     setMcStatus('success', 'Config chargée depuis ' + rig.name);
     validateMinerConfig();
-  } catch(e) {
+  } catch (e) {
     setMcStatus('error', 'Erreur: ' + e.message + ' — le rig doit avoir --http-enabled');
   }
 }
@@ -10013,14 +10063,14 @@ async function applyMinerConfig() {
   var json;
   try {
     json = JSON.parse(editor.value);
-  } catch(e) {
+  } catch (e) {
     setMcStatus('error', 'JSON invalide: ' + e.message);
     return;
   }
-  try { localStorage.setItem('bitos_miner_config', editor.value); } catch(_e) {}
+  try { localStorage.setItem('bitos_miner_config', editor.value); } catch (_e) { }
   var pathInput = el('mc-config-path');
   if (pathInput) {
-    try { localStorage.setItem('bitos_miner_config_path', pathInput.value); } catch(_e) {}
+    try { localStorage.setItem('bitos_miner_config_path', pathInput.value); } catch (_e) { }
   }
   var rig = MC_SELECTED_RIG !== null ? XMRIG_RIGS[MC_SELECTED_RIG] : null;
   if (!rig) {
@@ -10039,7 +10089,7 @@ async function applyMinerConfig() {
     if (!res.ok) throw new Error('HTTP ' + res.status);
     setMcStatus('success', 'Config appliquée à ' + rig.name + '. XMRig redémarre automatiquement.');
     toast('success', 'Miner Config', 'Config appliquée à ' + rig.name);
-  } catch(e) {
+  } catch (e) {
     setMcStatus('error', 'Erreur envoi: ' + e.message);
     toast('error', 'Miner Config', 'Échec: ' + e.message);
   }
@@ -10048,14 +10098,14 @@ async function applyMinerConfig() {
 function importMinerConfig(input) {
   if (!input.files || !input.files[0]) return;
   var reader = new FileReader();
-  reader.onload = function(e) {
+  reader.onload = function (e) {
     try {
       var parsed = JSON.parse(e.target.result);
       var editor = el('mc-editor');
       if (editor) editor.value = JSON.stringify(parsed, null, 2);
       setMcStatus('success', 'Config importée: ' + input.files[0].name);
       validateMinerConfig();
-    } catch(err) {
+    } catch (err) {
       setMcStatus('error', 'Fichier JSON invalide: ' + err.message);
     }
   };
@@ -10102,7 +10152,7 @@ function validateMinerConfig() {
     if (issues.length) html += '<div style="color:var(--red);margin-bottom:4px">⚠ ' + issues.join(' | ') + '</div>';
     if (ok.length) html += '<div style="color:var(--green)">✓ ' + ok.join(' | ') + '</div>';
     vDiv.innerHTML = html;
-  } catch(e) {
+  } catch (e) {
     vDiv.innerHTML = '<span style="color:var(--red)">JSON invalide: ' + e.message + '</span>';
   }
 }
@@ -10111,9 +10161,9 @@ function renderMcPresets() {
   var cont = el('mc-presets');
   if (!cont) return;
   var html = '';
-  Object.keys(FLIGHT_SHEETS).forEach(function(key) {
+  Object.keys(FLIGHT_SHEETS).forEach(function (key) {
     var fs = FLIGHT_SHEETS[key];
-    html += '<button class="btn btn-sm" onclick="loadPresetConfig(\''+key+'\')" style="font-size:10px">'
+    html += '<button class="btn btn-sm" onclick="loadPresetConfig(\'' + key + '\')" style="font-size:10px">'
       + fs.name + (fs.recommended ? ' ★' : '') + '</button>';
   });
   cont.innerHTML = html;
@@ -10158,8 +10208,8 @@ function populateCtrlRigSelect() {
   var sel = el('ctrl-rig-select');
   if (!sel) return;
   var html = '<option value="">— Sélectionner un rig —</option>';
-  XMRIG_RIGS.forEach(function(r, i) {
-    html += '<option value="'+i+'">'+r.name+' ('+r.ip+':'+r.port+')</option>';
+  XMRIG_RIGS.forEach(function (r, i) {
+    html += '<option value="' + i + '">' + r.name + ' (' + r.ip + ':' + r.port + ')</option>';
   });
   sel.innerHTML = html;
   if (CTRL_SELECTED_RIG !== null) sel.value = CTRL_SELECTED_RIG;
@@ -10183,15 +10233,15 @@ function onCtrlRigSelect() {
 }
 
 function enableCtrlButtons(on) {
-  ['ctrl-btn-start','ctrl-btn-stop','ctrl-btn-restart','ctrl-btn-pause','ctrl-btn-resume'].forEach(function(id) {
+  ['ctrl-btn-start', 'ctrl-btn-stop', 'ctrl-btn-restart', 'ctrl-btn-pause', 'ctrl-btn-resume'].forEach(function (id) {
     var b = el(id);
     if (b) b.disabled = !on;
   });
 }
 
 function resetCtrlDisplay() {
-  ['ctrl-status','ctrl-hashrate','ctrl-algo','ctrl-uptime','ctrl-hr-10s','ctrl-hr-60s','ctrl-hr-15m',
-   'ctrl-shares-ok','ctrl-shares-total','ctrl-diff'].forEach(function(id) { setText(id, '—'); });
+  ['ctrl-status', 'ctrl-hashrate', 'ctrl-algo', 'ctrl-uptime', 'ctrl-hr-10s', 'ctrl-hr-60s', 'ctrl-hr-15m',
+    'ctrl-shares-ok', 'ctrl-shares-total', 'ctrl-diff'].forEach(function (id) { setText(id, '—'); });
   var info = el('ctrl-rig-info');
   if (info) info.textContent = 'Sélectionnez un rig pour le contrôler';
   var gpu = el('ctrl-gpu-list');
@@ -10202,7 +10252,7 @@ function resetCtrlDisplay() {
 
 function startCtrlPolling() {
   stopCtrlPolling();
-  CTRL_POLL_TIMER = setInterval(function() {
+  CTRL_POLL_TIMER = setInterval(function () {
     if (CTRL_SELECTED_RIG !== null) fetchCtrlStats();
   }, 5000);
 }
@@ -10222,7 +10272,7 @@ async function fetchCtrlStats() {
     setText('ctrl-status', d.paused ? '⏸ Pausé' : '✓ Actif');
     var statusEl = el('ctrl-status');
     if (statusEl) statusEl.style.color = d.paused ? 'var(--yellow)' : 'var(--green)';
-    var hr = d.hashrate?.total || [0,0,0];
+    var hr = d.hashrate?.total || [0, 0, 0];
     setText('ctrl-hashrate', hr[0] > 0 ? formatHR(hr[0]) : '—');
     setText('ctrl-algo', d.algo || '—');
     setText('ctrl-uptime', d.uptime ? formatUptime(d.uptime) : '—');
@@ -10246,7 +10296,7 @@ async function fetchCtrlStats() {
     }
     rig.status = 'online';
     rig.hr = hr[0] || 0;
-  } catch(e) {
+  } catch (e) {
     setText('ctrl-status', '✗ Hors ligne');
     var statusEl2 = el('ctrl-status');
     if (statusEl2) statusEl2.style.color = 'var(--red)';
@@ -10258,18 +10308,18 @@ async function fetchCtrlStats() {
       var backends = await res2.json();
       renderCtrlGPU(backends);
     }
-  } catch(_e) {}
+  } catch (_e) { }
 }
 
 function renderCtrlGPU(backends) {
   var cont = el('ctrl-gpu-list');
   if (!cont) return;
   var cards = [];
-  backends.forEach(function(b, bi) {
+  backends.forEach(function (b, bi) {
     var type = b.type || (bi === 0 ? 'cpu' : 'gpu');
     var label = type.toUpperCase();
     if (b.threads && b.threads.length > 0) {
-      b.threads.forEach(function(t, ti) {
+      b.threads.forEach(function (t, ti) {
         var name = t.name || (label + ' #' + ti);
         var hr = t.hashrate ? (t.hashrate[0] || 0) : 0;
         var temp = t.health ? (t.health.temperature || 0) : 0;
@@ -10286,10 +10336,10 @@ function renderCtrlGPU(backends) {
           + '</div>'
           + '<div style="text-align:right;font-size:10px;font-family:var(--mono)">'
           + '<span style="color:var(--green);font-weight:600">' + formatHR(hr) + '</span>'
-          + (temp > 0 ? ' · <span style="color:'+tempCol+'">'+temp+'°C</span>' : '')
-          + (power > 0 ? ' · '+power+'W' : '')
-          + (fan > 0 ? ' · Fan '+fan+'%' : '')
-          + (clock > 0 ? ' · '+clock+'/'+memClock+'MHz' : '')
+          + (temp > 0 ? ' · <span style="color:' + tempCol + '">' + temp + '°C</span>' : '')
+          + (power > 0 ? ' · ' + power + 'W' : '')
+          + (fan > 0 ? ' · Fan ' + fan + '%' : '')
+          + (clock > 0 ? ' · ' + clock + '/' + memClock + 'MHz' : '')
           + '</div></div>'
         );
       });
@@ -10369,7 +10419,7 @@ async function minerAction(action) {
             signal: AbortSignal.timeout(5000)
           });
           if (!res.ok) throw new Error('HTTP ' + res.status);
-        } catch(e) {
+        } catch (e) {
           if (statusDiv) { statusDiv.style.color = 'var(--yellow)'; statusDiv.textContent = 'Config non appliquée: ' + e.message + ' — restart sans config'; }
         }
       }
@@ -10380,37 +10430,37 @@ async function minerAction(action) {
           body: JSON.stringify({ method: 'restart', id: 1 }),
           signal: AbortSignal.timeout(5000)
         });
-      } catch(_e) {}
+      } catch (_e) { }
     }
     if (statusDiv) { statusDiv.style.color = 'var(--green)'; statusDiv.textContent = action.toUpperCase() + ' envoyé à ' + rig.name; }
     toast('success', 'Miner Control', action.toUpperCase() + ' → ' + rig.name);
     setTimeout(fetchCtrlStats, 2000);
-  } catch(e) {
+  } catch (e) {
     if (statusDiv) { statusDiv.style.color = 'var(--red)'; statusDiv.textContent = 'Erreur: ' + e.message; }
     toast('error', 'Miner Control', 'Échec: ' + e.message);
   }
 }
 
 // ── INIT APP ──────────────────────────────────────────────────────
-function bitosInit(){
-  try{ lsRestore && lsRestore(); }catch(_e){}
-  try{ restoreWallets && restoreWallets(); }catch(_e){}
-  try{ restoreHiveToggle && restoreHiveToggle(); }catch(_e){}
-  try{ restorePoolSelection && restorePoolSelection(); }catch(_e){}
-  try{ restoreRVNPool && restoreRVNPool(); }catch(_e){}
-  try{ restoreKASPool && restoreKASPool(); }catch(_e){}
-  try{ loadXmrigRigs && loadXmrigRigs(); }catch(_e){}
-  try{ loadRVNRigs && loadRVNRigs(); }catch(_e){}
-  try{ loadKASRigs && loadKASRigs(); }catch(_e){}
-  try{ loadHistory && loadHistory(); }catch(_e){}
-  try{ initMobile && initMobile(); }catch(_e){}
-  try{ displayWallets && displayWallets(); }catch(_e){}
-  try{ renderDash && renderDash(); }catch(_e){}
-  try{ fetchCoinGeckoPrices && fetchCoinGeckoPrices(); }catch(_e){}
-  try{ if(HIVE_ENABLED) fetchHiveOS && fetchHiveOS(); }catch(_e){}
-  console.log('[BitOS] Cloud v4 ready — Pool: ' + (POOL_CONFIG.XMR.pool||'moneroocean'));
+function bitosInit() {
+  try { lsRestore && lsRestore(); } catch (_e) { }
+  try { restoreWallets && restoreWallets(); } catch (_e) { }
+  try { restoreHiveToggle && restoreHiveToggle(); } catch (_e) { }
+  try { restorePoolSelection && restorePoolSelection(); } catch (_e) { }
+  try { restoreRVNPool && restoreRVNPool(); } catch (_e) { }
+  try { restoreKASPool && restoreKASPool(); } catch (_e) { }
+  try { loadXmrigRigs && loadXmrigRigs(); } catch (_e) { }
+  try { loadRVNRigs && loadRVNRigs(); } catch (_e) { }
+  try { loadKASRigs && loadKASRigs(); } catch (_e) { }
+  try { loadHistory && loadHistory(); } catch (_e) { }
+  try { initMobile && initMobile(); } catch (_e) { }
+  try { displayWallets && displayWallets(); } catch (_e) { }
+  try { renderDash && renderDash(); } catch (_e) { }
+  try { fetchCoinGeckoPrices && fetchCoinGeckoPrices(); } catch (_e) { }
+  try { if (HIVE_ENABLED) fetchHiveOS && fetchHiveOS(); } catch (_e) { }
+  console.log('[BitOS] Cloud v4 ready — Pool: ' + (POOL_CONFIG.XMR.pool || 'moneroocean'));
 }
-if(document.readyState === 'loading'){
+if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', bitosInit);
 } else {
   bitosInit();
